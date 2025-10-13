@@ -61,19 +61,6 @@ Key screens include:
 
 All wireframes are available in the design folder and represent the initial user experience.
 
-## Scope and Sprint 0 Progress
-During Sprint 0, the team focused on defining the product vision, identifying the main features, and creating the design foundation for development.  
-The deliverables included:
-- Product concept 
-- App map, wireframes and prototyping  
-- User story documentation  
-- Repository setup and task planning  
-
-## Sprint 0 Roles
-- Scrum Master: Ajok Thon 
-- Product Owner: Buernortey Buer  
-- Developers: Godbless Osei, Bernard Gharbin and Alisha Atif
-
 ## How to Contribute
 Refer to the CONTRIBUTING.md file for details on how to follow branching and commit conventions, submit pull requests and review and test code.
  
