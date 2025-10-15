@@ -138,7 +138,7 @@ Displays when a user reports a problem. It confirms submission of the report.
 ### 19. Delete Account
 Provides an option for users to permanently delete their account, with a warning message about data loss.
 
-![Delete Account](./ux-design/DeleteAccount.png)
+![Delete Account](./ux-design/Delete%20Account.png)
 
 ---
 
