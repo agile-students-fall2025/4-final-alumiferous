@@ -61,7 +61,7 @@ Shows the user’s profile, including their photo, username, an about me section
 ### 8. Edit Profile
 Enables the user to update their personal information, profile picture and add/remove skills. Includes a save button.
 
-![Edit Profile](./ux-design/Edit%20Profile.png)
+![Edit Profile](./ux-design/Edit%20Profilee.png)
 
 ---
 
