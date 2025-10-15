@@ -1,4 +1,16 @@
 # UX Design
+## App Map Source File
+- [App Map Source (.jam)](./ux-design/InstaSkill.jam)
+
+## Wireframe Source File
+- [Wireframe Source (.fig)](./ux-design/InstaSkill.fig)
+
+
+
+## Prototype Link
+This is the link to the app's design prototype:
+
+https://www.figma.com/design/PsQ2YXIKhzU0VMnDAnJseT/InstaSkill?node-id=0-1&t=7fnxLztB9TVE0z1b-1   
 
 ## App Map
 The following diagram shows the overall structure and navigation flow between the main screens of the app.
