@@ -10,125 +10,146 @@ The following diagram shows the overall structure and navigation flow between th
 ## Wireframes
 
 ### 1. Log In
+This screen allows existing users to enter their credentials and access the app. It contains fields for username and passwor. It also contains 2 links. First is to reset the password if needed, and the second redirects the user to the Sign Up page if it is their first time using the application.
+
 ![Log In](./ux-design/Log%20In.png)
-This screen allows existing users to enter their credentials and access the app. It contains fields for email and password, and a link to reset the password if needed.
 
 ---
 
 ### 2. Sign Up
+New users can register by providing their basic details such as username and password. Once registered, they are redirected to the Home screen.
+
 ![Sign Up](./ux-design/Sign%20Up.png)
-New users can register by providing their basic details such as name, email, and password. Once registered, they are redirected to the Home screen.
 
 ---
 
 ### 3. Home
+The home screen features a “Search for Skill” bar where the user can search for their desired skill. It also display the skills that are currently trending. Whenever th user clicks on a skill, they are redirected to view its detailed description. A fixed bottom navigation bar (Chat, Requests, Home, Upload, and Profile) appears on all screens for quick access.
+
 ![Home](./ux-design/Home.png)
-The home screen features a “Search for Skill” bar and displays trending skills in box form. Users can click on a skill to view its detailed description. A fixed bottom navigation bar (Chat, Requests, Home, Upload, and Profile) appears on all screens for quick access.
 
 ---
 
 ### 4. Skill Description
+It displays detailed information about a selected skill including the name, description, and an image/video of demonstration. Users can send a request from this page if interested.
+
 ![Skill Description](./ux-design/Skill%20Description.png)
-Displays detailed information about a selected skill including the name, description, and user offering the skill. Users can send a request or report the skill from this page.
 
 ---
 
 ### 5. Upload Skill
+It allows users to add a new skill to share with others. The screen includes input fields for skill name, description, an image/video and an upload button.
+
 ![Upload Skill](./ux-design/Upload%20Skill.png)
-Allows users to add a new skill to share with others. The screen includes input fields for skill name, description, and an upload button.
 
 ---
 
-### 6. UPLOAD POPUP
-![UPLOAD POPUP](./ux-design/UPLOAD%20POPUP.png)
+### 6. Upload Popup
 A confirmation popup that appears after submitting a new skill. It shows a success message or indicates upload progress.
 
+![UPLOAD POPUP](./ux-design/UPLOAD%20POPUP.png)
+
 ---
 
-### 7. Chat
+### 7. Profile
+Shows the user’s profile, including their photo, username, an about me section, skills they offer, and skills they wish to learn. It contains an Edit Profile button if user wishes to modify their profile and an Account Settings button.
+
+![Profile](./ux-design/Profile.png)
+
+---
+
+### 8. Edit Profile
+Enables the user to update their personal information, profile picture and add/remove skills. Includes a save button.
+
+![Edit Profile](./ux-design/Edit%20Profile.png)
+
+---
+
+### 9. Chat
+The chat feature displays a list of ongoing conversations. Users can select a chat to view or send new messages.
+
 ![Chat](./ux-design/Chat.png)
-Displays a list of ongoing conversations. Users can select a chat to view or send new messages.
 
 ---
 
-### 8. Messages
-![Messages](./ux-design/Messages.png)
+### 10. Messages
 This screen represents the chat conversation view, showing sent and received messages between users in real time.
 
+![Messages](./ux-design/Messages.png)
+
 ---
 
-### 9. Requests
+### 11. Requests
+Shows all incoming and outgoing skill exchange requests. Users can accept or reject pending requests.
+
 ![Review Request](./ux-design/Review%20Request.png)
-Shows all incoming and outgoing skill exchange requests. Users can accept, reject, or review pending requests.
 
 ---
 
-### 10. REQUEST POPUP
-![REQUEST POPUP](./ux-design/REQUEST%20POPUP.png)
-Appears when a user sends a skill request. Confirms that the request was successfully sent.
-
----
-
-### 11. REPORT POPUP
-![REPORT POPUP](./ux-design/REPORT%20POPUP.png)
-Displays when a user reports a problem or an inappropriate skill post. It confirms submission of the report.
-
----
-
-### 12. Report Problem
-![Report Problem](./ux-design/Report%20Problem.png)
-Allows users to describe an issue they faced in the app, such as a bug or inappropriate content. Includes a text box and submit button.
-
----
-
-### 13. Profile
-![Profile](./ux-design/Profile.png)
-Shows the user’s profile, including their photo, username, listed skills, and profile options such as editing or deleting the account.
-
----
-
-### 14. Edit Profile
-![Edit Profile](./ux-design/Edit%20Profile.png)
-Enables the user to update their personal information or profile picture. Includes save and cancel buttons.
-
----
-
-### 15. Delete Account
-![Delete Account](./ux-design/DeleteAccount.png)
-Provides an option for users to permanently delete their account, with a warning message about data loss.
-
----
-
-### 16. DELETE POPUP
-![DELETE POPUP](./ux-design/DELETE%20POPUP.png)
-A confirmation message that appears before the user permanently deletes their account.
-
----
-
-### 17. Settings
-![Settings](./ux-design/Settings.png)
-Contains controls for adjusting app preferences such as notifications, privacy, or dark mode options.
-
----
-
-### 18. Delete Skill
-![Delete Skill](./ux-design/Delete%20Skill.png)
-Lets users remove one of their uploaded skills from the platform.
-
----
-
-### 19. Reset Password
-![Reset Password](./ux-design/Reset%20Password.png)
-Allows users to reset their account password by entering their registered email. They receive a reset link or confirmation.
-
----
-
-### 20. Send Request
-![Send Request](./ux-design/Send%20Request.png)
+### 12. Send Request
 Appears when a user wants to request a skill from another user. Includes message input and a send button.
 
+![Send Request](./ux-design/Send%20Request.png)
+
 ---
 
-### 21. Skill Description (Popups & Details)
-![Skill Description](./ux-design/Skill%20Description.png)
-Reiterates the skill view with interactive elements like sending requests or reporting issues via the popups listed above.
+### 13. Request Popup
+Appears when a user sends a skill swap request. Confirms that the request was successfully sent.
+
+![REQUEST POPUP](./ux-design/REQUEST%20POPUP.png)
+
+---
+
+### 14. Delete Skill
+Lets users remove one of their uploaded skills from the platform.
+
+![Delete Skill](./ux-design/Delete%20Skill.png)
+
+---
+
+### 15. Delete Popup
+A confirmation message that appears when deletes a skill.
+
+![DELETE POPUP](./ux-design/DELETE%20POPUP.png)
+
+---
+
+### 16. Settings
+Contains controls for adjusting app preferences such as reset password, report a problem, logout and delete account.
+
+![Settings](./ux-design/Settings.png)
+
+---
+
+### 17. Report Problem
+Allows users to describe an issue they faced in the app, such as a bug. Includes a text box and submit button.
+
+![Report Problem](./ux-design/Report%20Problem.png)
+
+---
+
+### 18. Report Popup
+Displays when a user reports a problem. It confirms submission of the report.
+
+![REPORT POPUP](./ux-design/REPORT%20POPUP.png)
+
+---
+
+### 19. Delete Account
+Provides an option for users to permanently delete their account, with a warning message about data loss.
+
+![Delete Account](./ux-design/DeleteAccount.png)
+
+---
+
+
+### 20. Reset Password
+Allows users to reset their account password.
+
+![Reset Password](./ux-design/Reset%20Password.png)
+
+---
+
+
+
+
