@@ -4,7 +4,7 @@ import axios from 'axios'
 import './Login.css'
 
 const Login = props => {
-  let [urlSearchParams] = useSearchParams() // get access to the URL query string parameters
+  let [urlSearchParams] = useSearchParams() // Get query params
 
   // create state variables to hold username and password
   const [status, setStatus] = useState({}) // the API will return an object indicating the login status in a success field of the response object
@@ -21,7 +21,7 @@ const Login = props => {
 
   // if the user's logged-in status changes, call the setuser function that was passed to this component from the PrimaryNav component.
   useEffect(() => {
-    // if the login was a success, call the setuser function that was passed to this component as a prop
+    // Signup status effect
     if (status.success) {
       console.log(`User successfully logged in: ${status.username}`)
     //   props.setuser(status)
@@ -29,26 +29,33 @@ const Login = props => {
   }, [status])
 
   const handleSubmit = async e => {
-    // prevent the HTML form from actually submitting... we use React's javascript code instead
     e.preventDefault()
 
     try {
-      // create an object with the data we want to send to the server
-      const requestData = {
-        username: e.target.username.value, // gets the value of the field in the submitted form with name='username'
-        password: e.target.password.value, // gets the value of the field in the submitted form with name='password',
-      }
+      // Validate inputs
+    //   const requestData = {
+    //     username: e.target.username.value, // gets the value of the field in the submitted form with name='username'
+    //     password: e.target.password.value, // gets the value of the field in the submitted form with name='password',
+    //   }
 
-      // store the response data into the data state variable
-    //   console.log(response.data)
-    //   setStatus(response.data)
+      // Simulate signup
+      setTimeout(() => {
+          const success = Math.random() > 0.5; // 50% chance to succeed
+          if (success) {
+          setStatus({ success: true, username: e.target.username.value });
+          setErrorMessage('');
+          } else {
+          setStatus({ success: false });
+          setErrorMessage('Mock API: Signup failed, please try again.');
+          }
+      }, 1000); // 1 second delay
     } catch (err) {
       // throw an error
       throw new Error(err)
     }
   }
 
-  // if the user is not logged in, show the login form
+  // Show signup form
   if (!status.success)
     return (
       <div className="Login">
@@ -65,10 +72,10 @@ const Login = props => {
             {
               //handle error condition
             }
-            <label>Username: </label>
+            <label>Username </label>
             <input type="text" name="username" placeholder="username" />
             <br />
-            <label>Password: </label>
+            <label>Password </label>
             <input type="password" name="password" placeholder="password" />
             <br />
             <input type="submit" value="Log In" />
