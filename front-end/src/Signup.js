@@ -22,7 +22,7 @@ const Signup = props => {
     useEffect(() =>{
         if(status.success){
             console.log(`User signed up successfully: ${status.username}`)
-            props.setuser(status)
+            // props.setuser(status)
         }
     },[status])// re run whenever the status change
 
@@ -54,12 +54,26 @@ const Signup = props => {
                 password
             }
             // send the request to the server api to authenticate
-            const response = await axios.post( // waits for server to respond before continuing 
-                '',
-                requestData
-            )
-            console.log(response.data)
-            setStatus(response.data)
+            // const response = await axios.post( // waits for server to respond before continuing 
+            //     '',
+            //     requestData
+            // )
+
+            // Simulate a network request
+            setTimeout(() => {
+                const success = Math.random() > 0.5; // 50% chance to succeed
+                if (success) {
+                    setStatus({ success: true, username: e.target.username.value });
+                    setErrorMessage('');
+                } 
+                else {
+                    setStatus({ success: false });
+                    setErrorMessage('Mock API: Signup failed, please try again.');
+                }
+            }, 1000); // 1 second delay
+
+            // console.log(response.data)
+            // setStatus(response.data)
         }
         catch (err){
             throw new Error(err)
