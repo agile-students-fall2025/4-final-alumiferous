@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from "react";
-import { Navigate, useSearchParams} from 'react-router-dom'
+import { Navigate, Link, useSearchParams} from 'react-router-dom'
 import axios from 'axios'
 import './Signup.css'
 
@@ -9,7 +9,7 @@ const Signup = props => {
     //create variables to store username and password 
     const [status, setStatus] = useState({}) // status is variable for storing signup process status like whether (loading, sucessful or failed)
     const [errorMessage, setErrorMessage] = useState('') // errorMessages store error messages to be shown to the user if something goes wrong
-
+    
     //if the user got here by trying to access our Protected pages
     useEffect (() => {
         const qsError = urlSearchParams.get('error')
@@ -70,7 +70,7 @@ const Signup = props => {
     if (!status.success)
         return (
         <div className="Signup">
-            <h1>Create an account</h1>
+            <h1>Sign Up</h1>
             <p className="feedback">
             This page is placeholder only... without a back-end, we cannot support
             true login functionality. In this case, we fake a login request to a
@@ -83,17 +83,22 @@ const Signup = props => {
                 {
                 //handle error condition
                 }
-                <input type="text" name="username" placeholder="Username" />
+                <label>Username</label>
+                <input type="text" name="username" />
                 <br />
+                <label>Password</label>
+                <input type="password" name="password" />
                 <br />
-                <input type="password" name="password" placeholder="Password" />
-                <br />
-                <br />
-                <input type="password" name="confirm password" placeholder="Confirm Password" />
+                <label>Comfirm Password</label>
+                <input type="password" name="confirm password"/>
                 <br />
                 <br />
                 <input type="submit" value="Sign Up"/>
+                
             </form>
+            <h4 style={{ textAlign: 'center', marginTop: '18px' }}>
+                Already have an account? Click <Link to="">here to Sign in</Link>
+            </h4>
             {/* <p>
                 Server response (for debugging purposes):
                 <br />
