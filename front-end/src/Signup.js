@@ -16,7 +16,7 @@ const Signup = props => {
         if (qsError === 'protected'){
             setErrorMessage('Please sign up to use the app.')
         }
-    },[] )
+    },[urlSearchParams] )
 
     //if the user's Signup status changes, call the setuser function that was passed to this component
     useEffect(() =>{
@@ -26,4 +26,84 @@ const Signup = props => {
         }
     },[status])// re run whenever the status change
 
+    const handleSubmit = async e => {
+        e.preventDefault() // prevent the browser from reloading allowing you to handle the form sudmission
+
+        const username = e.target.username.value; // gets the value of the field in the submitted form with name='username'
+        const password = e.target.password.value; // gets the value of the field in the submitted form with name='password'
+        const confirmPassword = e.target['confirm password'].value;
+
+        // Basic Validation
+        if (!username || !password || !confirmPassword){ // all fields required
+            setErrorMessage('All fields are required.');
+            return;
+        }
+        if (password.length < 8){ // min length 8 for better security
+            setErrorMessage('Password must be at least 8 characters.');
+            return;
+        }
+        if (password != confirmPassword){ // passwords must match
+            setErrorMessage('Passwords do not match');
+            return;
+        }
+
+        try{
+            // create an object with the data we want to send to the server
+            const requestData = {
+                username,
+                password
+            }
+            // send the request to the server api to authenticate
+            const response = await axios.post( // waits for server to respond before continuing 
+                '',
+                requestData
+            )
+            console.log(response.data)
+            setStatus(response.data)
+        }
+        catch (err){
+            throw new Error(err)
+        }
+    }
+
+    // if the user is did not sign up, show the sign up form
+    if (!status.success)
+        return (
+        <div className="Signup">
+            <h1>Create an account</h1>
+            <p className="feedback">
+            This page is placeholder only... without a back-end, we cannot support
+            true login functionality. In this case, we fake a login request to a
+            mock API and randomly allow the user in or not. Keep trying until you
+            get in.
+            </p>
+            {errorMessage ? <p className="error">{errorMessage}</p> : ''}
+            <section className="main-content">
+            <form onSubmit={handleSubmit}>
+                {
+                //handle error condition
+                }
+                <input type="text" name="username" placeholder="Username" />
+                <br />
+                <br />
+                <input type="password" name="password" placeholder="Password" />
+                <br />
+                <br />
+                <input type="password" name="confirm password" placeholder="Confirm Password" />
+                <br />
+                <br />
+                <input type="submit" value="Sign Up"/>
+            </form>
+            {/* <p>
+                Server response (for debugging purposes):
+                <br />
+                <br />
+                {JSON.stringify(status, null, 2)}
+            </p> */}
+            </section>
+        </div>
+    )
+
 }
+
+export default Signup;
