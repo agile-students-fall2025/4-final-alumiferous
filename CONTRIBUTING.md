@@ -1,7 +1,7 @@
 
 # Contributing to This Project
 
-Welcome! This document outlines how to contribute to this project, our team values, and the processes we follow. Please read it carefully before making any contributions.
+Welcome! This document explains how to contribute to this project, outlines our team’s values, and describes the processes we follow. Please read it carefully before contributing.
 
 ## Table of Contents
 - [Team Norms & Values](#team-norms--values)
