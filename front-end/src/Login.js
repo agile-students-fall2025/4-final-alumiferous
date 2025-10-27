@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import {Link, Navigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import './Login.css'
 
@@ -59,13 +59,8 @@ const Login = props => {
   if (!status.success)
     return (
       <div className="Login">
+        <h1 className = "logo"> InstaSkill </h1>
         <h1>Log in</h1>
-        <p className="feedback">
-          This page is placeholder only... without a back-end, we cannot support
-          true login functionality. In this case, we fake a login request to a
-          mock API and randomly allow the user in or not. Keep trying until you
-          get in.
-        </p>
         {errorMessage ? <p className="error">{errorMessage}</p> : ''}
         <section className="main-content">
           <form onSubmit={handleSubmit}>
@@ -80,6 +75,9 @@ const Login = props => {
             <br />
             <input type="submit" value="Log In" />
           </form>
+          <h2>
+            Don't have an account? Click <Link to="/login">here to Sign up</Link>
+          </h2>
         </section>
       </div>
     )
