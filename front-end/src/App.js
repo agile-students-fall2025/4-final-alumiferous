@@ -8,22 +8,17 @@ import Footer from './Footer';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path= "/login" element = {<Login/>}/>
-      </Routes>
-    </BrowserRouter>
-  );
     <div className='App'>
-      <Router>
+      <BrowserRouter>
         <Header />
-          <Routes >
-            <Route path = "/" element ={<Home />}/>
-          </Routes>
-        <Footer /> 
-    </Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
     </div>
-    
-  )
+  );
 }
+
 export default App;
