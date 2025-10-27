@@ -1,0 +1,88 @@
+.Signup {
+  max-width: 425px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f8fbff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  color: #222;
+  font-family:  Arial, Helvetica, sans-serif ;
+}
+
+.Signup h1 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 300; 
+}
+h2 {
+  text-align: center;
+  font-weight: 300;
+  font-size: 0.95em; 
+}
+.logo{
+  text-align: center;
+  font-weight: 600;
+  font-family: fantasy;
+}
+
+.Signup .feedback {
+  font-size: 0.95em;
+  color: #555;
+  background: #eaf6ff;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.Signup .error {
+  color: #d32f2f;
+  background: #ffeaea;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.Signup .main-content {
+  margin-top: 10px;
+}
+
+.Signup form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.Signup label {
+  font-weight: 100;
+  margin-bottom: 1px;
+  font-size: 1em;
+}
+
+.Signup input[type="text"],
+.Signup input[type="password"] {
+  padding: 15px;
+  border: 1px solid #b8c4ea;
+  border-radius: 6px;
+  font-size: em;
+  background: #fff;
+}
+
+.Signup input[type="submit"] {
+  background: #94108d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 15px;
+  font-size: 1em;
+  font-weight: 400;
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.Signup input[type="submit"]:hover {
+  background: #5b1650;
+}
