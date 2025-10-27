@@ -84,13 +84,8 @@ const Signup = props => {
     if (!status.success)
         return (
         <div className="Signup">
+            <h1 className = "logo"> InstaSkill </h1>
             <h1>Sign Up</h1>
-            <p className="feedback">
-            This page is placeholder only... without a back-end, we cannot support
-            true login functionality. In this case, we fake a login request to a
-            mock API and randomly allow the user in or not. Keep trying until you
-            get in.
-            </p>
             {errorMessage ? <p className="error">{errorMessage}</p> : ''}
             <section className="main-content">
             <form onSubmit={handleSubmit}>
@@ -110,9 +105,9 @@ const Signup = props => {
                 <input type="submit" value="Sign Up"/>
                 
             </form>
-            <h4 style={{ textAlign: 'center', marginTop: '18px' }}>
-                Already have an account? Click <Link to="">here to Sign in</Link>
-            </h4>
+            <h2>
+                Already have an account? Click <Link to="/login">here to Sign in</Link>
+            </h2>
             {/* <p>
                 Server response (for debugging purposes):
                 <br />
