@@ -76,13 +76,13 @@ const Login = props => {
             <input type="submit" value="Log In" />
           </form>
           <h2>
-            Don't have an account? Click <Link to="/login">here to Sign up</Link>
+            Don't have an account? Click <Link to="/signup">here to Sign up</Link>
           </h2>
         </section>
       </div>
     )
   // otherwise, if the user has successfully logged-in, redirect them to a different page
-  else return <Navigate to="/home" />
+  else return <Navigate to="/" />
 }
 
 export default Login
