@@ -4,19 +4,19 @@
 InstaSkill is a collaborative skill exchange platform where users can teach what they know and learn what they want, without the use of money.  The idea behind InstaSkill is to create a trusted community where knowledge, time, and experience act as the true currency.  
 
 ## Project Description
-The platform connects individuals based on the skills they offer and the ones they wish to gain. By providing features such as matching, scheduling, and feedback, InstaSkill encourages meaningful, peer-to-peer learning interactions. As a part of this project, our team designed and planned the system following agile principles, focusing on solving a real-world problem of affordable and accessible learning.
+The platform connects individuals based on the skills they offer and the ones they wish to gain. By providing features such as matching, scheduling, and feedback, InstaSkill encourages meaningful, peer-to-peer learning interactions. Our team designed and planned the system using Agile principles, focusing on addressing the real-world challenge of making learning affordable and accessible.
 
 ## Team Members
 - Alisha Atif (aa10699@nyu.edu)  
 - Godbless Osei (gmo6996@nyu.edu)  
 - Bernard Gharbin (bg2696@nyu.edu)  
-- Buernortey Buer (bb3621@nyu.edu)  
+- Bismark Buernortey Buer (bb3621@nyu.edu)  
 - Ajok Thon (at4933@nyu.edu)  
 
 ## Project Background and Target Users
 InstaSkill was inspired by the growing need for affordable, community-based learning solutions. Students and freelancers often have valuable skills but limited resources or opportunities to access others’ expertise. InstaSkill bridges that gap by enabling people to directly exchange their skills in a structured and trustworthy environment. This creates a continuous cycle of teaching, learning, and improving.
 
-InstaSkill is designed for anyone interested in learning or teaching through collaboration.  It is especially useful for students seeking help in academic or creative areas, freelancers wanting to exchange professional skills  or hobbyists looking to explore new activities or share passions  
+InstaSkill is designed for anyone interested in learning or teaching through collaboration. It is especially useful for students seeking help in academic or creative areas, freelancers wanting to exchange professional skills, or hobbyists looking to explore new activities and share their passions.  
 
 ## Core Features
 ### User Profiles
