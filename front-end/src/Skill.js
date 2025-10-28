@@ -4,14 +4,15 @@ import './Skill.css';
 const Skill = ({ name, brief, skillImg, handleHover }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  //
   const onEnter = () => {
     setIsHovered(true);
-    handleHover(name);
+    //handleHover(name);
   };
 
   const onLeave = () => {
     setIsHovered(false);
-    handleHover(null);
+    //handleHover(null);
   };
 
   return (

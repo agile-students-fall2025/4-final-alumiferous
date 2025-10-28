@@ -15,7 +15,7 @@
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* title left, nav right */
   align-items: center;
   height: 100%;
 }
@@ -25,6 +25,7 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   color: #333;
+  font-family: fantasy;
 }
 
 /* === Navigation === */
@@ -35,21 +36,29 @@
 }
 
 .nav-item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
+  text-decoration: none; /* remove default link underline */
+  color: inherit;        /* keep default color */
 }
 
-/* === Icon behavior === */
+/* === Icon wrapper === */
 .icon-wrapper {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
 }
 
+/* Hover icon effects */
+.icon-wrapper:hover {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.25));
+}
+
+/* Icon style */
 .nav-icon {
   width: 26px;
   height: 26px;
@@ -57,15 +66,8 @@
   transition: all 0.25s ease;
 }
 
-/* Hover outline glow */
-.icon-wrapper:hover .nav-icon {
-  color: #222;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.25));
-  transform: scale(1.1);
-}
-
-/* === Label === */
-.icon-label {
+/* Label below icon, initially hidden */
+.icon-lable {
   position: absolute;
   bottom: -1.4rem;
   font-size: 0.75rem;
@@ -79,7 +81,8 @@
   pointer-events: none;
 }
 
-.icon-wrapper:hover .icon-label {
+/* Show label on hover */
+.icon-wrapper:hover .icon-lable {
   opacity: 1;
   transform: translateY(0);
 }
