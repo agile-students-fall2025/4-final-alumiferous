@@ -108,12 +108,6 @@ const Signup = props => {
             <h2>
                 Already have an account? Click <Link to="/login">here to Sign in</Link>
             </h2>
-            {/* <p>
-                Server response (for debugging purposes):
-                <br />
-                <br />
-                {JSON.stringify(status, null, 2)}
-            </p> */}
             </section>
         </div>
     )
