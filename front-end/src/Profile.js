@@ -14,7 +14,7 @@ const Profile = () => {
   const [feedback, setFeedback] = useState('')
 
   useEffect(() => {
-    alert('Welcome to your Profile Page!')
+    //alert('Welcome to your Profile Page!')
     console.log('Profile Page loaded.')
   }, [])
 
