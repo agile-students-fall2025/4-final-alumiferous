@@ -66,13 +66,6 @@ const Profile = () => {
         </div>
       </section>
       {feedback && <div className="Profile-feedback">{feedback}</div>}
-      <nav className="BottomNavigation">
-        <Link className="NavTab" to="/home">Home</Link>
-        <Link className="NavTab" to="/profile">Profile</Link>
-        <Link className="NavTab" to="/upload">Upload</Link>
-        <Link className="NavTab" to="/chat">Chat</Link>
-        <Link className="NavTab" to="/requests">Requests</Link>
-      </nav>
     </main>
   )
 }
