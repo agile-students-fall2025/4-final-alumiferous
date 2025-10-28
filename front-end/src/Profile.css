@@ -1,0 +1,204 @@
+body {
+  background: linear-gradient(135deg, #e6f7fa 0%, #f5e6ff 100%);
+  min-height: 100vh;
+}
+.Profile {
+  max-width: 900px;
+  margin: 48px auto 120px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 8px 40px rgba(33,89,135,0.14), 0 2px 8px rgba(70,33,135,0.02);
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.ProfileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 18px;
+  background: #f7f7fa;
+  box-shadow: 0 2px 10px rgba(33, 89, 135, 0.05);
+  padding: 18px 28px;
+  margin-bottom: 26px;
+}
+
+.BackButton, .MenuButton {
+  background: #f7f7fa;
+  border: none;
+  font-size: 24px;
+  color: #888;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  box-shadow: 0 1px 4px rgba(70,33,135,0.07);
+  transition: background 0.18s;
+}
+.BackButton:hover, .MenuButton:hover {
+  background: #ececff;
+  color: #1976d2;
+}
+
+.SearchBar {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 16px;
+  background: #eee;
+  box-shadow: 0 1px 4px rgba(70,33,135,0.06);
+  outline: none;
+  min-width: 180px;
+}
+
+.ProfileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 38px 0 28px 0;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(33,89,135,0.08);
+  background: #f5f7fb;
+  margin-bottom: 28px;
+}
+
+.Avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 12px rgba(33,89,135,0.11);
+  margin-bottom: 16px;
+  border: 5px solid #fff;
+}
+
+.UserInfo h2 {
+  color: #222f3e;
+  font-size: 28px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+.UserInfo p {
+  color: #9198ad;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.AboutSection {
+  margin: 18px 0 0 0;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(70, 33, 135, 0.04);
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+.AboutSection h3 {
+  color: #1976d2;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.SkillsSection {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 420px;
+  margin: 18px 0;
+}
+.SkillsOffered, .SkillsWanted {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.SkillTag {
+  background: #e9eefc;
+  color: #1976d2;
+  border-radius: 7px;
+  padding: 6px 18px;
+  margin: 3px 0;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(33,89,135,0.08);
+  margin-right: 4px;
+}
+.SkillTag.wanted {
+  background: #ffecef;
+  color: #d21951;
+}
+
+.ActionButtons {
+  margin: 18px 0 0 0;
+  display: flex;
+  gap: 16px;
+}
+.EditProfileButton,
+.AccountSettingsButton {
+  padding: 12px 20px;
+  border-radius: 26px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  background: #1976d2;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(33,89,135,0.09);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.EditProfileButton:hover,
+.AccountSettingsButton:hover {
+  background: #1653a4;
+  box-shadow: 0 4px 18px rgba(33,89,135,0.17);
+}
+
+.Profile-feedback {
+  background: #eaf6ff;
+  color: #1976d2;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 1px 4px rgba(33,89,135,0.19);
+  margin: 12px auto;
+  text-align: center;
+  width: auto;
+}
+
+.BottomNavigation {
+  position: fixed;
+  bottom: 32px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 4px 24px rgba(33,89,135,0.14);
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 12px 0;
+  max-width: 520px;
+  margin: 0 auto;
+  z-index: 99;
+}
+.NavTab {
+  color: #888;
+  background: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-size: 17px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: none;
+  transition: background 0.2s, color 0.18s, font-weight 0.14s;
+}
+.NavTab:focus,
+.NavTab:hover {
+  color: #1976d2;
+  background: #f2faff;
+  font-weight: 600;
+}
+.NavTab.active,
+.NavTab[aria-current="page"] {
+  color: #fff;
+  background: #1976d2;
+  font-weight: 600;
+}
