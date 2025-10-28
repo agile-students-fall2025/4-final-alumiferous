@@ -9,18 +9,22 @@ const Home = () => {
     setHoveredSkill(name);
   };
 
-  const skills = [
-    { name: "Lorem Skill 1", brief: "Lorem ipsum dolor sit amet.", img: `${process.env.PUBLIC_URL}/images/image1.jpeg` },
-    { name: "Lorem Skill 2", brief: "Consectetur adipiscing elit.", img: `${process.env.PUBLIC_URL}/images/image2.jpeg` },
-    { name: "Lorem Skill 3", brief: "Sed do eiusmod tempor incididunt.", img: `${process.env.PUBLIC_URL}/images/image3.jpeg` },
-    { name: "Lorem Skill 4", brief: "Ut labore et dolore magna aliqua.", img: `${process.env.PUBLIC_URL}/images/image4.jpeg` },
-    { name: "Lorem Skill 5", brief: "Ut enim ad minim veniam.", img: `${process.env.PUBLIC_URL}/images/image5.jpeg` },
-    { name: "Lorem Skill 6", brief: "Quis nostrud exercitation ullamco.", img: `${process.env.PUBLIC_URL}/images/image6.jpeg` },
-    { name: "Lorem Skill 7", brief: "Laboris nisi ut aliquip ex ea.", img: `${process.env.PUBLIC_URL}/images/image7.jpeg` },
-    { name: "Lorem Skill 8", brief: "Commodo consequat duis aute irure.", img: `${process.env.PUBLIC_URL}/images/image8.jpeg` },
-    { name: "Lorem Skill 9", brief: "Dolor in reprehenderit in voluptate.", img: `${process.env.PUBLIC_URL}/images/image9.jpeg` },
-    { name: "Lorem Skill 10", brief: "Velit esse cillum dolore eu fugiat.", img: `${process.env.PUBLIC_URL}/images/image10.jpeg` }
-  ];
+
+const skills = [
+  { name: "Public Speaking", brief: "Confident presentations and speeches.", img: `${process.env.PUBLIC_URL}/images/public-speaking.jpg` },
+  { name: "Python", brief: "Programming and data analysis using Python.", img: `${process.env.PUBLIC_URL}/images/python.jpeg` },
+  { name: "Graphic Design", brief: "Creating visuals with Adobe Illustrator.", img: `${process.env.PUBLIC_URL}/images/graphic-design.jpeg` },
+  { name: "Video Editing", brief: "Editing videos in Premiere Pro and Final Cut.", img: `${process.env.PUBLIC_URL}/images/video-editing.jpeg` },
+  { name: "Spanish", brief: "Conversational and written fluency.", img: `${process.env.PUBLIC_URL}/images/spanish.jpg` },
+  { name: "Photography", brief: "Portrait and landscape photography.", img: `${process.env.PUBLIC_URL}/images/photography.jpg` },
+  { name: "Web Development", brief: "Building with HTML, CSS, JavaScript.", img: `${process.env.PUBLIC_URL}/images/web-development.jpg` },
+  { name: "Knitting", brief: "Handmade scarves and crafts.", img: `${process.env.PUBLIC_URL}/images/knitting.jpeg` },
+  { name: "Cooking", brief: "Recipe development and world cuisines.", img: `${process.env.PUBLIC_URL}/images/cooking.jpg` },
+  { name: "3D Modeling", brief: "Creating 3D assets for games and animation.", img: `${process.env.PUBLIC_URL}/images/3d-modeling.jpeg` },
+  { name: "Teaching", brief: "Experienced in classroom and online instruction.", img: `${process.env.PUBLIC_URL}/images/teaching.jpg` },
+  { name: "Project Management", brief: "Managing teams and deadlines effectively.", img: `${process.env.PUBLIC_URL}/images/project-management.jpg` }
+];
+
 
   return (
     <div className="home-container">
