@@ -6,6 +6,7 @@ import Footer from './Footer';
 import Login from './Login';
 import Signup from './Signup';
 import Profile from './Profile'
+import SkillDetail from './SkillDetail';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/skill/:name" element={<SkillDetail/>} />
         </Routes>
         <Footer />
       </BrowserRouter>
