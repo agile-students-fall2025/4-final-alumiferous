@@ -68,10 +68,10 @@ const Login = props => {
               //handle error condition
             }
             <label>Username </label>
-            <input type="text" name="username" placeholder="username" />
+            <input type="text" name="username" />
             <br />
             <label>Password </label>
-            <input type="password" name="password" placeholder="password" />
+            <input type="password" name="password" />
             <br />
             <input type="submit" value="Log In" />
           </form>
@@ -82,7 +82,7 @@ const Login = props => {
       </div>
     )
   // otherwise, if the user has successfully logged-in, redirect them to a different page
-  else return <Navigate to="/" />
+  else return <Navigate to="/home" />
 }
 
 export default Login
