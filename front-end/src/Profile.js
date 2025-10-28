@@ -57,9 +57,12 @@ const Profile = () => {
           </div>
         </div>
         <div className="ActionButtons">
-          <button className="EditProfileButton" onClick={handleEditClick}>
-            Edit Profile
-          </button>
+          <Link to="/edit-profile">
+            <button className="EditProfileButton" >
+              Edit Profile
+            </button>
+          </Link>
+
           <Link to="/settings">
             <button className="AccountSettingsButton">Account Settings</button>
           </Link>
