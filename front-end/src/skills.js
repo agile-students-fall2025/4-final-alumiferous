@@ -84,3 +84,5 @@ export const skills = [
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur id risus vitae nisl interdum porttitor.",
   },
 ];
+
+export const getSkillById = (id) => skills.find(s => s.id === id);

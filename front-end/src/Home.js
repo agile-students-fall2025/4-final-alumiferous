@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Home.css';
 import Skill from './Skill';
-import { skills } from "./data/skills";
+import { skills } from "./skills";
 
 const Home = () => {
   const [hoveredSkill, setHoveredSkill] = useState(null);
