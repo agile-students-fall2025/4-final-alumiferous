@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 const navItems = [
   { name: "Home", icon: HomeIcon, route: "/home" },
   { name: "Profile", icon: UserIcon, route: "/profile" },
-  { name: "Settings", icon: Cog6ToothIcon, route: "/settings" },
+  { name: "Settings", icon: Cog6ToothIcon, route: "/home" },
   { name: "Upload", icon: ArrowUpTrayIcon, route: "/upload" },
   { name: "Messages", icon: ChatBubbleOvalLeftEllipsisIcon, route: "/messages" },
   { name: "Requests", icon: BellIcon, route: "/requests" },
