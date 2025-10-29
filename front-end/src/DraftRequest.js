@@ -1,11 +1,7 @@
-// src/DraftRequest.js
-
-// React hooks: component state + side effects
 import { useEffect, useState } from "react";
-// React Router: navigation, reading query params, and linking
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-// In-memory skills helper (no network calls). See src/skills.js
 import { getSkillById } from "./skills";
+import "./DraftRequest.css";
 
 export default function DraftRequest() {
   // Read ?skillId=... from the URL (e.g., /requests/new?skillId=python)
@@ -43,36 +39,36 @@ export default function DraftRequest() {
 
   // Page layout: a simple centered card-style form
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <h1 style={styles.title}>Send Skill Request</h1>
+    <div className="page">
+      <div className="container">
+        <h1 className="title">Send Skill Request</h1>
 
         {/* Simple form with three fields:
             - To:      (pre-filled with the skill owner; editable)
             - Skill:   (read-only pill showing which skill this request is for)
             - About you: (text area for the message body)
         */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>
+  <form onSubmit={handleSubmit} className="form">
+          <label className="label">
             To:
             <input
-              style={styles.input}
+              className="input"
               value={owner}
               onChange={(e) => setOwner(e.target.value)}
               placeholder={`To: ${skill?.name || "Skill"} owner`}
             />
           </label>
 
-          <label style={styles.label}>
+          <label className="label">
             Interested in skill:
             {/* Read-only display so users are sure which skill they’re contacting about */}
-            <div style={styles.skillBox}>{skill?.name || "(unknown skill)"}</div>
+            <div className="skillBox">{skill?.name || "(unknown skill)"}</div>
           </label>
 
-          <label style={styles.label}>
+          <label className="label">
             Say something about yourself:
             <textarea
-              style={styles.textarea}
+              className="textarea"
               rows={6}
               value={aboutYou}
               onChange={(e) => setAboutYou(e.target.value)}
@@ -82,10 +78,10 @@ export default function DraftRequest() {
           </label>
 
           {/* Mock submit */}
-          <button type="submit" style={styles.button}>Send Request</button>
+          <button type="submit" className="button">Send Request</button>
 
           {/* Back link returns to the skill detail you came from */}
-          <Link to={`/skills/${encodeURIComponent(skillId)}`} style={styles.backLink}>
+          <Link to={`/skills/${encodeURIComponent(skillId)}`} className="backLink">
             ← Back
           </Link>
         </form>
@@ -94,45 +90,3 @@ export default function DraftRequest() {
   );
 }
 
-// Inline styles for sprint speed.
-// Later we can move to CSS modules or Tailwind for consistency.
-const styles = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f7f7f7",
-  },
-  container: {
-    background: "#fff",
-    padding: "40px 50px",
-    borderRadius: 12,
-    boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: 600,
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: 30,
-    fontSize: 28,
-    fontWeight: "600",
-    color: "#222",
-  },
-  form: { display: "flex", flexDirection: "column", gap: 20 },
-  label: { display: "flex", flexDirection: "column", fontWeight: "600", color: "#333", fontSize: 16 },
-  input: { marginTop: 8, padding: "12px 14px", borderRadius: 8, border: "1px solid #ccc", fontSize: 16 },
-  skillBox: { marginTop: 8, background: "#f0f0f0", padding: "12px 14px", borderRadius: 8, fontSize: 16 },
-  textarea: {
-    marginTop: 8, padding: "12px 14px", borderRadius: 8,
-    border: "1px solid #ccc", fontSize: 16, resize: "vertical",
-  },
-  button: {
-    background: "#007bff", color: "#fff", padding: "14px", fontSize: 18,
-    borderRadius: 8, border: "none", cursor: "pointer", transition: "0.2s",
-  },
-  backLink: {
-    marginTop: 20, textAlign: "center", display: "block",
-    color: "#007bff", textDecoration: "none", fontWeight: 500,
-  },
-};
