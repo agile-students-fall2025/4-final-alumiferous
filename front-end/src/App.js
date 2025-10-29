@@ -1,17 +1,23 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
-import Header from './Header';
-import Home from './Home';
-import Footer from './Footer';
-import Login from './Login';
-import Signup from './Signup';
-import Profile from './Profile';
-import EditProfile from './EditProfile';
-import SkillDescription from './SkillDescription';
-import Settings from './Settings';
-import ResetPassword from './ResetPassword';
-import ReportProblem from './ReportProblem';
-import DeleteAccount from './DeleteAccount';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
+
+// Shared layout
+import Header from "./Header";
+import Footer from "./Footer";
+
+// Core pages
+import Home from "./Home";
+import Login from "./Login";
+import Signup from "./Signup";
+import Profile from "./Profile";
+import EditProfile from "./EditProfile";
+import SkillDescription from "./SkillDescription";
+
+// Feature pages
+import Settings from "./Settings";
+import ResetPassword from "./ResetPassword";
+import ReportProblem from "./ReportProblem";
+import DeleteAccount from "./DeleteAccount";
 
 function App() {
   return (
@@ -30,7 +36,6 @@ function App() {
               <>
                 <Header />
                 <Home />
-                {/* <Footer /> */}
               </>
             }
           />
@@ -42,7 +47,6 @@ function App() {
               <>
                 <Header />
                 <Profile />
-                {/* <Footer /> */}
               </>
             }
           />
@@ -54,7 +58,6 @@ function App() {
               <>
                 <Header />
                 <EditProfile />
-                {/* <Footer /> */}
               </>
             }
           />
