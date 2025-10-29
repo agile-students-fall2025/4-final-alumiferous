@@ -8,6 +8,7 @@ import Signup from './Signup';
 import Profile from './Profile'
 import EditProfile from './EditProfile';
 
+import SkillDescription from './SkillDescription';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          
           <Route path="/signup" element={<Signup />} />
 
           <Route
@@ -25,7 +27,7 @@ function App() {
               <>
                 <Header />
                 <Home />
-                <Footer />
+                {/*<Footer />*/}
               </>
             }
           />
@@ -36,7 +38,7 @@ function App() {
               <>
                 <Header />
                 <Profile />
-                <Footer />
+                {/*<Footer />*/}
               </>
             }
           />
@@ -47,13 +49,15 @@ function App() {
               <>
                 <Header />
                 <EditProfile />
-                <Footer />
+                {/*<Footer />*/}
               </>
             }
           />
 
           
+          <Route path="/skill/:id" element={<SkillDescription/>} />
         </Routes>
+        {/*<Footer />*/}
       </BrowserRouter>
     </div>
   );
