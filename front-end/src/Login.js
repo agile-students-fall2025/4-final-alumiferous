@@ -46,7 +46,7 @@ const Login = props => {
           setErrorMessage('');
           } else {
           setStatus({ success: false });
-          setErrorMessage('Mock API: Signup failed, please try again.');
+          setErrorMessage('Mock API: Login failed, please try again.');
           }
       }, 1000); // 1 second delay
     } catch (err) {
