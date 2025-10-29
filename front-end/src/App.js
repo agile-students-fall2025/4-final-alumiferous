@@ -6,6 +6,8 @@ import Footer from './Footer';
 import Login from './Login';
 import Signup from './Signup';
 import Profile from './Profile'
+import EditProfile from './EditProfile';
+
 
 
 function App() {
@@ -17,7 +19,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          
           <Route
             path="/home"
             element={
@@ -29,7 +30,6 @@ function App() {
             }
           />
 
-          
           <Route
             path="/profile"
             element={
@@ -40,6 +40,19 @@ function App() {
               </>
             }
           />
+
+          <Route
+            path="/edit-profile"
+            element={
+              <>
+                <Header />
+                <EditProfile />
+                <Footer />
+              </>
+            }
+          />
+
+          
         </Routes>
       </BrowserRouter>
     </div>

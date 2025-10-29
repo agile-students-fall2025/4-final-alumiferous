@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 
 const navItems = [
-  { name: "Home", icon: HomeIcon, route: "/" },
+  { name: "Home", icon: HomeIcon, route: "/home" },
   { name: "Profile", icon: UserIcon, route: "/profile" },
   { name: "Settings", icon: Cog6ToothIcon, route: "/settings" },
   { name: "Upload", icon: ArrowUpTrayIcon, route: "/upload" },
