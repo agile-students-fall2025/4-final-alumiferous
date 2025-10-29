@@ -1,29 +1,38 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
-import Header from './Header';
-import Home from './Home';
-import Footer from './Footer';
-import Login from './Login';
-import Signup from './Signup';
-import Profile from './Profile';
-import EditProfile from './EditProfile';
-import SkillDescription from './SkillDescription';
-import Settings from './Settings';
-import ResetPassword from './ResetPassword';
-import ReportProblem from './ReportProblem';
-import DeleteAccount from './DeleteAccount';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
 
-function App() {
+// Shared layout
+import Header from "./Header";
+// import Footer from "./Footer";
+
+// Core pages
+import Home from "./Home";
+import Login from "./Login";
+import Signup from "./Signup";
+import Profile from "./Profile";
+import EditProfile from "./EditProfile";
+
+// Feature pages
+import SkillDescription from "./SkillDescription";
+import DraftRequest from "./DraftRequest";
+
+// Settings / account
+// import Settings from "./Settings";
+// import ResetPassword from "./ResetPassword";
+// import ReportProblem from "./ReportProblem";
+// import DeleteAccount from "./DeleteAccount";
+
+export default function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Login / Signup */}
+          {/* Auth */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Home */}
+          {/* Main pages with layout */}
           <Route
             path="/home"
             element={
@@ -35,7 +44,6 @@ function App() {
             }
           />
 
-          {/* Profile */}
           <Route
             path="/profile"
             element={
@@ -47,7 +55,6 @@ function App() {
             }
           />
 
-          {/* Edit Profile */}
           <Route
             path="/edit-profile"
             element={
@@ -59,11 +66,31 @@ function App() {
             }
           />
 
-          {/* Skill Description (plural path used by Home/Skill link) */}
-          <Route path="/skills/:id" element={<SkillDescription />} />
-
-          {/* Settings */}
+          {/* Skills & Requests */}
           <Route
+            path="/skills/:id"
+            element={
+              <>
+                <Header />
+                <SkillDescription />
+                {/* <Footer /> */}
+              </>
+            }
+          />
+
+          <Route
+            path="/requests/new"
+            element={
+              <>
+                <Header />
+                <DraftRequest />
+                {/* <Footer /> */}
+              </>
+            }
+          />
+
+          {/* Settings & account */}
+          {/* <Route
             path="/settings"
             element={
               <>
@@ -73,8 +100,6 @@ function App() {
               </>
             }
           />
-
-          {/* Reset Password */}
           <Route
             path="/reset-password"
             element={
@@ -85,8 +110,6 @@ function App() {
               </>
             }
           />
-
-          {/* Report Problem */}
           <Route
             path="/report-problem"
             element={
@@ -97,8 +120,6 @@ function App() {
               </>
             }
           />
-
-          {/* Delete Account */}
           <Route
             path="/delete-account"
             element={
@@ -108,12 +129,12 @@ function App() {
                 <Footer />
               </>
             }
-          />
+          /> */}
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );
 }
-
-export default App;
