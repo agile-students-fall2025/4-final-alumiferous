@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Skill = ({ id, name, brief, skillImg }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const path = `/skill/${encodeURIComponent(id)}`;
+  const path = `/skills/${encodeURIComponent(id)}`;
 
   const onEnter = () => setIsHovered(true);
   const onLeave = () => setIsHovered(false);

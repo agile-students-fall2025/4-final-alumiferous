@@ -16,12 +16,10 @@ const DeleteAccount = () => {
       alert("Please fill out all fields and check the confirmation box.");
       return;
     }
-
-    // simulate delete success
     setDeleted(true);
 
     setTimeout(() => {
-      navigate("/login"); // redirect after popup
+      navigate("/login");
     }, 2500);
   };
 
