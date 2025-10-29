@@ -8,6 +8,7 @@
   overflow: hidden;
   background: #f9f9f9;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .skill-card:hover {
@@ -21,6 +22,7 @@
   object-fit: cover;
   display: block;
   transition: opacity 0.3s ease;
+
 }
 
 .skill-card img.dimmed {
@@ -44,6 +46,7 @@
   text-align: center;
   padding: 1rem;
   transition: opacity 0.3s ease;
+  box-sizing: border-box;
 }
 
 .skill-overlay.visible {
