@@ -3,7 +3,7 @@ import "./App.css";
 
 // Shared layout
 import Header from "./Header";
-// import Footer from "./Footer";
+import Footer from "./Footer";
 
 // Core pages
 import Home from "./Home";
@@ -88,9 +88,9 @@ export default function App() {
               </>
             }
           />
-
-          {/* Settings & account */}
-          {/* <Route
+{/* 
+          Settings & account
+          <Route
             path="/settings"
             element={
               <>
@@ -99,8 +99,8 @@ export default function App() {
                 <Footer />
               </>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/reset-password"
             element={
               <>
@@ -109,8 +109,8 @@ export default function App() {
                 <Footer />
               </>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/report-problem"
             element={
               <>
@@ -132,7 +132,7 @@ export default function App() {
           /> */}
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>
     </div>
