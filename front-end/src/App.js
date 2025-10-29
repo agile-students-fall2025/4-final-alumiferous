@@ -1,90 +1,119 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Header from './Header';
+import Home from './Home';
+import Footer from './Footer';
+import Login from './Login';
+import Signup from './Signup';
+import Profile from './Profile';
+import EditProfile from './EditProfile';
+import SkillDescription from './SkillDescription';
+import Settings from './Settings';
+import ResetPassword from './ResetPassword';
+import ReportProblem from './ReportProblem';
+import DeleteAccount from './DeleteAccount';
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
-
-import Header from "./Header";
-import Footer from "./Footer";
-
-import Home from "./Home";
-import Login from "./Login";
-import Signup from "./Signup";
-import Profile from "./Profile";
-import EditProfile from "./EditProfile";
-
-import SkillDescription from "./SkillDescription";
-import DraftRequest from "./DraftRequest";
-
-export default function App() {
+function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Auth */}
+          {/* Login / Signup */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Main pages with layout */}
+          {/* Home */}
           <Route
             path="/home"
             element={
               <>
                 <Header />
                 <Home />
-                <Footer />
+                {/* <Footer /> */}
               </>
             }
           />
 
+          {/* Profile */}
           <Route
             path="/profile"
             element={
               <>
                 <Header />
                 <Profile />
-                <Footer />
+                {/* <Footer /> */}
               </>
             }
           />
 
+          {/* Edit Profile */}
           <Route
             path="/edit-profile"
             element={
               <>
                 <Header />
                 <EditProfile />
-                <Footer />
+                {/* <Footer /> */}
               </>
             }
           />
 
-          {/* Your feature pages */}
+          {/* Skill Description (plural path used by Home/Skill link) */}
+          <Route path="/skills/:id" element={<SkillDescription />} />
+
+          {/* Settings */}
           <Route
-            path="/skills/:id"
+            path="/settings"
             element={
               <>
                 <Header />
-                <SkillDescription />
+                <Settings />
                 <Footer />
               </>
             }
           />
 
+          {/* Reset Password */}
           <Route
-            path="/requests/new"
+            path="/reset-password"
             element={
               <>
                 <Header />
-                <DraftRequest />
+                <ResetPassword />
                 <Footer />
               </>
             }
           />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Report Problem */}
+          <Route
+            path="/report-problem"
+            element={
+              <>
+                <Header />
+                <ReportProblem />
+                <Footer />
+              </>
+            }
+          />
+
+          {/* Delete Account */}
+          <Route
+            path="/delete-account"
+            element={
+              <>
+                <Header />
+                <DeleteAccount />
+                <Footer />
+              </>
+            }
+          />
         </Routes>
+        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );
 }
+
+export default App;

@@ -1,5 +1,3 @@
-// src/SkillDescription.js
-
 // React Router hooks/components for reading URL params, navigating, and linking
 import { useParams, Link, useNavigate } from "react-router-dom";
 
