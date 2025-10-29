@@ -18,7 +18,7 @@
   color: #eee;
 }
 
-/* .settings-header {
+.settings-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -30,7 +30,7 @@
   align-items: center;
   justify-content: flex-start;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-} */
+}
 
 .logo {
   font-size: 1.5rem;
