@@ -1,0 +1,83 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f7f7f7;
+}
+
+.container {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #222;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+
+.input {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.skillBox {
+  margin-top: 8px;
+  background: #f0f0f0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.textarea {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.button {
+  background: #007bff;
+  color: #fff;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.backLink {
+  margin-top: 20px;
+  text-align: center;
+  display: block;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}

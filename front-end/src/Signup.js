@@ -111,6 +111,7 @@ const Signup = props => {
             </section>
         </div>
     )
+    else return <Navigate to="/login" />
 
 }
 
