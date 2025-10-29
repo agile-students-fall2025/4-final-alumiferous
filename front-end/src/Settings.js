@@ -32,9 +32,9 @@ const Settings = () => {
 
   return (
     <div className={`settings-container ${darkMode ? 'dark' : 'light'}`}>
-      <header className="settings-header">
+      {/* <header className="settings-header">
         <h1 className="logo">Instaskill</h1>
-      </header>
+      </header> */}
 
       <div className="settings-content">
         <button className="settings-btn" onClick={toggleTheme}>
