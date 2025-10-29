@@ -8,10 +8,9 @@ export default function DraftRequest() {
 
   const skillId = params.get("skillId") || "";
   const [skill, setSkill] = useState(null);
-  const [owner, setOwner] = useState("");      // mock owner name/email if you have it
+  const [owner, setOwner] = useState("");
   const [aboutYou, setAboutYou] = useState("");
 
-  // Pull skill details (name) from mock API so UI shows real data
   useEffect(() => {
     let ignore = false;
     if (skillId) {
@@ -19,7 +18,6 @@ export default function DraftRequest() {
         .then((s) => {
           if (ignore) return;
           setSkill(s);
-          // if your mock has s.ownerName or s.ownerEmail, use them:
           setOwner(s.ownerName || "Skill owner");
         })
         .catch(() => setSkill(null));
@@ -29,112 +27,127 @@ export default function DraftRequest() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    // For now just simulate sending (no backend in this sprint)
     console.log("REQUEST:", { to: owner, skillId, aboutYou });
     alert("Request sent (mock).");
-    nav("/requests"); // or wherever your Requests list lives
+    nav("/requests");
   }
 
   return (
-    <div style={styles.screen}>
-      {/* Logo box */}
-      <div style={styles.logo}>InstaSkill</div>
+    <div style={styles.page}>
+      <div style={styles.container}>
+        <h1 style={styles.title}>Send Skill Request</h1>
 
-      <h1 style={styles.title}>Send Skill Request</h1>
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <label style={styles.label}>
+            To:
+            <input
+              style={styles.input}
+              value={owner}
+              onChange={(e) => setOwner(e.target.value)}
+              placeholder={`To: ${skill?.name || "Skill"} owner`}
+            />
+          </label>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <label style={styles.block}>
-          <div style={styles.label}>To:</div>
-          <input
-            style={styles.input}
-            value={owner}
-            onChange={(e) => setOwner(e.target.value)}
-            placeholder={`To: ${skill?.name || "Skill"} owner`}
-          />
-        </label>
+          <label style={styles.label}>
+            Interested in skill:
+            <div style={styles.skillBox}>{skill?.name || "(unknown skill)"}</div>
+          </label>
 
-        <div style={{ height: 16 }} />
+          <label style={styles.label}>
+            Say something about yourself:
+            <textarea
+              style={styles.textarea}
+              rows={6}
+              value={aboutYou}
+              onChange={(e) => setAboutYou(e.target.value)}
+              placeholder="Briefly introduce yourself and what you need…"
+              required
+            />
+          </label>
 
-        <div style={styles.label}>Interested in skill:</div>
-        <div style={styles.skillPill}>{skill?.name || "(unknown skill)"}</div>
+          <button type="submit" style={styles.button}>Send Request</button>
 
-        <div style={{ height: 16 }} />
+          <Link to={`/skills/${skillId}`} style={styles.backLink}>← Back</Link>
 
-        <label style={styles.block}>
-          <div style={styles.label}>Say something about yourself</div>
-          <textarea
-            style={styles.textarea}
-            rows={7}
-            value={aboutYou}
-            onChange={(e) => setAboutYou(e.target.value)}
-            placeholder="Briefly introduce yourself and what you need…"
-            required
-          />
-        </label>
-
-        <button type="submit" style={styles.cta}>Send Request</button>
-
-        <div style={{ marginTop: 12 }}>
-          <Link to="/" style={{ textDecoration: "none" }}>← Back</Link>
-        </div>
-      </form>
-
-      {/* Bottom bar (optional – add only if your app uses it globally) */}
-      <div style={styles.tabbar}>
-        <Tab to="/">Home</Tab>
-        <Tab to="/profile">Profile</Tab>
-        <Tab to="/upload">Upload</Tab>
-        <Tab to="/chat">Chat</Tab>
-        <Tab to="/requests">Requests</Tab>
+        </form>
       </div>
     </div>
   );
 }
 
-function Tab({ to, children }) {
-  return (
-    <Link to={to} style={styles.tab}>{children}</Link>
-  );
-}
-
 const styles = {
-  screen: {
-    minHeight: "100dvh",
-    padding: "16px 16px 90px",
-    boxSizing: "border-box",
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f7f7f7",
   },
-  logo: {
-    width: 120, height: 80, border: "2px solid #999",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    background: "#eee", borderRadius: 4, fontWeight: 600,
+  container: {
+    background: "#fff",
+    padding: "40px 50px",
+    borderRadius: 12,
+    boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+    width: "100%",
+    maxWidth: 600,
   },
-  title: { fontSize: 28, margin: "12px 0 16px" },
-  form: { maxWidth: 560 },
-  block: { display: "block" },
-  label: { fontWeight: 600, marginBottom: 8 },
+  title: {
+    textAlign: "center",
+    marginBottom: 30,
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#222",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+  },
+  label: {
+    display: "flex",
+    flexDirection: "column",
+    fontWeight: "600",
+    color: "#333",
+    fontSize: 16,
+  },
   input: {
-    width: "100%", padding: "12px 14px", borderRadius: 6,
-    border: "1px solid #ccc", fontSize: 16,
+    marginTop: 8,
+    padding: "12px 14px",
+    borderRadius: 8,
+    border: "1px solid #ccc",
+    fontSize: 16,
   },
-  skillPill: {
-    display: "inline-block", background: "#ddd", padding: "14px 24px",
-    borderRadius: 6, fontSize: 20, fontWeight: 600,
+  skillBox: {
+    marginTop: 8,
+    background: "#f0f0f0",
+    padding: "12px 14px",
+    borderRadius: 8,
+    fontSize: 16,
   },
   textarea: {
-    width: "100%", padding: "12px 14px", borderRadius: 6,
-    border: "1px solid #ccc", fontSize: 16, resize: "vertical",
+    marginTop: 8,
+    padding: "12px 14px",
+    borderRadius: 8,
+    border: "1px solid #ccc",
+    fontSize: 16,
+    resize: "vertical",
   },
-  cta: {
-    marginTop: 24, width: "100%", background: "#000", color: "#fff",
-    border: "none", padding: "16px", borderRadius: 8, fontSize: 18, cursor: "pointer",
+  button: {
+    background: "#007bff",
+    color: "#fff",
+    padding: "14px",
+    fontSize: 18,
+    borderRadius: 8,
+    border: "none",
+    cursor: "pointer",
+    transition: "0.2s",
   },
-  tabbar: {
-    position: "fixed", left: 0, right: 0, bottom: 0, height: 64,
-    background: "#e9e9e9", borderTop: "1px solid #ccc",
-    display: "flex", justifyContent: "space-around", alignItems: "center",
-  },
-  tab: {
-    background: "#666", color: "#fff", padding: "8px 12px",
-    borderRadius: 6, textDecoration: "none", fontSize: 14,
+  backLink: {
+    marginTop: 20,
+    textAlign: "center",
+    display: "block",
+    color: "#007bff",
+    textDecoration: "none",
+    fontWeight: 500,
   },
 };

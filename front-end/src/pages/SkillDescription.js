@@ -1,43 +1,91 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchSkillById } from "../api/skills";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { skills } from "../data/skills";
 
 export default function SkillDescription() {
   const { id } = useParams();
   const nav = useNavigate();
-  const [skill, setSkill] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
 
-  useEffect(() => {
-    setLoading(true); setErr(null);
-    fetchSkillById(id).then(setSkill).catch(e => setErr(e.message)).finally(() => setLoading(false));
-  }, [id]);
+  const skill = skills.find((s) => s.id === id);
 
-  if (loading) return <div style={{padding:16}}>Loading…</div>;
-  if (err)     return <div style={{padding:16}}>Error: {err} <Link to="/">Back</Link></div>;
+  if (!skill) {
+    return (
+      <div style={{ padding: 20 }}>
+        <p>Skill not found.</p>
+        <Link to="/home">← Back to Home</Link>
+      </div>
+    );
+  }
 
   return (
-    <div style={{minHeight:"100dvh", padding:"16px 16px 96px", display:"flex", flexDirection:"column", alignItems:"center"}}>
-      <div style={{alignSelf:"flex-start", border:"2px solid #bbb", padding:"10px 14px", borderRadius:6, background:"#eee"}}>InstaSkill</div>
-      <h1 style={{margin:"12px 0 16px"}}>Skill Info</h1>
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h1 style={styles.title}>{skill.name}</h1>
+        <img src={skill.img} alt={skill.name} style={styles.image} />
+        <p style={styles.description}>{skill.description}</p>
 
-      <div style={{width:"92%", maxWidth:520, border:"1px solid #ddd", borderRadius:8, background:"#fafafa", padding:12}}>
-        <img src={skill.mediaUrl} alt={skill.name} style={{width:"100%", borderRadius:6}} />
-        <div style={{textAlign:"center", fontWeight:600, marginTop:8}}>Image / Video of skill</div>
+        <button
+          onClick={() => nav(`/requests/new?skillId=${encodeURIComponent(skill.id)}`)}
+          style={styles.button}
+        >
+          Draft Request
+        </button>
+
+        <Link to="/home" style={styles.back}>
+          ← Back to Home
+        </Link>
       </div>
-
-      <div style={{width:"92%", maxWidth:600, border:"1px solid #ddd", borderRadius:8, padding:16, marginTop:16}}>
-        <div style={{textAlign:"center", fontWeight:600, marginBottom:8}}>About skill</div>
-        <p style={{lineHeight:1.6}}>{skill.description}</p>
-      </div>
-
-      <button
-         onClick={() => nav(`/requests/new?skillId=${encodeURIComponent(skill.id)}`)}
-         style={{ marginTop: 24, background: "#000", color: "#fff", border: "none", padding: "14px 22px", borderRadius: 8 }}
-      >
-        Draft a Request
-     </button>
     </div>
   );
 }
+
+const styles = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f7f8fa",
+    padding: "40px 20px",
+  },
+  card: {
+    background: "#fff",
+    padding: 40,
+    borderRadius: 10,
+    boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+    maxWidth: 700,
+    textAlign: "center",
+  },
+  title: {
+    fontSize: 32,
+    marginBottom: 24,
+    color: "#222",
+  },
+  image: {
+    width: "100%",
+    maxHeight: 400,
+    borderRadius: 10,
+    objectFit: "cover",
+    marginBottom: 20,
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 1.6,
+    color: "#444",
+  },
+  button: {
+    marginTop: 24,
+    padding: "14px 28px",
+    background: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: 6,
+    fontSize: 18,
+    cursor: "pointer",
+  },
+  back: {
+    display: "block",
+    marginTop: 16,
+    textDecoration: "none",
+    color: "#007bff",
+  },
+};
