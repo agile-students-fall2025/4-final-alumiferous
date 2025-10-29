@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Header from './Header';
 import Home from './Home';
@@ -109,8 +109,10 @@ function App() {
               </>
             }
           />
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        {/* <Footer /> */}
       </BrowserRouter>
     </div>
   );
