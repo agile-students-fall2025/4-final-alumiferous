@@ -6,6 +6,8 @@ import Footer from './Footer';
 import Login from './Login';
 import Signup from './Signup';
 import Profile from './Profile'
+import EditProfile from './EditProfile';
+
 import SkillDescription from './SkillDescription';
 
 
@@ -13,13 +15,47 @@ function App() {
   return (
     <div className='App'>
       <BrowserRouter>
-        <Header />
         <Routes>
+          <Route path="/" element={<Login />} />
            <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
+
+          <Route
+            path="/home"
+            element={
+              <>
+                <Header />
+                <Home />
+                {/*<Footer />*/}
+              </>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <>
+                <Header />
+                <Profile />
+                {/*<Footer />*/}
+              </>
+            }
+          />
+
+          <Route
+            path="/edit-profile"
+            element={
+              <>
+                <Header />
+                <EditProfile />
+                {/*<Footer />*/}
+              </>
+            }
+          />
+
+          
           <Route path="/skill/:id" element={<SkillDescription/>} />
         </Routes>
         {/*<Footer />*/}

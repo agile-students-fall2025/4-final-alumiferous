@@ -2,33 +2,19 @@ import React, { useState } from "react";
 import "./Skill.css";
 import { Link } from "react-router-dom";
 
-const Skill = ({ id, name, brief, skillImg, handleHover }) => {
+const Skill = ({ id, name, brief, skillImg }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  //get the path of a skill detail
-  //use the skill name as a unique identifier and dynamic liink creator
   const path = `/skill/${encodeURIComponent(id)}`;
 
-  const onEnter = () => {
-    setIsHovered(true);
-    //handleHover(name);
-  };
-
-  const onLeave = () => {
-    setIsHovered(false);
-    //handleHover(null);
-  };
+  const onEnter = () => setIsHovered(true);
+  const onLeave = () => setIsHovered(false);
 
   return (
-    <Link to={path} className="skill-card">
-      <div onMouseEnter={onEnter} onMouseLeave={onLeave}>
-        <img src={skillImg} alt={name} className={isHovered ? "dimmed" : ""} />
-
-        {/* Dynamic overlay */}
-        <div className={`skill-overlay ${isHovered ? "visible" : ""}`}>
-          <h3>{name}</h3>
-          <p>{brief}</p>
-        </div>
+    <Link to={path} className="skill-card" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <img src={skillImg} alt={name} className={isHovered ? "dimmed" : ""} />
+      <div className={`skill-overlay ${isHovered ? "visible" : ""}`}>
+        <h3>{name}</h3>
+        <p>{brief}</p>
       </div>
     </Link>
   );

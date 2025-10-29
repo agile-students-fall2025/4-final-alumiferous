@@ -3,14 +3,16 @@ import { HomeIcon, UserIcon, Cog6ToothIcon, ArrowUpTrayIcon, ChatBubbleOvalLeftE
 import "./Header.css";
 import { Link } from "react-router-dom";
 
+
+
 //array of navigation icons
 const navItems = [
-  { name: "Home", icon: HomeIcon },
-  { name: "Profile", icon: UserIcon },
-  { name: "Settings", icon: Cog6ToothIcon },
-  { name: "Upload", icon: ArrowUpTrayIcon },
-  { name: "Messages", icon: ChatBubbleOvalLeftEllipsisIcon },
-  { name: "Requests", icon: BellIcon },
+  { name: "Home", icon: HomeIcon, route: "/home" },
+  { name: "Profile", icon: UserIcon, route: "/profile" },
+  { name: "Settings", icon: Cog6ToothIcon, route: "/settings" },
+  { name: "Upload", icon: ArrowUpTrayIcon, route: "/upload" },
+  { name: "Messages", icon: ChatBubbleOvalLeftEllipsisIcon, route: "/messages" },
+  { name: "Requests", icon: BellIcon, route: "/requests" },
 ];
 
 const Header = () => {
