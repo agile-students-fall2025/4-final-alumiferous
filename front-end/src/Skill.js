@@ -1,33 +1,22 @@
-import React, { useState } from 'react';
-import './Skill.css';
+import React, { useState } from "react";
+import "./Skill.css";
+import { Link } from "react-router-dom";
 
-const Skill = ({ name, brief, skillImg, handleHover }) => {
+const Skill = ({ id, name, brief, skillImg }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const path = `/skill/${encodeURIComponent(id)}`;
 
-  const onEnter = () => {
-    setIsHovered(true);
-    handleHover(name);
-  };
-
-  const onLeave = () => {
-    setIsHovered(false);
-    handleHover(null);
-  };
+  const onEnter = () => setIsHovered(true);
+  const onLeave = () => setIsHovered(false);
 
   return (
-    <div
-      className="skill-card"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
+    <Link to={path} className="skill-card" onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <img src={skillImg} alt={name} className={isHovered ? "dimmed" : ""} />
-      
-      {/* Dynamic overlay */}
       <div className={`skill-overlay ${isHovered ? "visible" : ""}`}>
         <h3>{name}</h3>
         <p>{brief}</p>
       </div>
-    </div>
+    </Link>
   );
 };
 
