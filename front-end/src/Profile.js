@@ -14,7 +14,7 @@ const Profile = () => {
   const [feedback, setFeedback] = useState('')
 
   useEffect(() => {
-    alert('Welcome to your Profile Page!')
+    //alert('Welcome to your Profile Page!')
     console.log('Profile Page loaded.')
   }, [])
 
@@ -57,9 +57,12 @@ const Profile = () => {
           </div>
         </div>
         <div className="ActionButtons">
-          <button className="EditProfileButton" onClick={handleEditClick}>
-            Edit Profile
-          </button>
+          <Link to="/edit-profile">
+            <button className="EditProfileButton" >
+              Edit Profile
+            </button>
+          </Link>
+
           <Link to="/settings">
             <button className="AccountSettingsButton">Account Settings</button>
           </Link>
@@ -71,3 +74,4 @@ const Profile = () => {
 }
 
 export default Profile
+
