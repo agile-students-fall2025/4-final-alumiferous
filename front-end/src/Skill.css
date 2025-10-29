@@ -1,51 +1,54 @@
 .skill-card {
-  display: block;
   position: relative;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-  border-radius: 12px;
   overflow: hidden;
-  background: #f9f9f9;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.skill-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .skill-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
-  transition: opacity 0.3s ease;
+  transition: all 0.4s ease;
 }
 
+/* Slight dimming when hovered */
 .skill-card img.dimmed {
-  opacity: 0.3;
+  filter: brightness(60%) blur(1px);
+  transform: scale(1.05);
 }
 
-/* Overlay styles */
+/* Overlay text */
 .skill-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.55);
-  color: white;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
   opacity: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: opacity 0.4s ease, transform 0.3s ease;
   text-align: center;
   padding: 1rem;
-  transition: opacity 0.3s ease;
+  transform: translateY(10%);
 }
 
 .skill-overlay.visible {
   opacity: 1;
+  transform: translateY(0);
+}
+
+.skill-overlay h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.skill-overlay p {
+  font-size: 1rem;
+  max-width: 80%;
 }
