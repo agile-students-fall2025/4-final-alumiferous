@@ -1,0 +1,71 @@
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 80px;
+  padding: 2rem;
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+}
+ 
+.settings-container.light {
+  background-color: #f8f8f8;
+  color: #333;
+}
+
+.settings-container.dark {
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+.settings-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #007bff;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.settings-content {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 300px;
+}
+
+.settings-btn {
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.settings-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+.settings-btn.delete {
+  background-color: #e63946;
+}
+
+.settings-btn.delete:hover {
+  background-color: #c53030;
+}
