@@ -20,6 +20,7 @@ const ReportProblem = () => {
     setTimeout(() => setSubmitted(false), 2500); // hides popup after 2.5s
   };
 
+  // return css
   return (
     <div className="report-container">
       <div className="report-box">
