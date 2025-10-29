@@ -6,6 +6,8 @@ import Footer from './Footer';
 import Login from './Login';
 import Signup from './Signup';
 import Profile from './Profile'
+import EditProfile from './EditProfile';
+
 
 
 function App() {
