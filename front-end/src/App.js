@@ -17,10 +17,10 @@ import SkillDescription from "./SkillDescription";
 import DraftRequest from "./DraftRequest";
 
 // Settings / account
-// import Settings from "./Settings";
-// import ResetPassword from "./ResetPassword";
-// import ReportProblem from "./ReportProblem";
-// import DeleteAccount from "./DeleteAccount";
+import Settings from "./Settings";
+import ResetPassword from "./ResetPassword";
+import ReportProblem from "./ReportProblem";
+import DeleteAccount from "./DeleteAccount";
 
 export default function App() {
   return (
@@ -88,8 +88,8 @@ export default function App() {
               </>
             }
           />
-{/* 
-          Settings & account
+
+          {/* Settings & account */}
           <Route
             path="/settings"
             element={
@@ -99,8 +99,8 @@ export default function App() {
                 <Footer />
               </>
             }
-          /> */}
-          {/* <Route
+          />
+          <Route
             path="/reset-password"
             element={
               <>
@@ -129,7 +129,7 @@ export default function App() {
                 <Footer />
               </>
             }
-          /> */}
+          />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
@@ -138,3 +138,5 @@ export default function App() {
     </div>
   );
 }
+
+
