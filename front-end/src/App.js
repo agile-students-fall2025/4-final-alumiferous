@@ -21,6 +21,10 @@ import ResetPassword from "./ResetPassword";
 import ReportProblem from "./ReportProblem";
 import DeleteAccount from "./DeleteAccount";
 
+// Chat pages
+import Chat  from "./Chat";
+
+
 export default function App() {
   return (
     <div className="App">
@@ -125,6 +129,17 @@ export default function App() {
               <>
                 <Header />
                 <DeleteAccount />
+                <Footer />
+              </>
+            }
+          />
+
+          <Route
+            path="/chat"
+            element={
+              <>
+                <Header />
+                <Chat />
                 <Footer />
               </>
             }
