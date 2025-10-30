@@ -1,22 +1,31 @@
 .Login {
-  max-width: 100%;
-  margin: 20px;
-  margin-top: 40px;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
   padding: 24px 20px;
   background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
   color: #222;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  box-sizing: border-box;
 }
 
 /* Desktop styles */
 @media (min-width: 768px) {
   .Login {
-    max-width: 450px;
-    margin: 40px auto;
-    margin-top: 80px;
     padding: 32px;
+    align-items: center;
+  }
+}
+
+/* Content wrapper for desktop to limit width */
+@media (min-width: 768px) {
+  .Login > * {
+    max-width: 450px;
+    width: 100%;
   }
 }
 
@@ -64,7 +73,8 @@ h2 {
 .Login form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  transition: all 0.3s ease;
 }
 
 .Login label {
@@ -118,11 +128,22 @@ h2 {
   transform: translateY(-1px);
 }
 
-/* Name fields - mobile first (stacked), desktop (side by side) */
+/* Name fields with smooth animations */
 .name-row {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.4s ease;
+  margin-bottom: 0;
+}
+
+.name-row.show {
+  max-height: 200px;
+  opacity: 1;
+  margin-bottom: 0;
 }
 
 .name-row input {

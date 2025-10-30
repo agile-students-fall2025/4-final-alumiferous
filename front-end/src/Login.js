@@ -41,18 +41,10 @@ const Login = props => {
       const firstName = isLogin ? null : e.target.firstName.value
       const lastName = isLogin ? null : e.target.lastName.value
 
-      // Simulate API call
-      setTimeout(() => {
-          const success = Math.random() > 0.5; // 50% chance to succeed
-          if (success) {
-            const username = isLogin ? email.split('@')[0] : `${firstName} ${lastName}` // Use full name for signup, email prefix for login
-            setStatus({ success: true, username });
-            setErrorMessage('');
-          } else {
-            setStatus({ success: false });
-            setErrorMessage(`Mock API: ${isLogin ? 'Login' : 'Signup'} failed, please try again.`);
-          }
-      }, 1000); // 1 second delay
+      // Process login/signup
+      const username = isLogin ? email.split('@')[0] : `${firstName} ${lastName}` // Use full name for signup, email prefix for login
+      setStatus({ success: true, username });
+      setErrorMessage('');
     } catch (err) {
       // throw an error
       throw new Error(err)
@@ -96,13 +88,11 @@ const Login = props => {
             {/* Email field (for both login and signup) */}
             <input type="email" name="email" placeholder="Email" required />
             
-            {/* Name fields (only for signup) - on same row */}
-            {!isLogin && (
-              <div className="name-row">
-                <input type="text" name="firstName" placeholder="First Name" required />
-                <input type="text" name="lastName" placeholder="Last Name" required />
-              </div>
-            )}
+            {/* Name fields (only for signup) - on same row with animation */}
+            <div className={`name-row ${!isLogin ? 'show' : ''}`}>
+              <input type="text" name="firstName" placeholder="First Name" required={!isLogin} />
+              <input type="text" name="lastName" placeholder="Last Name" required={!isLogin} />
+            </div>
             
             {/* Password field */}
             <input type="password" name="password" placeholder="Password" required />

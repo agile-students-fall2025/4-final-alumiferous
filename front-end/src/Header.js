@@ -11,7 +11,7 @@ const navItems = [
   { name: "Profile", icon: UserIcon, route: "/profile" },
   { name: "Settings", icon: Cog6ToothIcon, route: "/home" },
   { name: "Upload", icon: ArrowUpTrayIcon, route: "/upload" },
-  { name: "Messages", icon: ChatBubbleOvalLeftEllipsisIcon, route: "/messages" },
+  { name: "Chat", icon: ChatBubbleOvalLeftEllipsisIcon, route: "/chat" },
   { name: "Requests", icon: BellIcon, route: "/requests" },
 ];
 
