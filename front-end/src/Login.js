@@ -6,7 +6,10 @@ import './Login.css'
 const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
 
-  // create state variables to hold username and password
+  // State for toggle between login and signup
+  const [isLogin, setIsLogin] = useState(true)
+  
+  // create state variables to hold form data
   const [status, setStatus] = useState({}) // the API will return an object indicating the login status in a success field of the response object
   const [errorMessage, setErrorMessage] = useState(``) 
 
@@ -32,21 +35,22 @@ const Login = props => {
     e.preventDefault()
 
     try {
-      // Validate inputs
-    //   const requestData = {
-    //     username: e.target.username.value, // gets the value of the field in the submitted form with name='username'
-    //     password: e.target.password.value, // gets the value of the field in the submitted form with name='password',
-    //   }
+      // Get form data
+      const email = e.target.email.value
+      const password = e.target.password.value
+      const firstName = isLogin ? null : e.target.firstName.value
+      const lastName = isLogin ? null : e.target.lastName.value
 
-      // Simulate signup
+      // Simulate API call
       setTimeout(() => {
           const success = Math.random() > 0.5; // 50% chance to succeed
           if (success) {
-          setStatus({ success: true, username: e.target.username.value });
-          setErrorMessage('');
+            const username = isLogin ? email.split('@')[0] : `${firstName} ${lastName}` // Use full name for signup, email prefix for login
+            setStatus({ success: true, username });
+            setErrorMessage('');
           } else {
-          setStatus({ success: false });
-          setErrorMessage('Mock API: Login failed, please try again.');
+            setStatus({ success: false });
+            setErrorMessage(`Mock API: ${isLogin ? 'Login' : 'Signup'} failed, please try again.`);
           }
       }, 1000); // 1 second delay
     } catch (err) {
@@ -55,29 +59,56 @@ const Login = props => {
     }
   }
 
-  // Show signup form
+  // Show combined login/signup form
   if (!status.success)
     return (
       <div className="Login">
-        <h1 className = "logo"> InstaSkill </h1>
-        <h1>Log in</h1>
-        {errorMessage ? <p className="error">{errorMessage}</p> : ''}
+        <h1 className="logo">InstaSkill</h1>
+        
+        {/* Toggle buttons */}
+        <div className="form-toggle">
+          <button 
+            type="button"
+            className={isLogin ? 'active' : ''}
+            onClick={() => {
+              setIsLogin(true)
+              setErrorMessage('')
+            }}
+          >
+            Log In
+          </button>
+          <button 
+            type="button"
+            className={!isLogin ? 'active' : ''}
+            onClick={() => {
+              setIsLogin(false)
+              setErrorMessage('')
+            }}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {errorMessage ? <p className="error">{errorMessage}</p> : ''} 
+        
         <section className="main-content">
           <form onSubmit={handleSubmit}>
-            {
-              //handle error condition
-            }
-            <label>Username </label>
-            <input type="text" name="username" />
-            <br />
-            <label>Password </label>
-            <input type="password" name="password" />
-            <br />
-            <input type="submit" value="Log In" />
+            {/* Email field (for both login and signup) */}
+            <input type="email" name="email" placeholder="Email" required />
+            
+            {/* Name fields (only for signup) - on same row */}
+            {!isLogin && (
+              <div className="name-row">
+                <input type="text" name="firstName" placeholder="First Name" required />
+                <input type="text" name="lastName" placeholder="Last Name" required />
+              </div>
+            )}
+            
+            {/* Password field */}
+            <input type="password" name="password" placeholder="Password" required />
+            
+            <input type="submit" value={isLogin ? 'Log In' : 'Sign Up'} />
           </form>
-          <h2>
-            Don't have an account? Click <Link to="/signup">here to Sign up</Link>
-          </h2>
         </section>
       </div>
     )

@@ -8,7 +8,6 @@ import Footer from "./Footer";
 // Core pages
 import Home from "./Home";
 import Login from "./Login";
-import Signup from "./Signup";
 import Profile from "./Profile";
 import EditProfile from "./EditProfile";
 
@@ -30,7 +29,7 @@ export default function App() {
           {/* Auth */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Navigate to="/login" replace />} />
 
           {/* Main pages with layout */}
           <Route
