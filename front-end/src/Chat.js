@@ -10,6 +10,51 @@ const Chat = props => {
     const chatList = [
         {
             id: 1,
+            name: "Ajok Thon",
+            photo: "/images/avatar-default.png",
+            last_message: "Hey! Are you free for the Python tutoring session tomorrow?",
+            timestamp: "2:30 PM",
+            unread: 2,
+            online: true
+        },
+        {
+            id: 2,
+            name: "Buernortey",
+            photo: "/images/avatar.png", 
+            last_message: "Thanks for the JavaScript help! The project is working now 🎉",
+            timestamp: "1:15 PM",
+            unread: 0,
+            online: false
+        },
+        {
+            id: 3,
+            name: "Gharbin Bern",
+            photo: "/images/avatar.png",
+            last_message: "Can you teach me React hooks? I'm struggling with useEffect",
+            timestamp: "11:45 AM",
+            unread: 1,
+            online: true
+        },
+        {
+            id: 4,
+            name: "Godbless Osei",
+            photo: "/images/avatar.png",
+            last_message: "Perfect! See you at the study session",
+            timestamp: "Yesterday",
+            unread: 0,
+            online: false
+        },
+        {
+            id: 5,
+            name: "Alisha Atif",
+            photo: "/images/avatar-default.png",
+            last_message: "Looking forward to our collaboration on the web development project!",
+            timestamp: "Yesterday",
+            unread: 3,
+            online: true
+        },
+        {
+            id: 6,
             name: "Sarah Johnson",
             photo: "/images/nonexistent-avatar.jpg",
             last_message: "Hey! Are you free for the Python tutoring session tomorrow?",
@@ -18,7 +63,7 @@ const Chat = props => {
             online: true
         },
         {
-            id: 2,
+            id: 7,
             name: "Mike Chen",
             photo: "/images/avatar-default.png", 
             last_message: "Thanks for the JavaScript help! The project is working now 🎉",
@@ -27,7 +72,7 @@ const Chat = props => {
             online: false
         },
         {
-            id: 3,
+            id: 8,
             name: "Emma Wilson",
             photo: "/images/avatar-default.png",
             last_message: "Can you teach me React hooks? I'm struggling with useEffect",
@@ -36,7 +81,7 @@ const Chat = props => {
             online: true
         },
         {
-            id: 4,
+            id: 9,
             name: "Alex Rodriguez",
             photo: "/images/missing-image.png",
             last_message: "Perfect! See you at the study session",
