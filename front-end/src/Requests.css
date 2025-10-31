@@ -1,0 +1,114 @@
+.requests-container {
+  max-width: 500px;
+  margin: 80px auto 0 auto;
+  padding: 16px;
+  background-color: #fafafa;
+  min-height: calc(100vh - 100px);
+  font-family: "Inter", sans-serif;
+}
+
+.requests-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.no-requests {
+  text-align: center;
+  color: #777;
+  margin-top: 40px;
+}
+
+.request-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+.request-card:hover {
+  transform: scale(1.02);
+}
+
+.request-info {
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.request-name {
+  display: block;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+.request-skill {
+  display: block;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.request-buttons {
+  display: flex;
+  gap: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+.accept-btn,
+.decline-btn {
+  flex: 1;
+  max-width: 120px;
+  padding: 12px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.accept-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.decline-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #43a047;
+}
+
+.decline-btn:hover {
+  background-color: #e53935;
+}
+
+@media (max-width: 480px) {
+  .requests-container {
+    margin-top: 70px;
+    padding: 12px;
+  }
+
+  .request-card {
+    padding: 16px;
+  }
+
+  .accept-btn,
+  .decline-btn {
+    max-width: 100px;
+    font-size: 0.9rem;
+    padding: 10px 0;
+  }
+}
