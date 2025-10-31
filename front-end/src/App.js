@@ -24,6 +24,8 @@ import DeleteAccount from "./DeleteAccount";
 // Chat pages
 import Chat  from "./Chat";
 import Requests from "./Requests";
+import UploadSkill from "./UploadSkill";
+
 
 
 
@@ -158,7 +160,16 @@ export default function App() {
             }
           />
 
-
+          <Route
+            path="/upload"
+            element={
+              <>
+                <Header />
+                <UploadSkill />
+                <Footer />
+              </>
+            }
+          />
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
