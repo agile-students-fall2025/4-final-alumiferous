@@ -23,6 +23,8 @@ import DeleteAccount from "./DeleteAccount";
 
 // Chat pages
 import Chat  from "./Chat";
+import Requests from "./Requests";
+
 
 
 export default function App() {
@@ -144,6 +146,18 @@ export default function App() {
               </>
             }
           />
+
+          <Route
+            path="/requests"
+            element={
+              <>
+                <Header />
+                <Requests />
+                <Footer />
+              </>
+            }
+          />
+
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
