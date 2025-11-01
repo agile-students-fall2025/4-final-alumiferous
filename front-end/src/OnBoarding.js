@@ -60,6 +60,7 @@ const OnBoarding = () => {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
+  //custom array of skill use can choose from
   const allSkills = [
     "Python",
     "Public Speaking",

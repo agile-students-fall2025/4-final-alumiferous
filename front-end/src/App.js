@@ -36,10 +36,10 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Auth */}
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Navigate to="/login" replace />} />
-          <Route path="/" element={<OnBoarding/>}/>
+          <Route path="/onboarding" element={<OnBoarding/>}/>
 
           {/* Main pages with layout */}
           <Route
