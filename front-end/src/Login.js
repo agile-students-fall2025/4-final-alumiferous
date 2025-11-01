@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import {Link, Navigate, useSearchParams } from 'react-router-dom'
+import {Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import './Login.css'
 
 const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
+
+  //variable for navigation
+  const navigate = useNavigate()
 
   // State for toggle between login and signup
   const [isLogin, setIsLogin] = useState(true)
@@ -75,6 +78,7 @@ const Login = props => {
             onClick={() => {
               setIsLogin(false)
               setErrorMessage('')
+              navigate("/onboarding")
             }}
           >
             Sign Up

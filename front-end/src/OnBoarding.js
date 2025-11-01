@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
 import { skills } from "./skills";
+import { useNavigate } from "react-router-dom";
+
 const OnBoarding = () => {
   //state variables for each step of the onboarding process
   const [step, setStep] = useState(1);
   //state variable to store data collected
+
+  //variable for navigations
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     skillsOffered: [],
@@ -24,7 +29,32 @@ const OnBoarding = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     console.log("Submitting data:", formData)
+    navigate("/home")
   };
+
+  //validation checks for all fields completed
+  const validateStep = () => {
+  switch (step) {
+    case 1:
+      return formData.username.trim() !== "";
+
+    case 2:
+      return formData.skillsOffered.length > 0;
+
+    case 3:
+      return formData.skillsWanted.length > 0;
+
+    case 4:
+      return formData.preferredLanguage !== "";
+
+    case 5:
+      return formData.weeklyCommitment !== "";
+
+    default:
+      return true;
+  }
+};
+
 
   //updates for step state variable
   const nextStep = () => setStep((prev) => prev + 1);
@@ -57,7 +87,13 @@ const OnBoarding = () => {
               value={formData.username}
               onChange={handleChange}
             />
-            <button type="button" onClick={nextStep}>
+            <button type="button" onClick={() => {
+                if (validateStep()) {
+                    nextStep();
+                }else {
+                    alert("Please fill the required fileds before you proceed")
+                }
+            }}>
               Next
             </button>
           </div>
@@ -77,7 +113,13 @@ const OnBoarding = () => {
             <button type="button" onClick={prevStep}>
               Back
             </button>
-            <button type="button" onClick={nextStep}>
+            <button type="button" onClick={() => {
+                if (validateStep()) {
+                    nextStep();
+                }else {
+                    alert("Please fill the required fileds before you proceed")
+                }
+            }}>
               Next
             </button>
           </div>
@@ -97,7 +139,13 @@ const OnBoarding = () => {
             <button type="button" onClick={prevStep}>
               Back
             </button>
-            <button type="button" onClick={nextStep}>
+            <button type="button" onClick={() => {
+                if (validateStep()) {
+                    nextStep();
+                }else {
+                    alert("Please fill the required fileds before you proceed")
+                }
+            }}>
               Next
             </button>
           </div>
@@ -107,9 +155,10 @@ const OnBoarding = () => {
           <div className="onboarding-step">
             <h2>What are you preferred Languages</h2>
             <select
-              name="PreferredLanguage"
+              name="preferredLanguage"
               value={formData.preferredLanguage}
               onChange={handleChange}
+              
             >
               <option value="">Select...</option>
               <option value="English">English</option>
@@ -121,7 +170,13 @@ const OnBoarding = () => {
             <button type="button" onClick={prevStep}>
               Back
             </button>
-            <button type="button" onClick={nextStep}>
+            <button type="button" onClick={() => {
+                if (validateStep()) {
+                    nextStep();
+                }else {
+                    alert("Please fill the required fileds before you proceed")
+                }
+            }}>
               Next
             </button>
           </div>
@@ -143,7 +198,13 @@ const OnBoarding = () => {
             <button type="button" onClick={prevStep}>
               Back
             </button>
-            <button type="submit" onClick={handleSubmit}>Finish</button>
+            <button type="submit" onClick={(e) => {
+                if (validateStep()) {
+                    handleSubmit(e);
+                }else {
+                    alert("Please fill the required fileds before you proceed")
+                }
+            }}>Finish</button>
           </div>
         )}
 
