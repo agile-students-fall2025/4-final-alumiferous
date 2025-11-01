@@ -1,5 +1,6 @@
 //import needed modules
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Chat.css'
 
 //MAIN chat component
@@ -155,9 +156,9 @@ const ProfileImage = ({ photo, name }) => {
 
 //chatitem component 
 const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) => {
+    const navigate = useNavigate()
     const handleChatClick = () => {
-        console.log(`Opening chat with ${name}`)
-        // Example: navigate(`/chat/${id}`)
+        navigate(`/chat/${id}`)
     }
 
     return (
