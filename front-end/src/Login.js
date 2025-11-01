@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import {Link, Navigate, useSearchParams } from 'react-router-dom'
+import {Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import './Login.css'
 
 const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
+
+  //variable for navigation
+  const navigate = useNavigate()
 
   // State for toggle between login and signup
   const [isLogin, setIsLogin] = useState(true)
@@ -45,6 +48,12 @@ const Login = props => {
       const username = isLogin ? email.split('@')[0] : `${firstName} ${lastName}` // Use full name for signup, email prefix for login
       setStatus({ success: true, username });
       setErrorMessage('');
+       // all navigation handled here 
+    if (isLogin) {
+      navigate("/home"); // regular login goes straight home
+    } else {
+      navigate("/onboarding"); // new user goes to onboarding flow
+    }
     } catch (err) {
       // throw an error
       throw new Error(err)
@@ -103,7 +112,7 @@ const Login = props => {
       </div>
     )
   // otherwise, if the user has successfully logged-in, redirect them to a different page
-  else return <Navigate to="/home" />
+  //else return <Navigate to="/home" />
 }
 
 export default Login
