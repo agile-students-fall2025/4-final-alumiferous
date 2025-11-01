@@ -1,54 +1,109 @@
-.skill-card {
-  display: block;
-  position: relative;
+.skill-wrapper {
+  display: inline-block;
   width: 100%;
-  height: 100%;
-  text-decoration: none;
+  margin-bottom: 1rem;
+  break-inside: avoid;
   border-radius: 12px;
   overflow: hidden;
-  background: #f9f9f9;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-sizing: border-box;
+  background: transparent; /* blend with background */
 }
 
-.skill-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
-
-.skill-card img {
+.skill-card {
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.skill-image {
+  width: 100%;
+  height: auto;
   display: block;
-  transition: opacity 0.3s ease;
-
+  border-radius: 12px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.skill-card img.dimmed {
-  opacity: 0.3;
-}
 
-/* Overlay styles */
-.skill-overlay {
+
+.skill-menu-button {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.55);
-  color: white;
-  opacity: 0;
+  bottom: 5px;
+  right: 5px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 10px;       /* makes it rounded, not circular */
+  padding: 4px 10px;         /* horizontal padding creates the “pill” shape */
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+/* .skill-menu-button:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+} */
+
+.skill-menu-icon {
+  width: 20px;
+  height: 20px;
+  color: #333;
+}
+
+.skill-menu-icon {
+  width: 20px;
+  height: 20px;
+  color: #333;
+}
+
+/* Pop-up modal */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 1rem;
-  transition: opacity 0.3s ease;
-  box-sizing: border-box;
+  animation: fadeIn 0.25s ease forwards;
+  z-index: 999;
 }
 
-.skill-overlay.visible {
-  opacity: 1;
+.skill-menu-popup {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 85%;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.25s ease forwards;
+  text-align: center;
+}
+
+.skill-menu-popup ul {
+  list-style: none;
+  padding: 0;
+}
+
+.skill-menu-popup li {
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.skill-menu-popup li:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

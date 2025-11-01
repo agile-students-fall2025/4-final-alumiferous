@@ -1,88 +1,26 @@
-/* === Layout === */
 .header {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.85);
+  height: 65px;
+  background: #ffffffcc;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid #e0e0e0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between; /* title left, nav right */
-  align-items: center;
-  height: 100%;
+  text-align: center;
 }
 
-.header-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #333;
+.app-title {
   font-family: fantasy;
-}
-
-/* === Navigation === */
-.nav-bar {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-item {
-  text-decoration: none; /* remove default link underline */
-  color: inherit;        /* keep default color */
-}
-
-/* === Icon wrapper === */
-.icon-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  transition: transform 0.25s ease, filter 0.25s ease;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-}
-
-/* Hover icon effects */
-.icon-wrapper:hover {
-  transform: translateY(-3px);
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.25));
-}
-
-/* Icon style */
-.nav-icon {
-  width: 26px;
-  height: 26px;
-  color: #555;
-  transition: all 0.25s ease;
-}
-
-/* Label below icon, initially hidden */
-.icon-lable {
-  position: absolute;
-  bottom: -1.4rem;
-  font-size: 0.75rem;
-  color: #444;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2px 6px;
-  border-radius: 6px;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: all 0.25s ease;
-  pointer-events: none;
-}
-
-/* Show label on hover */
-.icon-wrapper:hover .icon-lable {
-  opacity: 1;
-  transform: translateY(0);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: cornflowerblue;
+  letter-spacing: 0.5px;
+  margin: 0;
 }

@@ -1,22 +1,44 @@
 import React, { useState } from "react";
 import "./Skill.css";
 import { Link } from "react-router-dom";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
-const Skill = ({ id, name, brief, skillImg }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const path = `/skills/${encodeURIComponent(id)}`;
+const Skill = ({ skillId, name, brief, skillImg }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const onEnter = () => setIsHovered(true);
-  const onLeave = () => setIsHovered(false);
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    setIsMenuOpen((prev) => !prev);
+  };
 
   return (
-    <Link to={path} className="skill-card" onMouseEnter={onEnter} onMouseLeave={onLeave}>
-      <img src={skillImg} alt={name} className={isHovered ? "dimmed" : ""} />
-      <div className={`skill-overlay ${isHovered ? "visible" : ""}`}>
-        <h3>{name}</h3>
-        <p>{brief}</p>
+    <div className="skill-wrapper">
+      <div className="skill-card">
+        <Link to={`/skills/${encodeURIComponent(skillId)}`}>
+          <img src={skillImg} alt={name} className="skill-image" />
+        </Link>
+
+        {/* Floating more-options button */}
+        <button className="skill-menu-button" onClick={toggleMenu}>
+          <EllipsisHorizontalIcon className="skill-menu-icon" />
+        </button>
       </div>
-    </Link>
+
+      {/* Pop-up menu */}
+      {isMenuOpen && (
+        <div className="menu-overlay" onClick={() => setIsMenuOpen(false)}>
+          <div className="skill-menu-popup" onClick={(e) => e.stopPropagation()}>
+            <h3>{name}</h3>
+            <p>{brief}</p>
+            <ul>
+              <li>Save Skill</li>
+              <li>Report Abuse</li>
+              <li>Hide</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
