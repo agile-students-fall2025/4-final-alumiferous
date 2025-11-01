@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Chat.css'
+import { BellIcon,} from "@heroicons/react/24/outline";
 
 //MAIN chat component
 const Chat = props => {
+    const navigate = useNavigate()
     const [searchTerm, setSearchTerm] = useState('')
     const [chatList, setChatList] = useState([])
     const [loading, setLoading] = useState(true)
@@ -75,7 +77,14 @@ const Chat = props => {
             <div className="chat-header">
                 <h1 className="chat-title">Chat</h1>
                 <div className="header-actions">
-                    <button className="settings-btn">⚙️</button>
+                    <button
+                        className="requests-btn"
+                        aria-label="Requests"
+                        title="Requests"
+                        onClick={() => navigate('/requests')}
+                    >
+                        <BellIcon aria-hidden="true" />
+                    </button>
                 </div>
             </div>
 

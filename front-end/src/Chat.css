@@ -33,7 +33,7 @@
   gap: 12px;
 }
 
-.chat-page .settings-btn {
+.chat-page .requests-btn {
   background: transparent;
   border: none;
   font-size: 20px;
@@ -43,8 +43,15 @@
   transition: background 0.2s ease;
 }
 
-.chat-page .settings-btn:hover {
+.chat-page .requests-btn:hover {
   background: #f0f0f0;
+}
+
+/* Size the Heroicons bell */
+.chat-page .requests-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 /* Search Container */
