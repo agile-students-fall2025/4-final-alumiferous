@@ -25,6 +25,7 @@ import DeleteAccount from "./DeleteAccount";
 import Chat  from "./Chat";
 import Requests from "./Requests";
 import UploadSkill from "./UploadSkill";
+import OnBoarding from "./OnBoarding";
 
 
 
@@ -35,9 +36,10 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Auth */}
-          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<OnBoarding/>}/>
 
           {/* Main pages with layout */}
           <Route
