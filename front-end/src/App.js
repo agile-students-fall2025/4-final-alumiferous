@@ -49,7 +49,7 @@ export default function App() {
               <>
                 <Header />
                 <Home />
-                {/* <Footer /> */}
+                <Footer />
               </>
             }
           />
@@ -60,7 +60,7 @@ export default function App() {
               <>
                 <Header />
                 <Profile />
-                {/* <Footer /> */}
+                <Footer />
               </>
             }
           />
@@ -71,7 +71,7 @@ export default function App() {
               <>
                 <Header />
                 <EditProfile />
-                {/* <Footer /> */}
+                <Footer />
               </>
             }
           />
@@ -83,7 +83,7 @@ export default function App() {
               <>
                 <Header />
                 <SkillDescription />
-                {/* <Footer /> */}
+                <Footer />
               </>
             }
           />
@@ -94,7 +94,7 @@ export default function App() {
               <>
                 <Header />
                 <DraftRequest />
-                {/* <Footer /> */}
+                <Footer />
               </>
             }
           />
