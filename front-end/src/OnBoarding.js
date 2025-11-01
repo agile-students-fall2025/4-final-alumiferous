@@ -114,13 +114,7 @@ const OnBoarding = () => {
             <button type="button" onClick={prevStep}>
               Back
             </button>
-            <button type="button" onClick={() => {
-                if (validateStep()) {
-                    nextStep();
-                }else {
-                    alert("Please fill the required fileds before you proceed")
-                }
-            }}>
+            <button type="button" onClick={nextStep}>
               Next
             </button>
           </div>
@@ -175,7 +169,7 @@ const OnBoarding = () => {
                 if (validateStep()) {
                     nextStep();
                 }else {
-                    alert("Please fill the required fileds before you proceed")
+                    alert("Please fill the required filed before you proceed")
                 }
             }}>
               Next
@@ -203,7 +197,7 @@ const OnBoarding = () => {
                 if (validateStep()) {
                     handleSubmit(e);
                 }else {
-                    alert("Please fill the required fileds before you proceed")
+                    alert("Please fill the required filed before you proceed")
                 }
             }}>Finish</button>
           </div>
