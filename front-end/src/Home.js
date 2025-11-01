@@ -10,20 +10,28 @@ const Home = () => {
   //a state variable with a blank array
   const [skills, setSkills] = useState([]);
 
-  //event handler for hovering event
-  const handleClick = (name) => {
-    //
-    //setHoveredSkill(name);
-    <Link to="" />;
-  };
   useEffect(() => {
+    //create a local storage to prevent unneccesary API calls
+    const cached = localStorage.getItem("skills")
+    if(cached){
+      //if there is cached data use it as the skills data and return
+      setSkills(JSON.parse(cached));
+      return // skip the API call
+    }
     //fetch data from mock API
     console.log("fetching skill details...");
     axios("https://my.api.mockaroo.com/skills.json?key=4e009220")
       .then(
         //callback to be returned when the call is successful
         (response) => {
-          setSkills(response.data);
+          //update the data fected with the image ratio
+          const updatedData = response.data.map((skill) => ({
+            ...skill,
+            width: Math.floor(Math.random() * 80) + 150,
+            height: Math.floor(Math.random() * 50) + 10,
+          }));
+          setSkills(updatedData); //set skills data to updated data
+          localStorage.setItem("skills",JSON.stringify(updatedData)) //set the newly fected data to local storage
         }
       )
       .catch((err) => {
@@ -260,7 +268,11 @@ const Home = () => {
   // ];
 
   //return all list components my looping through the array of skills
+
+ 
+  
   return (
+    
     <div className="home-container">
       <header className="home-header">
         <input type="text" placeholder="Search a skill" />
@@ -268,17 +280,20 @@ const Home = () => {
 
       <div className="skill-grid">
         {skills.map((skill, i) => (
+         
           <Skill //pass skill details as attributes to
             key={i}
             skillId={skill.skillId}
             name={skill.name}
             brief={skill.brief}
-            skillImg={skill.image}
+             //inject random place holder image form the Lorem Picsum API
+            skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
             category = {skill.category}
             username = {skill.username}
             //handleHover={handleHover}
           />
-        ))}
+        )
+         )}
       </div>
     </div>
   );

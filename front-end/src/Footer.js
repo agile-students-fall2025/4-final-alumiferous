@@ -6,6 +6,7 @@ import {
   ArrowUpTrayIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   BellIcon,
+  FolderIcon
 } from "@heroicons/react/24/outline";
 import "./Footer.css";
 import { Link } from "react-router-dom";
@@ -17,6 +18,7 @@ const navItems = [
   { icon: ChatBubbleOvalLeftEllipsisIcon, route: "/chat" },
   { icon: BellIcon, route: "/requests" },
   { icon: Cog6ToothIcon, route: "/settings" },
+  { icon: FolderIcon, route: "/savedskills"},
 ];
 
 const Footer = () => {
