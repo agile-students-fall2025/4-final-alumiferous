@@ -112,3 +112,53 @@
     padding: 10px 0;
   }
 }
+
+body.dark-mode .requests-container {
+  background-color: #1a1a1a !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .requests-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .request-card {
+  background: #222 !important;
+  color: #f1f1f1 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-mode .request-name {
+  color: #fff !important;
+}
+
+body.dark-mode .request-skill {
+  color: #ccc !important;
+}
+
+body.dark-mode .no-requests {
+  color: #999 !important;
+}
+
+body.dark-mode .accept-btn {
+  background-color: #4caf50 !important; 
+  color: #fff !important;
+  border: none !important;
+}
+
+body.dark-mode .accept-btn:hover {
+  background-color: #43a047 !important;
+}
+
+body.dark-mode .decline-btn {
+  background-color: #f44336 !important; 
+  color: #fff !important;
+  border: none !important;
+}
+
+body.dark-mode .decline-btn:hover {
+  background-color: #e53935 !important;
+}
+
+
+

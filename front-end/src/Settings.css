@@ -2,70 +2,92 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 80px;
-  padding: 2rem;
-  transition: background-color 0.3s, color 0.3s;
+  justify-content: center; 
   min-height: 100vh;
-}
- 
-.settings-container.light {
-  background-color: #f8f8f8;
-  color: #333;
-}
-
-.settings-container.dark {
-  background-color: #1e1e1e;
-  color: #eee;
+  background-color: #f2f2f2;
+  font-family: "Inter", sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+  padding: 20px;
 }
 
-.settings-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #007bff;
-  color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.settings-content {
-  margin-top: 100px;
+.settings-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 90%;
+  max-width: 400px;
+  padding: 24px 18px;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  width: 300px;
+  align-items: stretch;
+}
+
+.settings-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  color: #222;
+  margin-bottom: 16px;
 }
 
 .settings-btn {
-  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 18px;
   border: none;
-  border-radius: 8px;
+  background: transparent;
   font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #e6e6e6;
   cursor: pointer;
-  background-color: #007bff;
-  color: white;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.settings-btn:last-child {
+  border-bottom: none;
 }
 
 .settings-btn:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
+  background-color: #f8f8f8;
 }
 
 .settings-btn.delete {
-  background-color: #e63946;
+  color: #e63946;
+  font-weight: 600;
+  justify-content: center;
 }
 
 .settings-btn.delete:hover {
-  background-color: #c53030;
+  background-color: #ffecec;
+}
+
+body.dark-mode .settings-container {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .settings-box {
+  background-color: #1e1e1e !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .settings-title {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .settings-btn {
+  color: #f1f1f1 !important;
+  border-bottom: 1px solid #333;
+}
+
+body.dark-mode .settings-btn:hover {
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode .settings-btn.delete {
+  color: #ff5c5c !important;
 }
