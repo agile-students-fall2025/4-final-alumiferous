@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React, { useContext, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { SkillsContext } from "./SkillsContext";
 import "./SkillDescription.css";
 
 export default function SkillDescription() {
@@ -7,61 +8,16 @@ export default function SkillDescription() {
   const { id } = useParams();
   const nav = useNavigate();
 
-  // local state for this page
-  const [skill, setSkill] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Get skills from context
+  const { skills } = useContext(SkillsContext);
 
-  useEffect(() => {
-    // 1. First try to read what Home already cached
-    const cached = localStorage.getItem("skills");
-    if (cached) {
-      const parsed = JSON.parse(cached);
-
-      // find this exact skill by id
-      const found = parsed.find(
-        (s) => String(s.skillId) === String(id)
-      );
-
-      setSkill(found || null);
-      setLoading(false);
-      return;
-    }
-
-    // 2. Fallback for direct navigation (user goes straight to /skills/5 without visiting Home)
-    async function fetchFromMockaroo() {
-      try {
-        const res = await fetch("https://my.api.mockaroo.com/skills.json?key=4e009220");
-        const data = await res.json();
-
-        // match Home.jsx behavior: add width/height so picsum works
-        const updatedData = data.map((s) => ({
-          ...s,
-          width: Math.floor(Math.random() * 80) + 150,
-          height: Math.floor(Math.random() * 100) + 200,
-        }));
-
-        // cache it so we don't refetch next time
-        localStorage.setItem("skills", JSON.stringify(updatedData));
-
-        // find the right skill again
-        const found = updatedData.find(
-          (s) => String(s.skillId) === String(id)
-        );
-
-        setSkill(found || null);
-      } catch (err) {
-        console.error("Failed to fetch skills for detail page:", err);
-        setSkill(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchFromMockaroo();
-  }, [id]);
+  // Find the skill by id
+  const skill = useMemo(() => {
+    return skills.find((s) => String(s.skillId) === String(id));
+  }, [skills, id]);
 
   // ---- loading state ----
-  if (loading) {
+  if (!skills || skills.length === 0) {
     return (
       <div className="page">
         <div className="card">
