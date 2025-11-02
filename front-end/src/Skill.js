@@ -3,7 +3,7 @@ import "./Skill.css";
 import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
-const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
+const Skill = ({ skillId, name, brief, skillImg, ImgHeight ,handleSaveSkill }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = (e) => {
@@ -31,7 +31,8 @@ const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
             <h3>{name}</h3>
             <p>{brief}</p>
             <ul>
-              <li>Save Skill</li>
+              {/* call handleSaveSkill to handle the event of a save clicked */}
+              <li onClick={() => { handleSaveSkill(skillId)}}>Save Skill</li>
               <li>Report Abuse</li>
               <li>Hide</li>
             </ul>

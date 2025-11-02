@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
-import './ResetPassword.css';
+import React, { useState } from "react";
+import "./ResetPassword.css";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!email || !newPassword || !confirmPassword) {
-      alert('Please fill out all fields.');
+      alert("Please fill out all fields.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match.');
+      alert("Passwords do not match.");
       return;
     }
 
@@ -25,7 +27,13 @@ const ResetPassword = () => {
   return (
     <div className="reset-container">
       <div className="reset-box">
-        <h2 className="reset-title">Reset Your Password</h2>
+        <div className="reset-header">
+          <button className="back-btn" onClick={() => navigate("/settings")}>
+            ←
+          </button>
+          <h2 className="reset-title">Reset Your Password</h2>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <input
             type="email"
