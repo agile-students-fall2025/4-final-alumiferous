@@ -28,7 +28,8 @@ const Home = () => {
           const updatedData = response.data.map((skill) => ({
             ...skill,
             width: Math.floor(Math.random() * 80) + 150,
-            height: Math.floor(Math.random() * 50) + 150,
+            height: Math.floor(Math.random() * 100) + 200,
+            
           }));
           setSkills(updatedData); //set skills data to updated data
           localStorage.setItem("skills",JSON.stringify(updatedData)) //set the newly fected data to local storage
@@ -290,7 +291,7 @@ const Home = () => {
             skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
             category = {skill.category}
             username = {skill.username}
-            //handleHover={handleHover}
+            ImgHeight = {skill.height}
           />
         )
          )}

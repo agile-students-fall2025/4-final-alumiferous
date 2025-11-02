@@ -13,11 +13,16 @@
   width: 100%;
   overflow: hidden;
   border-radius: 12px;
+
+  /* Define a variable based on data-height attribute */
+  --skill-height: attr(data-height px);
 }
+
+
 
 .skill-image {
   width: 100%;
-  height: auto;
+  height: var(--skill-height);
   display: block;
   border-radius: 12px;
   object-fit: cover;

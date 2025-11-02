@@ -1,3 +1,4 @@
+/* === Container === */
 .onboarding-container {
   display: flex;
   justify-content: center;
@@ -7,31 +8,42 @@
   padding: 1rem;
 }
 
+/* === Form Card === */
 .onboarding-form {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem 1.5rem;
   width: 100%;
   max-width: 400px;
   animation: fadeIn 0.3s ease-in-out;
+  text-align: center; /* centers text and buttons */
 }
 
+/* === Step Layout === */
 .onboarding-step {
   display: flex;
   flex-direction: column;
+  align-items: center; /* center contents */
+  justify-content: center;
+  text-align: center;
   gap: 1rem;
 }
 
-.onboarding-form input, .onboarding-form select {
+/* === Input & Select === */
+.onboarding-form input,
+.onboarding-form select {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 1rem;
   width: 100%;
+  text-align: center;
 }
 
+/* === Buttons === */
 .onboarding-form button {
+  width: 100%;
   padding: 10px;
   border: none;
   border-radius: 6px;
@@ -50,6 +62,38 @@
   color: white;
 }
 
+/* === Skill Selection Layout === */
+.skill-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.skill-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 350px;
+}
+
+.skill-option {
+  background: #f2f3f5;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.skill-option.selected {
+  background: #007bff;
+  color: #fff;
+}
+
+/* === Simple Fade Animation === */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
