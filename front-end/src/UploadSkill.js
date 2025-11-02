@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./UploadSkill.css";
 
 export default function UploadSkill() {
+  const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
   const [description, setDescription] = useState("");
   const [video, setVideo] = useState(null);
@@ -10,19 +11,20 @@ export default function UploadSkill() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!skillName || !description) {
+    if (!category || !skillName || !description) {
       setMessage("Please fill in all fields.");
       return;
     }
 
-    // Mock skill upload logic
     console.log({
+      category,
       skillName,
       description,
       video,
     });
 
-    setMessage(`${skillName} added to your offered skills!`);
+    setMessage(`${skillName} added under ${category} category!`);
+    setCategory("");
     setSkillName("");
     setDescription("");
     setVideo(null);
@@ -37,6 +39,25 @@ export default function UploadSkill() {
       <h2 className="upload-skill-title">Upload New Skill</h2>
 
       <form className="upload-skill-form" onSubmit={handleSubmit}>
+        <label htmlFor="category">Select Category</label>
+        <select
+          id="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="category-select"
+        >
+          <option value="">-- Choose a category --</option>
+          <option value="Technology">Technology</option>
+          <option value="Art & Design">Art & Design</option>
+          <option value="Music">Music</option>
+          <option value="Education">Education</option>
+          <option value="Fitness & Health">Fitness & Health</option>
+          <option value="Cooking">Cooking</option>
+          <option value="Language">Language</option>
+          <option value="Business">Business</option>
+          <option value="Other">Other</option>
+        </select>
+
         <label htmlFor="skillName">Skill Name</label>
         <input
           id="skillName"
