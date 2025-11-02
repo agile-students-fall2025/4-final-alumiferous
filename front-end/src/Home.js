@@ -29,6 +29,7 @@ const Home = () => {
             ...skill,
             width: Math.floor(Math.random() * 80) + 150,
             height: Math.floor(Math.random() * 100) + 200,
+            
           }));
           setSkills(updatedData); //set skills data to updated data
           localStorage.setItem("skills",JSON.stringify(updatedData)) //set the newly fected data to local storage
