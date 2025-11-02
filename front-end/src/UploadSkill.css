@@ -1,6 +1,6 @@
 .upload-skill-container {
   max-width: 500px;
-  margin: 80px auto 0 auto; /* below header */
+  margin: 80px auto 0 auto; 
   padding: 20px;
   background-color: #fafafa;
   min-height: calc(100vh - 100px);
@@ -95,3 +95,47 @@
     padding: 10px 0;
   }
 }
+
+body.dark-mode .upload-skill-container {
+  background-color: #1c1c1c !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .upload-skill-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .upload-skill-form label {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .upload-skill-form input[type="text"],
+body.dark-mode .upload-skill-form textarea {
+  background-color: #2b2b2b !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #555 !important;
+}
+
+body.dark-mode .upload-skill-form input[type="text"]:focus,
+body.dark-mode .upload-skill-form textarea:focus {
+  border: 1px solid #4caf50 !important; 
+}
+
+body.dark-mode .upload-skill-form input[type="file"] {
+  background: #2b2b2b !important;
+  color: #fff !important;
+}
+
+body.dark-mode .submit-btn {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .submit-btn:hover {
+  background-color: #43a047 !important;
+}
+
+body.dark-mode .upload-message {
+  color: #e0e0e0 !important;
+}
+
