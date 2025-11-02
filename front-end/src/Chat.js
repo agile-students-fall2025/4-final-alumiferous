@@ -1,95 +1,69 @@
 //import needed modules
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Chat.css'
+import { BellIcon,} from "@heroicons/react/24/outline";
 
 //MAIN chat component
 const Chat = props => {
+    const navigate = useNavigate()
     const [searchTerm, setSearchTerm] = useState('')
+    const [chatList, setChatList] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
-    // chat list container - mock data
-    const chatList = [
-        {
-            id: 1,
-            name: "Ajok Thon",
-            photo: "/images/avatar-default.png",
-            last_message: "Hey! Are you free for the Python tutoring session tomorrow?",
-            timestamp: "2:30 PM",
-            unread: 2,
-            online: true
-        },
-        {
-            id: 2,
-            name: "Buernortey",
-            photo: "/images/avatar.png", 
-            last_message: "Thanks for the JavaScript help! The project is working now 🎉",
-            timestamp: "1:15 PM",
-            unread: 0,
-            online: false
-        },
-        {
-            id: 3,
-            name: "Gharbin Bern",
-            photo: "/images/avatar.png",
-            last_message: "Can you teach me React hooks? I'm struggling with useEffect",
-            timestamp: "11:45 AM",
-            unread: 1,
-            online: true
-        },
-        {
-            id: 4,
-            name: "Godbless Osei",
-            photo: "/images/avatar.png",
-            last_message: "Perfect! See you at the study session",
-            timestamp: "Yesterday",
-            unread: 0,
-            online: false
-        },
-        {
-            id: 5,
-            name: "Alisha Atif",
-            photo: "/images/avatar-default.png",
-            last_message: "Looking forward to our collaboration on the web development project!",
-            timestamp: "Yesterday",
-            unread: 3,
-            online: true
-        },
-        {
-            id: 6,
-            name: "Sarah Johnson",
-            photo: "/images/nonexistent-avatar.jpg",
-            last_message: "Hey! Are you free for the Python tutoring session tomorrow?",
-            timestamp: "2:30 PM",
-            unread: 2,
-            online: true
-        },
-        {
-            id: 7,
-            name: "Mike Chen",
-            photo: "/images/avatar-default.png", 
-            last_message: "Thanks for the JavaScript help! The project is working now 🎉",
-            timestamp: "1:15 PM",
-            unread: 0,
-            online: false
-        },
-        {
-            id: 8,
-            name: "Emma Wilson",
-            photo: "/images/avatar-default.png",
-            last_message: "Can you teach me React hooks? I'm struggling with useEffect",
-            timestamp: "11:45 AM",
-            unread: 1,
-            online: true
-        },
-        {
-            id: 9,
-            name: "Alex Rodriguez",
-            photo: "/images/missing-image.png",
-            last_message: "Perfect! See you at the study session",
-            timestamp: "Yesterday",
-            unread: 0,
-            online: false
+    // Helper to generate stable Picsum avatar URLs per user
+    const avatarUrl = (seed, size = 50) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`
+
+    // Load chat list from Mockaroo mock API
+    useEffect(() => {
+        let isMounted = true
+        const loadChats = async () => {
+            try {
+                setLoading(true)
+                setError(null)
+                const apiKey = process.env.REACT_APP_MOCKAROO_KEY
+                if (!apiKey) {
+                    throw new Error('Missing REACT_APP_MOCKAROO_KEY env var')
+                }
+                const res = await fetch('https://my.api.mockaroo.com/chats.json', {
+                    headers: {
+                        'X-API-Key': apiKey,
+                    }
+                })
+                if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+                const data = await res.json()
+              
+                // Normalize records to the shape used by the UI
+                const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
+                    const name = item.name
+                    return {
+                        id: item.id ,
+                        name,
+                        photo: avatarUrl(name),
+                        last_message: item.last_message,
+                        timestamp: item.timestamp,
+                        unread: item.unread ,
+                        online: item.online,
+                    }
+                })
+                
+                if (isMounted) setChatList(normalized)
+            } 
+            catch (err) {
+                console.error('Failed to load chats:', err)
+                const message = String(err).includes('REACT_APP_MOCKAROO_KEY')
+                    ? 'Missing API key. Create a .env with REACT_APP_MOCKAROO_KEY=your_key and restart the dev server.'
+                    : 'Failed to load conversations'
+                if (isMounted) setError(message)
+            } 
+            finally {
+                if (isMounted) setLoading(false)
+            }
         }
-    ]
+        loadChats()
+        return () => { isMounted = false }
+    }, [])
 
     // Filter chats based on search term
     const filteredChats = chatList.filter(chat =>
@@ -103,7 +77,14 @@ const Chat = props => {
             <div className="chat-header">
                 <h1 className="chat-title">Chat</h1>
                 <div className="header-actions">
-                    <button className="settings-btn">⚙️</button>
+                    <button
+                        className="requests-btn"
+                        aria-label="Requests"
+                        title="Requests"
+                        onClick={() => navigate('/requests')}
+                    >
+                        <BellIcon aria-hidden="true" />
+                    </button>
                 </div>
             </div>
 
@@ -120,7 +101,13 @@ const Chat = props => {
 
             {/* Chat List */}
             <div className="chat-list">
-                {filteredChats.length > 0 ? (
+                {loading && (
+                    <div className="no-results"><p>Loading conversations…</p></div>
+                )}
+                {!loading && error && (
+                    <div className="no-results"><p>{error}</p></div>
+                )}
+                {!loading && !error && filteredChats.length > 0 ? (
                     filteredChats.map(chat => (
                         <ChatItem
                             key={chat.id}
@@ -134,9 +121,11 @@ const Chat = props => {
                         />
                     ))
                 ) : (
-                    <div className="no-results">
-                        <p>No conversations found</p>
-                    </div>
+                    !loading && !error && (
+                        <div className="no-results">
+                            <p>No conversations found</p>
+                        </div>
+                    )
                 )}
             </div>
 
@@ -176,9 +165,9 @@ const ProfileImage = ({ photo, name }) => {
 
 //chatitem component 
 const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) => {
+    const navigate = useNavigate()
     const handleChatClick = () => {
-        console.log(`Opening chat with ${name}`)
-        // Example: navigate(`/chat/${id}`)
+        navigate(`/chat/${id}`)
     }
 
     return (

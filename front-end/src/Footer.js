@@ -16,9 +16,7 @@ const navItems = [
   { icon: UserIcon, route: "/profile" },
   { icon: ArrowUpTrayIcon, route: "/upload" },
   { icon: ChatBubbleOvalLeftEllipsisIcon, route: "/chat" },
-  { icon: BellIcon, route: "/requests" },
   { icon: Cog6ToothIcon, route: "/settings" },
-  { icon: FolderIcon, route: "/savedskills"},
 ];
 
 const Footer = () => {

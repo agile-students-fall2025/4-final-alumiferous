@@ -22,7 +22,8 @@ import ReportProblem from "./ReportProblem";
 import DeleteAccount from "./DeleteAccount";
 
 // Chat pages
-import Chat  from "./Chat";
+import Chat from "./Chat";
+import Messages from "./Messages";
 import Requests from "./Requests";
 import UploadSkill from "./UploadSkill";
 import OnBoarding from "./OnBoarding";
@@ -144,9 +145,20 @@ export default function App() {
             path="/chat"
             element={
               <>
-                <Header />
+                {/* <Header /> */}
                 <Chat />
                 <Footer />
+              </>
+            }
+          />
+
+          <Route
+            path="/chat/:id"
+            element={
+              <>
+                {/* <Header /> */}
+                <Messages />
+                {/* <Footer /> */}
               </>
             }
           />

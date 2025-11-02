@@ -28,7 +28,7 @@ const Home = () => {
           const updatedData = response.data.map((skill) => ({
             ...skill,
             width: Math.floor(Math.random() * 80) + 150,
-            height: Math.floor(Math.random() * 50) + 10,
+            height: Math.floor(Math.random() * 50) + 150,
           }));
           setSkills(updatedData); //set skills data to updated data
           localStorage.setItem("skills",JSON.stringify(updatedData)) //set the newly fected data to local storage
