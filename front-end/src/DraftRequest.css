@@ -74,10 +74,10 @@
 }
 
 .backLink {
-  margin-top: 20px;
-  text-align: center;
   display: block;
   color: #007bff;
   text-decoration: none;
   font-weight: 500;
+  margin-bottom: 20px;
+  text-align: left;
 }
