@@ -69,3 +69,28 @@
 .settings-btn.delete:hover {
   background-color: #c53030;
 }
+
+body.dark-mode .settings-container {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .settings-btn {
+  background-color: #007bff !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+body.dark-mode .settings-btn:hover {
+  background-color: #0056b3 !important;
+  transform: scale(1.02);
+}
+
+body.dark-mode .settings-btn.delete {
+  background-color: #e63946 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .settings-btn.delete:hover {
+  background-color: #c53030 !important;
+}

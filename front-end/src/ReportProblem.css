@@ -70,3 +70,39 @@
 .dark-mode .report-title {
   color: #ffffff;
 }
+
+body.dark-mode .report-container {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .report-box {
+  background: #1e1e1e !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .report-title {
+  color: #4dabf7 !important;
+}
+
+body.dark-mode .report-small-box,
+body.dark-mode .report-big-box {
+  background: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .report-submit {
+  background-color: #4dabf7 !important;
+  color: #fff !important;
+}
+body.dark-mode .report-submit:hover {
+  background-color: #339af0 !important;
+}
+
+body.dark-mode .report-popup {
+  background: #20332b !important;
+  color: #9df1b0 !important;
+  border: 1px solid #357a38 !important;
+}

@@ -202,3 +202,85 @@ body {
   background: #1976d2;
   font-weight: 600;
 }
+
+body.dark-mode .Profile {
+  background: #1e1e1e !important;
+  color: #f1f1f1 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .ProfileHeader {
+  background: #262626 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .BackButton,
+body.dark-mode .MenuButton {
+  background: #333 !important;
+  color: #eee !important;
+  box-shadow: none !important;
+}
+body.dark-mode .BackButton:hover,
+body.dark-mode .MenuButton:hover {
+  background: #444 !important;
+  color: #4dabf7 !important;
+}
+
+body.dark-mode .ProfileCard {
+  background: #252525 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .AboutSection {
+  background: #252525 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .AboutSection h3 {
+  color: #4dabf7 !important; 
+}
+
+body.dark-mode .UserInfo h2 {
+  color: #fff !important;
+}
+body.dark-mode .UserInfo p {
+  color: #ccc !important;
+}
+
+/* Skill tags */
+body.dark-mode .SkillTag {
+  background: #2c2c2c !important;
+  color: #4dabf7 !important;
+}
+body.dark-mode .SkillTag.wanted {
+  background: #3a1a1e !important;
+  color: #ff7b9c !important;
+}
+
+/* Buttons */
+body.dark-mode .EditProfileButton,
+body.dark-mode .AccountSettingsButton {
+  background: #4dabf7 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+body.dark-mode .EditProfileButton:hover,
+body.dark-mode .AccountSettingsButton:hover {
+  background: #339af0 !important;
+}
+
+/* Bottom nav */
+body.dark-mode .BottomNavigation {
+  background: #181818 !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode .NavTab {
+  color: #aaa !important;
+}
+body.dark-mode .NavTab.active,
+body.dark-mode .NavTab[aria-current="page"] {
+  color: #fff !important;
+  background: #4dabf7 !important;
+}

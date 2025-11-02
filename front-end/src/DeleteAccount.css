@@ -103,26 +103,48 @@
   }
 }
 
-/* Dark mode */
-.delete-container.dark {
-  background-color: #121212;
+body.dark-mode .delete-container {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
 }
 
-.delete-container.dark .delete-box {
-  background-color: #1e1e1e;
-  color: white;
+body.dark-mode .delete-box {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
 }
 
-.delete-container.dark .delete-text {
-  color: #ccc;
+body.dark-mode .delete-title {
+  color: #ff6b6b !important; 
 }
 
-.delete-container.dark .delete-form input {
-  background-color: #2a2a2a;
-  color: white;
-  border: 1px solid #444;
+body.dark-mode .delete-text {
+  color: #cccccc !important;
 }
 
-.delete-container.dark .checkbox-label {
-  color: #ddd;
+body.dark-mode .delete-form input[type="text"],
+body.dark-mode .delete-form input[type="password"] {
+  background-color: #2a2a2a !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .checkbox-label {
+  color: #ddd !important;
+}
+
+body.dark-mode .delete-submit {
+  background-color: #e63946 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+body.dark-mode .delete-submit:hover {
+  background-color: #c53030 !important;
+}
+
+/* Success popup */
+body.dark-mode .delete-popup {
+  background-color: #28a745 !important;
+  color: #fff !important;
 }
