@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { getSkillById } from "./skills";
 import "./DraftRequest.css";
 
 export default function DraftRequest() {
