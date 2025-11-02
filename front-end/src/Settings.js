@@ -9,25 +9,42 @@ const Settings = () => {
 
   return (
     <div className={`settings-container ${darkMode ? "dark" : "light"}`}>
-      <div className="settings-content">
+      <div className="settings-box">
+        <h2 className="settings-title">Settings</h2>
+
         <button className="settings-btn" onClick={toggleTheme}>
           Appearance: {darkMode ? "Dark" : "Light"}
         </button>
 
-        <button className="settings-btn" onClick={() => navigate("/reset-password")}>
+        <button
+          className="settings-btn"
+          onClick={() => navigate("/reset-password")}
+        >
           Reset Password
         </button>
-        <button className="settings-btn" onClick={() => navigate("/report-problem")}>
+
+        <button
+          className="settings-btn"
+          onClick={() => navigate("/report-problem")}
+        >
           Report a Problem
         </button>
-        <button className="settings-btn" onClick={() => {
-          localStorage.clear();
-          alert("You have been logged out.");
-          navigate("/login");
-        }}>
+
+        <button
+          className="settings-btn"
+          onClick={() => {
+            localStorage.clear();
+            alert("You have been logged out.");
+            navigate("/login");
+          }}
+        >
           Logout
         </button>
-        <button className="settings-btn delete" onClick={() => navigate("/delete-account")}>
+
+        <button
+          className="settings-btn delete"
+          onClick={() => navigate("/delete-account")}
+        >
           Delete Account
         </button>
       </div>
