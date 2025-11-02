@@ -4,29 +4,21 @@ import { getSkillById } from "./skills";
 import "./DraftRequest.css";
 
 export default function DraftRequest() {
-  // Read ?skillId=... from the URL (e.g., /requests/new?skillId=python)
+  // Read ?skillId=...&skillName=...&owner=... from the URL
   const [params] = useSearchParams();
-  // For programmatic navigation after submit or when going back
   const nav = useNavigate();
 
-  // The selected skill id from the query string
+  // Get values from query string
   const skillId = params.get("skillId") || "";
+  const skillName = params.get("skillName") || "";
+  const ownerParam = params.get("owner") || "";
 
   // Local UI state
-  const [skill, setSkill] = useState(null);     // the selected skill's full object
-  const [owner, setOwner] = useState("");       // who we are addressing (mocked for now)
-  const [aboutYou, setAboutYou] = useState(""); // request body typed by the user
+  const [owner, setOwner] = useState(ownerParam); // pre-fill with owner from URL
+  const [aboutYou, setAboutYou] = useState("");
 
-  // When skillId changes, look up the skill synchronously from our in-memory list
-  // (No async/fetch in this sprint; keeps things simple for the demo)
-  useEffect(() => {
-    // synchronous lookup; no async/fetch
-    const s = skillId ? getSkillById(skillId) : null;
-    // If not found, still set a minimal object so the UI renders predictably
-    setSkill(s || { id: skillId, name: skillId });
-    // Mock an owner name if your data doesn't include one yet
-    setOwner(s?.ownerName || "Skill owner");
-  }, [skillId]);
+  // Skill object for display (just name for now)
+  const skill = { id: skillId, name: skillName };
 
   // "Send" the request (mock): log to console, show alert, then route back to the skill page
   function handleSubmit(e) {
@@ -41,6 +33,11 @@ export default function DraftRequest() {
   return (
     <div className="page">
       <div className="container">
+        {/* Back button at top left of the container */}
+        <Link to={`/skills/${encodeURIComponent(skillId)}`} className="backLink">
+          ← Back
+        </Link>
+        
         <h1 className="title">Send Skill Request</h1>
 
         {/* Simple form with three fields:
@@ -62,7 +59,7 @@ export default function DraftRequest() {
           <label className="label">
             Interested in skill:
             {/* Read-only display so users are sure which skill they’re contacting about */}
-            <div className="skillBox">{skill?.name || "(unknown skill)"}</div>
+            <div className="skillBox">{skill.name || "(unknown skill)"}</div>
           </label>
 
           <label className="label">
@@ -79,11 +76,6 @@ export default function DraftRequest() {
 
           {/* Mock submit */}
           <button type="submit" className="button">Send Request</button>
-
-          {/* Back link returns to the skill detail you came from */}
-          <Link to={`/skills/${encodeURIComponent(skillId)}`} className="backLink">
-            ← Back
-          </Link>
         </form>
       </div>
     </div>

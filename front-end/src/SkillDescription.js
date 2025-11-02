@@ -1,57 +1,102 @@
-// React Router hooks/components for reading URL params, navigating, and linking
-import { useParams, Link, useNavigate } from "react-router-dom";
-
-// In-memory data helper (no network calls). See src/skills.js
-import { getSkillById } from "./skills";
-
-// Importing CSS for styling
+import React, { useContext, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { SkillsContext } from "./SkillsContext";
 import "./SkillDescription.css";
 
 export default function SkillDescription() {
-  // Grab the ":id" from the route /skills/:id (e.g., "python", "public-speaking")
+  // URL like /skills/5 → we read "5"
   const { id } = useParams();
-
-  // For programmatic navigation (e.g., when clicking "Draft Request")
   const nav = useNavigate();
 
-  // Look up the skill synchronously from our local array
-  const skill = getSkillById(id);
+  // Get skills from context
+  const { skills } = useContext(SkillsContext);
 
-  // If the id is unknown, show a friendly message with a way back
-  if (!skill) {
+  // Find the skill by id
+  const skill = useMemo(() => {
+    return skills.find((s) => String(s.skillId) === String(id));
+  }, [skills, id]);
+
+  // ---- loading state ----
+  if (!skills || skills.length === 0) {
     return (
       <div className="page">
         <div className="card">
-          <p>Skill not found.</p>
-          <Link to="/home" className="back">← Back to Home</Link>
+          <p>Loading skill...</p>
         </div>
       </div>
     );
   }
 
-  // Main UI: show image, description, and a button to draft a request.
-  // The "Draft Request" button passes the current skill id in the query string.
+  // ---- not found / bad id ----
+  if (!skill) {
+    return (
+      <div className="page">
+        <div className="card">
+          <p>Skill not found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Use the same image logic as Home.js: use skill.image if present, otherwise use picsum fallback
+  // Always use the same image logic as Home.js for consistency
+  const finalImageSrc = `//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`;
+
   return (
     <div className="page">
       <div className="card">
+        {/* Skill name */}
         <h1 className="title">{skill.name}</h1>
-        {/* Skill media pulled from public/images via Home -> skills.js */}
-        <img src={skill.img} alt={skill.name} className="image" />
-        {/* If no description is set yet, show a short placeholder */}
+
+        {/* Hero image */}
+        <img
+          src={finalImageSrc}
+          alt={skill.name}
+          className="image"
+        />
+
+        {/* Long description (detail from Mockaroo).
+            If detail is empty for that row, fall back to brief. */}
         <p className="description">
-          {skill.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+          {skill.detail || skill.brief || "No description provided yet."}
         </p>
-        {/* Navigate to the Draft Request screen with this skill preselected */}
+
+        {/* Extra metadata */}
+        <div className="meta">
+          <p>
+            <strong>Category:</strong> {skill.category || "—"}
+          </p>
+          <p>
+            <strong>Posted by:</strong> {skill.username || "anonymous"}
+          </p>
+        </div>
+
+        {/* Draft Request button.
+           VERY IMPORTANT:
+           We pass what the next page will need using the same keys:
+           - skillId (number)
+           - name (string)
+           - username (string, who owns it)
+           You can also pass category if your request form needs it.
+        */}
         <button
-          onClick={() => nav(`/requests/new?skillId=${encodeURIComponent(skill.id)}`)}
           className="button"
+          onClick={() =>
+            nav(
+              `/requests/new?skillId=${encodeURIComponent(
+                skill.skillId
+              )}&skillName=${encodeURIComponent(
+                skill.name
+              )}&owner=${encodeURIComponent(
+                skill.username || ""
+              )}&category=${encodeURIComponent(
+                skill.category || ""
+              )}`
+            )
+          }
         >
           Draft Request
         </button>
-        {/* Simple way back to the grid */}
-        <Link to="/home" className="back">
-          ← Back to Home
-        </Link>
       </div>
     </div>
   );
