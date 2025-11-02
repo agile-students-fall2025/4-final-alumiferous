@@ -14,7 +14,6 @@ export default function DraftRequest() {
   const ownerParam = params.get("owner") || "";
 
   // Local UI state
-  const [owner, setOwner] = useState(ownerParam); // pre-fill with owner from URL
   const [aboutYou, setAboutYou] = useState("");
 
   // Skill object for display (just name for now)
@@ -23,9 +22,9 @@ export default function DraftRequest() {
   // "Send" the request (mock): log to console, show alert, then route back to the skill page
   function handleSubmit(e) {
     e.preventDefault();
-    console.log("REQUEST:", { to: owner, skillId, aboutYou });
+    console.log("REQUEST:", { to: ownerParam, skillId, aboutYou });
     alert("Request sent (mock).");
-    // After "sending", return to the same skill’s description page
+    // After "sending", return to the same skill's description page
     nav(`/skills/${encodeURIComponent(skillId)}`);
   }
 
@@ -48,17 +47,12 @@ export default function DraftRequest() {
   <form onSubmit={handleSubmit} className="form">
           <label className="label">
             To:
-            <input
-              className="input"
-              value={owner}
-              onChange={(e) => setOwner(e.target.value)}
-              placeholder={`To: ${skill?.name || "Skill"} owner`}
-            />
+            <div className="skillBox">{ownerParam || "Skill owner"}</div>
           </label>
 
           <label className="label">
             Interested in skill:
-            {/* Read-only display so users are sure which skill they’re contacting about */}
+            {/* Read-only display so users are sure which skill they're contacting about */}
             <div className="skillBox">{skill.name || "(unknown skill)"}</div>
           </label>
 
