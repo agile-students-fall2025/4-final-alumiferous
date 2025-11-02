@@ -32,11 +32,12 @@ const Settings = () => {
 
   return (
     <div className={`settings-container ${darkMode ? 'dark' : 'light'}`}>
-      {/* <header className="settings-header">
-        <h1 className="logo">Instaskill</h1>
-      </header> */}
+      <header className="settings-header">
+        <h1 className="settings-title">Settings</h1>
+      </header>
 
-      <div className="settings-content">
+      <div className="settings-body">
+        <div className="settings-content">
         <button className="settings-btn" onClick={toggleTheme}>
           Appearance: {darkMode ? 'Dark' : 'Light'}
         </button>
@@ -56,6 +57,7 @@ const Settings = () => {
         <button className="settings-btn delete" onClick={handleDeleteAccount}>
           Delete Account
         </button>
+        </div>
       </div>
     </div>
   );

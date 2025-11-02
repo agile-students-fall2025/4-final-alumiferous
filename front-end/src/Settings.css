@@ -1,11 +1,12 @@
 .settings-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 80px;
-  padding: 2rem;
+  height: 100vh;
+  width: 100vw;
+  padding-top: var(--app-header-offset, 64px);
+  box-sizing: border-box;
+  overflow: hidden; /* inner content scrolls */
   transition: background-color 0.3s, color 0.3s;
-  min-height: 100vh;
 }
  
 .settings-container.light {
@@ -19,17 +20,20 @@
 }
 
 .settings-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #007bff;
-  color: white;
-  padding: 1rem 2rem;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.settings-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
 }
 
 .logo {
@@ -38,12 +42,21 @@
   letter-spacing: 1px;
 }
 
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px;
+  padding-bottom: calc(var(--app-footer-offset, 65px) + env(safe-area-inset-bottom));
+}
+
 .settings-content {
-  margin-top: 100px;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  width: 300px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
 }
 
 .settings-btn {

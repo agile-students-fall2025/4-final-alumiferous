@@ -1,13 +1,47 @@
-.upload-skill-container {
-  max-width: 500px;
-  margin: 80px auto 0 auto; /* below header */
-  padding: 20px;
-  background-color: #fafafa;
-  min-height: calc(100vh - 100px);
+/* Page container mirrors Profile/Chat */
+.upload-skill-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding-top: var(--app-header-offset, 64px);
+  background: #fafafa;
+  box-sizing: border-box;
+  overflow: hidden; /* inner body scrolls */
   font-family: "Inter", sans-serif;
 }
 
+.upload-skill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
 .upload-skill-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.upload-skill-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--app-footer-offset, 65px) + env(safe-area-inset-bottom));
+}
+
+.upload-skill-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.upload-skill-section-title {
   text-align: center;
   font-size: 1.6rem;
   font-weight: 600;
@@ -83,10 +117,7 @@
 }
 
 @media (max-width: 480px) {
-  .upload-skill-container {
-    margin-top: 70px;
-    padding: 16px;
-  }
+  .upload-skill-container { padding: 16px; }
   .upload-skill-form {
     gap: 10px;
   }

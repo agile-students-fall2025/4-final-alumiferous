@@ -1,54 +1,142 @@
-body {
-  background: linear-gradient(135deg, #e6f7fa 0%, #f5e6ff 100%);
-  min-height: 100vh;
-}
+
+body { margin: 0; }
+/* Global background handled in App.css */
 .Profile {
-  max-width: 900px;
-  margin: 48px auto 120px;
-  padding: 32px;
-  background: #fff;
-  border-radius: 28px;
-  box-shadow: 0 8px 40px rgba(33,89,135,0.14), 0 2px 8px rgba(70,33,135,0.02);
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: normal;
+  height: 100vh;
+  width: 100vw;
+  /* Offset for the global App header so it doesn't overlap */
+  padding-top: var(--app-header-offset, 64px);
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
 }
+
+
+.Profile .ProfileCard,
+.Profile .Profile-feedback {
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 .ProfileHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  border-radius: 18px;
-  background: #f7f7fa;
-  box-shadow: 0 2px 10px rgba(33, 89, 135, 0.05);
-  padding: 18px 28px;
-  margin-bottom: 26px;
+  align-items: center;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.BackButton, .MenuButton {
+/* Scrollable inner content area  */
+.ProfileBody {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  /* Ensure bottom content isn't covered by fixed footers/bars */
+  padding-bottom: calc(var(--app-footer-offset, 50px) + env(safe-area-inset-bottom));
+  min-width: 0;
+}
+
+
+@media (max-width: 768px) {
+  /* Preserve top offset under the main app header; only adjust side padding */
+  .Profile {
+    padding-top: var(--app-header-offset, 64px);
+    padding-left: 16px;
+    padding-right: 16px;
+    
+  }
+  .ProfileHeader {
+    padding: 12px 16px;
+    flex-wrap: nowrap; 
+  }
+  /* SearchBar removed */
+}
+
+
+.ProfileCard {
+  padding: 24px 16px;
+}
+
+
+.SkillsSection {
+  display: flex;
+  justify-content: center;
+  gap: 16px 20px;
+  flex-wrap: wrap;
+}
+.SkillsOffered, .SkillsWanted { width: 100%; max-width: 420px; }
+
+
+.ActionButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.EditProfileButton,
+.AccountSettingsButton { min-width: 180px; }
+@media (max-width: 480px) {
+  .EditProfileButton,
+  .AccountSettingsButton { width: 100%; }
+}
+
+
+
+.ProfileTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.BackButton, .MenuButton { 
   background: #f7f7fa;
   border: none;
   font-size: 24px;
   color: #888;
   border-radius: 12px;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 14px;
+  min-width: 40px; 
+  min-height: 40px;
+  flex: 0 0 auto; 
   box-shadow: 0 1px 4px rgba(70,33,135,0.07);
   transition: background 0.18s;
 }
-.BackButton:hover, .MenuButton:hover {
-  background: #ececff;
-  color: #1976d2;
+
+/* Mirror Chat header action button style */
+.ProfileHeader .MenuButton {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #333;
+  border-radius: 50%;
+  padding: 8px;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: none;
+  transition: background 0.2s ease;
+}
+.ProfileHeader .MenuButton:hover {
+  background: #f0f0f0;
 }
 
-.SearchBar {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 16px;
-  background: #eee;
-  box-shadow: 0 1px 4px rgba(70,33,135,0.06);
-  outline: none;
-  min-width: 180px;
-}
 
 .ProfileCard {
   display: flex;
@@ -81,6 +169,14 @@ body {
   color: #9198ad;
   font-size: 16px;
   margin-bottom: 10px;
+}
+
+/* Center the name and pronouns text under the avatar */
+.UserInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .AboutSection {
@@ -161,6 +257,49 @@ body {
   margin: 12px auto;
   text-align: center;
   width: auto;
+}
+
+/* Profile header menu dropdown */
+.ProfileMenu {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.MenuDropdown {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 6px;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.MenuItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.MenuItem:hover,
+.MenuItem:focus {
+  background: #f2f4f8;
+}
+
+.MenuItemLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .BottomNavigation {

@@ -145,7 +145,7 @@ export default function App() {
             path="/chat"
             element={
               <>
-                {/* <Header /> */}
+                <Header />
                 <Chat />
                 <Footer />
               </>

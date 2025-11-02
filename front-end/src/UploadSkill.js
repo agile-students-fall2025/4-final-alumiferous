@@ -33,8 +33,14 @@ export default function UploadSkill() {
   };
 
   return (
-    <div className="upload-skill-container">
-      <h2 className="upload-skill-title">Upload New Skill</h2>
+    <div className="upload-skill-page">
+      <header className="upload-skill-header">
+        <h1 className="upload-skill-title">Upload</h1>
+      </header>
+
+      <div className="upload-skill-body">
+      <div className="upload-skill-container">
+        <h2 className="upload-skill-section-title">Upload New Skill</h2>
 
       <form className="upload-skill-form" onSubmit={handleSubmit}>
         <label htmlFor="skillName">Skill Name</label>
@@ -76,6 +82,8 @@ export default function UploadSkill() {
       </form>
 
       {message && <p className="upload-message">{message}</p>}
+      </div>
+      </div>
     </div>
   );
 }
