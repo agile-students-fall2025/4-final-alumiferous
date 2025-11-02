@@ -27,6 +27,9 @@ import Messages from "./Messages";
 import Requests from "./Requests";
 import UploadSkill from "./UploadSkill";
 import OnBoarding from "./OnBoarding";
+import Savedskills from "./Savedskills";
+
+import { SkillsProvider } from "./SkillsContext";
 
 
 
@@ -35,6 +38,10 @@ export default function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      {/* Wraps entire app inside the SkillsProvider so all components use the same data*/}
+      <SkillsProvider>
+
+      
         <Routes>
           {/* Auth */}
           <Route path="/" element={<Login />} />
@@ -53,7 +60,16 @@ export default function App() {
               </>
             }
           />
-
+           <Route
+            path="/saved"
+            element={
+              <>
+                <Header />
+                <Savedskills />
+                <Footer />
+              </>
+            }
+          />
           <Route
             path="/profile"
             element={
@@ -187,6 +203,7 @@ export default function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
+        </SkillsProvider>
       </BrowserRouter>
     </div>
   );
