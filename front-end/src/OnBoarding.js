@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
-import { skills } from "./skills";
 import { useNavigate } from "react-router-dom";
 
 const OnBoarding = () => {
@@ -60,7 +59,7 @@ const OnBoarding = () => {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  //custom array of skill use can choose from
+  //custom array of skill user can choose from
   const allSkills = [
     "Python",
     "Public Speaking",

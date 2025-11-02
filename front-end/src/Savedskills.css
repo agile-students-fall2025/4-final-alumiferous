@@ -1,0 +1,40 @@
+.savedskills-container {
+  margin-top: 80px;
+  padding: 1rem;
+  min-height: 90vh;
+  background: #f8f9fb;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.saved-search-box {
+  display: block;
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.skill-grid {
+  column-count: 2;
+  column-gap: 0.8rem;
+}
+
+@media (min-width: 768px) {
+  .skill-grid {
+    column-count: 3;
+  }
+}
+
+.no-saved {
+  text-align: center;
+  color: #777;
+  margin-top: 2rem;
+  font-size: 1rem;
+}

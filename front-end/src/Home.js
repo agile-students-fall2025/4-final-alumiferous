@@ -63,14 +63,13 @@ const Home = () => {
   };
 
   //return all list components by looping through the array of skills
-  
+
   return (
-    
     <div className="home-container">
       <header className="home-header">
-        <input 
-          type="text" 
-          placeholder="Search a skill (min 3 characters)" 
+        <input
+          type="text"
+          placeholder="Search a skill (min 3 characters)"
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyUp={handleSearchChange}
@@ -83,29 +82,30 @@ const Home = () => {
         </div>
       )}
 
-      {!isSearching && filteredSkills.length === 0 && searchTerm.length >= 3 && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <p>No skills found matching "{searchTerm}"</p>
-        </div>
-      )}
+      {!isSearching &&
+        filteredSkills.length === 0 &&
+        searchTerm.length >= 3 && (
+          <div style={{ textAlign: "center", padding: "20px" }}>
+            <p>No skills found matching "{searchTerm}"</p>
+          </div>
+        )}
 
       <div className="skill-grid">
-        {!isSearching && filteredSkills.map((skill, i) => (
-         
-          <Skill //pass skill details as attributes to
-            key={i}
-            skillId={skill.skillId}
-            name={skill.name}
-            brief={skill.brief}
-             //inject random place holder image form the Lorem Picsum API
-            skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
-            category = {skill.category}
-            username = {skill.username}
-            ImgHeight = {skill.height}
-            handleSaveSkill = {handleSaveSkill}
-          />
-        )
-         )}
+        {!isSearching &&
+          filteredSkills.map((skill, i) => (
+            <Skill //pass skill details as attributes to
+              key={i}
+              skillId={skill.skillId}
+              name={skill.name}
+              brief={skill.brief}
+              //inject random place holder image form the Lorem Picsum API
+              skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
+              category={skill.category}
+              username={skill.username}
+              ImgHeight={skill.height}
+              handleSaveSkill={handleSaveSkill}
+            />
+          ))}
       </div>
     </div>
   );
