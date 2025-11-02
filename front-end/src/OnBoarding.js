@@ -16,7 +16,7 @@ const OnBoarding = () => {
     skillsOffered: [],
     skillsWanted: [],
     motivation: [],
-    preferredLanguage: "",
+    appUsage: "",
     weeklyCommitment: "",
   });
   //handle even change onclick e is the entity that changes
