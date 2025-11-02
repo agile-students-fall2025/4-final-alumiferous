@@ -36,6 +36,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <div className="App">
+        <SkillsProvider>
         <BrowserRouter>
           <Routes>
             {/* Auth */}
@@ -203,7 +204,9 @@ export default function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
+        
       </BrowserRouter>
+      </SkillsProvider>
     </div>
     </ThemeProvider>
   );
