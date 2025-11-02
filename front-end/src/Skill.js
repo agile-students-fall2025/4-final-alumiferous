@@ -3,7 +3,7 @@ import "./Skill.css";
 import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
-const Skill = ({ skillId, name, brief, skillImg }) => {
+const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = (e) => {
@@ -13,7 +13,7 @@ const Skill = ({ skillId, name, brief, skillImg }) => {
 
   return (
     <div className="skill-wrapper">
-      <div className="skill-card">
+      <div className="skill-card" data-height ={ImgHeight}>
         <Link to={`/skills/${encodeURIComponent(skillId)}`}>
           <img src={skillImg} alt={name} className="skill-image" />
         </Link>
