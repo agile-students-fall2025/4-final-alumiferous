@@ -79,8 +79,8 @@ const OnBoarding = () => {
       <form onSubmit={handleSubmit} className="onboarding-form">
         {step === 1 && (
           <div className="onboarding-step">
-            <h2>Welcome to InstaSkill</h2>
-            <p>Let's get to know you!</p>
+            <h1>Welcome to InstaSkill</h1>
+            <h2>Let's get to know you!</h2>
             <input
               type="text"
               name="username"
@@ -102,7 +102,7 @@ const OnBoarding = () => {
 
         {step === 2 && (
           <div className="onboarding-step">
-            <h2>What skills can you offer?</h2>
+            <h1>What skills can you offer?</h1>
             <SkillSelector
               label="Select the skill you can offer"
               allSkills={allSkills}
@@ -122,7 +122,7 @@ const OnBoarding = () => {
 
         {step === 3 && (
           <div className="onboarding-step">
-            <h2>What do you want to learn?</h2>
+            <h1>What do you want to learn?</h1>
             <SkillSelector
               label="Select the skill you want to learn"
               allSkills={allSkills}
@@ -148,7 +148,7 @@ const OnBoarding = () => {
 
         {step === 4 && (
           <div className="onboarding-step">
-            <h2>What best describes how you plan to use InstaSkill?</h2>
+            <h1>What best describes how you plan to use InstaSkill?</h1>
             <select
               name="preferredLanguage"
               value={formData.preferredLanguage}
@@ -178,7 +178,7 @@ const OnBoarding = () => {
 
         {step === 5 && (
           <div className="onboarding-step">
-            <h2>How much time can you commit weekly?</h2>
+            <h1>How much time can you commit weekly?</h1>
             <select
               name="weeklyCommitment"
               value={formData.weeklyCommitment}
@@ -199,12 +199,6 @@ const OnBoarding = () => {
                     alert("Please fill the required filed before you proceed")
                 }
             }}>Finish</button>
-          </div>
-        )}
-
-        {step === 6 && (
-          <div className="onboarding-step">
-            <h2></h2>
           </div>
         )}
       </form>
