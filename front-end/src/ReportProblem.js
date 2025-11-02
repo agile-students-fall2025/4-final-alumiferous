@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ReportProblem.css";
 
 const ReportProblem = () => {
   const [issueType, setIssueType] = useState("");
   const [description, setDescription] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,13 +19,18 @@ const ReportProblem = () => {
     setSubmitted(true);
     setIssueType("");
     setDescription("");
-    setTimeout(() => setSubmitted(false), 2500); // hides popup after 2.5s
+    setTimeout(() => setSubmitted(false), 2500); 
   };
 
   return (
     <div className="report-container">
       <div className="report-box">
-        <h2 className="report-title">Report a Problem</h2>
+        <div className="report-header">
+          <button className="back-btn" onClick={() => navigate("/settings")}>
+            ←
+          </button>
+          <h2 className="report-title">Report a Problem</h2>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <input

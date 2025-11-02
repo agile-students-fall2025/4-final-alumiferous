@@ -13,7 +13,6 @@
   box-sizing: border-box;
 }
 
-/* Desktop styles */
 @media (min-width: 768px) {
   .Login {
     padding: 32px;
@@ -21,7 +20,6 @@
   }
 }
 
-/* Content wrapper for desktop to limit width */
 @media (min-width: 768px) {
   .Login > * {
     max-width: 450px;
@@ -95,7 +93,7 @@ h2 {
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  -webkit-appearance: none; /* Remove iOS styling */
+  -webkit-appearance: none; 
   appearance: none;
 }
 
@@ -128,7 +126,6 @@ h2 {
   transform: translateY(-1px);
 }
 
-/* Name fields with smooth animations */
 .name-row {
   display: flex;
   flex-direction: column;
@@ -150,7 +147,6 @@ h2 {
   flex: 1;
 }
 
-/* Desktop: name fields on same row */
 @media (min-width: 480px) {
   .name-row {
     flex-direction: row;
@@ -227,4 +223,62 @@ h2 {
 .form-toggle button:hover:not(.active) {
   background: #f5f5f5;
   color: #333;
+}
+
+body.dark-mode .Login {
+  background: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .Login input[type="text"],
+body.dark-mode .Login input[type="email"],
+body.dark-mode .Login input[type="password"] {
+  background: #2a2a2a !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .Login input::placeholder {
+  color: #aaa !important;
+}
+
+body.dark-mode .Login input[type="submit"] {
+  background: #2f76bc !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+body.dark-mode .Login input[type="submit"]:hover {
+  background: #1162b3 !important;
+  transform: translateY(-1px);
+}
+
+body.dark-mode .form-toggle {
+  background: #1e1e1e !important;
+  border: 2px solid #333 !important;
+}
+
+body.dark-mode .form-toggle button {
+  color: #ccc !important;
+  background: transparent !important;
+}
+
+body.dark-mode .form-toggle button.active {
+  background: #2f76bc !important;
+  color: #fff !important;
+}
+
+body.dark-mode .form-toggle button:hover:not(.active) {
+  background: #2a2a2a !important;
+  color: #fff !important;
+}
+
+body.dark-mode .Login .feedback {
+  background: #173f5f !important;
+  color: #b3e5fc !important;
+}
+
+body.dark-mode .Login .error {
+  background: #5c1f1f !important;
+  color: #ffcdd2 !important;
 }
