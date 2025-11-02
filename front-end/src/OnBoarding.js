@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
-import { skills } from "./skills";
 import { useNavigate } from "react-router-dom";
 
 const OnBoarding = () => {
