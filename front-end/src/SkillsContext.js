@@ -6,7 +6,7 @@ export const SkillsContext = createContext();
 export const SkillsProvider = ({ children }) => {
    //a state variable with a blank array
   const [skills, setSkills] = useState([]);
-
+  
   // Fetch or load cached data once when app starts
   useEffect(() => {
     //create a local storage to prevent unneccesary API calls
