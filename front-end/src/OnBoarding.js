@@ -148,7 +148,7 @@ const OnBoarding = () => {
 
         {step === 4 && (
           <div className="onboarding-step">
-            <h2>What are you preferred Languages</h2>
+            <h2>What best describes how you plan to use InstaSkill?</h2>
             <select
               name="preferredLanguage"
               value={formData.preferredLanguage}
@@ -156,11 +156,10 @@ const OnBoarding = () => {
               
             >
               <option value="">Select...</option>
-              <option value="English">English</option>
-              <option value="French">Français</option>
-              <option value="Spanish">Español</option>
-              <option value="Chinese">中国人</option>
-              <option value="Arabic">عربي</option>
+              <option value="Student">To learn new skills or improve my abilities</option>
+              <option value="Instructor">To share my expertise and teach others</option>
+              <option value="Networking">To connect and collaborate with other professionals</option>
+              <option value="Business">To promote or grow my business through skill exchange</option>
             </select>
             <button type="button" onClick={prevStep}>
               Back
