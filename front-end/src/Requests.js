@@ -1,56 +1,70 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "./Requests.css";
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const pickOne = (arr) =>
+    Array.isArray(arr) && arr.length > 0
+      ? arr[Math.floor(Math.random() * arr.length)]
+      : "N/A";
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    let isMounted = true;
+    const fetchData = async () => {
       try {
-        const url = `${process.env.REACT_APP_MOCKAROO_URL}?count=${process.env.REACT_APP_MOCKAROO_COUNT}&key=${process.env.REACT_APP_MOCKAROO_KEY}`;
-        const res = await axios.get(url);
-        console.log("Mockaroo data:", res.data);
+        setLoading(true);
+        setError(null);
 
-        const mapped = res.data
-          .slice(0, 10) 
-          .map((user) => ({
-            id: user.userId || user.id,
+        const apiKey = process.env.REACT_APP_MOCKAROO_KEY;
+        if (!apiKey) throw new Error("Missing REACT_APP_MOCKAROO_KEY env var");
+
+        const res = await fetch(
+          "https://api.mockaroo.com/api/27165660?count=1000",
+          {
+            headers: { "X-API-Key": apiKey },
+          }
+        );
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+
+        const data = await res.json();
+        const normalized = (Array.isArray(data) ? data : [data])
+          .slice(0, 10)
+          .map((user, i) => ({
+            id: user.userId || user.id || i,
             name: user.username || `${user.first_name} ${user.last_name}`,
-            offers: Array.isArray(user.skillsAcquired)
-              ? user.skillsAcquired[Math.floor(Math.random() * user.skillsAcquired.length)] || "N/A"
-              : user.skillsAcquired || user._allSkills || "N/A",
-            wants: Array.isArray(user.skillsWanted)
-              ? user.skillsWanted[Math.floor(Math.random() * user.skillsWanted.length)] || "N/A"
-              : user.skillsWanted || "N/A",
-            profile: user.profile_photo || "",
+            offers: pickOne(user.skillsAcquired || user._allSkills),
+            wants: pickOne(user.skillsWanted),
           }));
 
-        setRequests(mapped);
+        if (isMounted) setRequests(normalized);
       } catch (err) {
-        console.error("Error fetching Mockaroo data:", err);
+        console.error("Failed to load requests:", err);
+        setError("Failed to load requests.");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
-
-    fetchRequests();
+    fetchData();
+    return () => (isMounted = false);
   }, []);
 
   const handleAccept = (id) => {
     const req = requests.find((r) => r.id === id);
     alert(`Accepted request from ${req.name}`);
-    setRequests(requests.filter((r) => r.id !== id));
+    setRequests((prev) => prev.filter((r) => r.id !== id));
   };
 
   const handleDecline = (id) => {
     const req = requests.find((r) => r.id === id);
     alert(`Declined request from ${req.name}`);
-    setRequests(requests.filter((r) => r.id !== id));
+    setRequests((prev) => prev.filter((r) => r.id !== id));
   };
 
-  if (loading) return <p>Loading requests...</p>;
+  if (loading) return <p className="no-requests">Loading requests…</p>;
+  if (error) return <p className="no-requests">{error}</p>;
 
   return (
     <div className="requests-container">
@@ -62,13 +76,6 @@ export default function Requests() {
         requests.map((req) => (
           <div key={req.id} className="request-card">
             <div className="request-info">
-              {req.profile && (
-                <img
-                  src={req.profile}
-                  alt={req.name}
-                  className="request-profile-photo"
-                />
-              )}
               <span className="request-name">{req.name}</span>
               <span className="request-skill">
                 <strong>Offers:</strong> {req.offers}
@@ -79,10 +86,16 @@ export default function Requests() {
             </div>
 
             <div className="request-buttons">
-              <button className="accept-btn" onClick={() => handleAccept(req.id)}>
+              <button
+                className="accept-btn"
+                onClick={() => handleAccept(req.id)}
+              >
                 Accept
               </button>
-              <button className="decline-btn" onClick={() => handleDecline(req.id)}>
+              <button
+                className="decline-btn"
+                onClick={() => handleDecline(req.id)}
+              >
                 Decline
               </button>
             </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "./UploadSkill.css";
 
 export default function UploadSkill() {
@@ -9,24 +8,42 @@ export default function UploadSkill() {
   const [description, setDescription] = useState("");
   const [video, setVideo] = useState(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCategories = async () => {
       try {
-        const url = `${process.env.REACT_APP_SKILLS_URL}?count=${process.env.REACT_APP_MOCKAROO_COUNT}&key=${process.env.REACT_APP_MOCKAROO_KEY}`;
-        const res = await axios.get(url);
-        console.log("Mockaroo skills sample:", res.data[0]);
+        setLoading(true);
+        setError(null);
 
-        const uniqueCategories = [
-          ...new Set(res.data.map((skill) => skill.category)),
+        const apiKey = process.env.REACT_APP_MOCKAROO_KEY;
+        if (!apiKey) throw new Error("Missing REACT_APP_MOCKAROO_KEY env var");
+
+        const res = await fetch(
+          "https://api.mockaroo.com/api/b9916500?count=1000",
+          {
+            headers: { "X-API-Key": apiKey },
+          }
+        );
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+        const data = await res.json();
+
+        const unique = [
+          ...new Set(data.map((skill) => skill.category).filter(Boolean)),
         ];
-        setCategories(uniqueCategories);
+        if (isMounted) setCategories(unique);
       } catch (err) {
-        console.error("Error fetching categories:", err);
+        console.error("Failed to load categories:", err);
+        if (isMounted) setError("Failed to load categories.");
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchCategories();
+    return () => (isMounted = false);
   }, []);
 
   const handleSubmit = (e) => {
@@ -55,11 +72,15 @@ export default function UploadSkill() {
     setVideo(e.target.files[0]);
   };
 
+  if (loading) return <p className="upload-message">Loading categories…</p>;
+  if (error) return <p className="upload-message error">{error}</p>;
+
   return (
     <div className="upload-skill-container">
       <h2 className="upload-skill-title">Upload New Skill</h2>
 
       <form className="upload-skill-form" onSubmit={handleSubmit}>
+        {/* Category dropdown */}
         <label htmlFor="category">Select Category</label>
         <select
           id="category"
@@ -68,17 +89,14 @@ export default function UploadSkill() {
           className="category-select"
         >
           <option value="">-- Choose a category --</option>
-          {categories.length > 0 ? (
-            categories.map((cat, index) => (
-              <option key={index} value={cat}>
-                {cat}
-              </option>
-            ))
-          ) : (
-            <option disabled>Loading categories...</option>
-          )}
+          {categories.map((cat, index) => (
+            <option key={index} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
 
+        {/* Skill name */}
         <label htmlFor="skillName">Skill Name</label>
         <input
           id="skillName"
@@ -88,6 +106,7 @@ export default function UploadSkill() {
           onChange={(e) => setSkillName(e.target.value)}
         />
 
+        {/* Description */}
         <label htmlFor="description">Description / Expertise</label>
         <textarea
           id="description"
@@ -96,6 +115,7 @@ export default function UploadSkill() {
           onChange={(e) => setDescription(e.target.value)}
         />
 
+        {/* Video input */}
         <label htmlFor="video">Attach Demo Video</label>
         <input
           id="video"
