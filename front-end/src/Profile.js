@@ -45,7 +45,14 @@ const Profile = () => {
       });
   }, []);
 
-  // Menu and localStorage save omitted for brevity
+  const handleSave = () => {
+    if (user) {
+      localStorage.setItem('profile', JSON.stringify(user));
+      setFeedback('Profile saved successfully!');
+      setTimeout(() => setFeedback(''), 3000);
+    }
+    setMenuOpen(false);
+  };
 
   if (loading) return <main>Loading profile...</main>;
   if (feedback && !user) return <main>{feedback}</main>;
@@ -54,8 +61,28 @@ const Profile = () => {
   return (
     <main className="Profile">
       <header className="ProfileHeader">
-        <h1 className="ProfileTitle">{user.username}</h1>
-        {/* Menu omitted for brevity */}
+        <h1 className="ProfileTitle">Profile</h1>
+        {/* Search removed per request */}
+        <div className="ProfileMenu" ref={menuRef}>
+          <button
+            className="MenuButton"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            ☰
+          </button>
+          {menuOpen && (
+            <div className="MenuDropdown" role="menu">
+              <button className="MenuItem" role="menuitem" onClick={handleSave}>
+                <Link to="/saved" className="MenuItemLink">Save</Link>
+              </button>
+              <button className="MenuItem" role="menuitem" onClick={() => { setMenuOpen(false) }}>
+                <Link to="/settings" className="MenuItemLink">Settings</Link>
+              </button>
+            </div>
+          )}
+        </div>
       </header>
       <div className="ProfileBody">
         <img className="Avatar" src={user.profilePhoto || "/images/avatar-default.png"} alt="User Avatar" />
