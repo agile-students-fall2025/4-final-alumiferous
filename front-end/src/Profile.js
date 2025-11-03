@@ -84,7 +84,6 @@ const Profile = () => {
         </div>
       </header>
       <div className="ProfileBody">
-      <section className="ProfileCard">
         <img className="Avatar" src={user.avatar} alt="User Avatar" />
         <div className="UserInfo">
           <h2>{user.name}</h2>
@@ -119,8 +118,7 @@ const Profile = () => {
             <button className="AccountSettingsButton">Account Settings</button>
           </Link>
         </div>
-      </section>
-      {feedback && <div className="Profile-feedback">{feedback}</div>}
+        {feedback && <div className="Profile-feedback">{feedback}</div>}
       </div>
     </main>
   )

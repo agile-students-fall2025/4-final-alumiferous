@@ -1,36 +1,22 @@
-/* Container spacing and centering */
-.EditProfileContainer {
-  background: #fafbff;
-  border-radius: 18px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-  margin: 32px auto;
-  max-width: 480px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Card for form fields */
-.ProfileCard {
+/* Flattened layout: use the page body, no inner cards */
+.edit-profile-body {
   width: 100%;
-  background: #fff;
-  border-radius: 18px;
-  padding: 24px 18px 18px;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+  max-width: 520px; /* match Profile's inner content width */
+  padding: 0 16px 20px;
+  margin: 0 auto; /* center horizontally */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch; /* sections take full available width within the column */
+  gap: 16px;
 }
 
-/* Avatar styling */
-.Avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-  margin-bottom: 14px;
+/* Remove Profile.css narrow max-widths for this page so content can span full width */
+.edit-profile-body .AboutSection,
+.edit-profile-body .SkillsSection {
+  width: 100%;
 }
+
+/* Avatar styling inherits from Profile.css for consistency */
 
 .ProfilePhotoSection {
   display: flex;
@@ -39,9 +25,7 @@
   margin-bottom: 14px;
 }
 
-.Avatar {
-  margin-bottom: 12px;
-}
+/* Avatar margin handled by Profile.css */
 
 .UploadButton {
   padding: 10px 22px;
@@ -121,6 +105,7 @@
   box-shadow: 0 1px 10px rgba(56,86,230,0.09);
   cursor: pointer;
   transition: background 0.2s;
+  align-self: center; /* center button in the column like Profile actions */
 }
 
 .SaveButton:hover {
@@ -129,15 +114,14 @@
 
 /* Responsive tweaks */
 @media (max-width: 600px) {
-  .EditProfileContainer {
-    padding: 10px 2px;
-    border-radius: 0;
-  }
-  .ProfileCard {
-    padding: 10px 6px;
-  }
   .SkillsSection {
     flex-direction: column;
     gap: 10px;
   }
+}
+
+/* Header alignment: left-align the back button and remove space-between */
+.edit-profile-header {
+  justify-content: flex-start;
+  gap: 8px;
 }
