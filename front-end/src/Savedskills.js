@@ -56,33 +56,35 @@ const Savedskills = () => {
   return (
     <div className="savedskills-page">
       <header className="savedskills-header">
-        <h2 className="savedskills-title">Your Saved Skills</h2>
+        <h2 className="savedskills-title">Saved</h2>
       </header>
 
-      <input
-        type="text"
-        placeholder="Search your saved skills (min 3 characters)"
-        className="savedskills-search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="savedskills-content">
+        <input
+          type="text"
+          placeholder="Search your saved skills (min 3 characters)"
+          className="savedskills-search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-      {isSearching && <p className="savedskills-status">Searching...</p>}
+        {isSearching && <p className="savedskills-status">Searching...</p>}
 
-      {!isSearching && filteredSaved.length === 0 ? (
-        <p className="savedskills-status">No saved skills found.</p>
-      ) : (
-        <div className="savedskills-grid">
-          {filteredSaved.map((skill, i) => (
-            <SavedSkillCard
-              key={i}
-              skill={skill}
-              onUnsave={handleUnsave}
-              onReport={handleReport}
-            />
-          ))}
-        </div>
-      )}
+        {!isSearching && filteredSaved.length === 0 ? (
+          <p className="savedskills-status">No saved skills found.</p>
+        ) : (
+          <div className="savedskills-grid">
+            {filteredSaved.map((skill, i) => (
+              <SavedSkillCard
+                key={i}
+                skill={skill}
+                onUnsave={handleUnsave}
+                onReport={handleReport}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Notification toast */}
       {notification.show && (

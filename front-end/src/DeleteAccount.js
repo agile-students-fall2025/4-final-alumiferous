@@ -36,12 +36,14 @@ const DeleteAccount = () => {
         <form onSubmit={handleSubmit} className="delete-form">
           <input
             type="text"
+            className="form-input"
             placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <input
             type="password"
+            className="form-input"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

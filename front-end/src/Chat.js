@@ -128,11 +128,6 @@ const Chat = props => {
                     )
                 )}
             </div>
-
-            {/* Floating Action Button for New Chat */}
-            <button className="fab">
-                <span>💬</span>
-            </button>
         </div>
     )
 }

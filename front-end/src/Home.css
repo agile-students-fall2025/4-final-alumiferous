@@ -1,5 +1,5 @@
 .home-container {
-  margin-top: 4rem;
+  margin-top: calc(var(--app-header-offset, 80px) + 0.5rem); /* responsive top margin */
   padding: 1rem;
   background: #f8f9fb;
 }
@@ -9,12 +9,10 @@
   margin-bottom: 1.5rem;
 }
 
-.home-header input {
-  width: 90%;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+/* Search input uses global .search-input class from App.css */
+.home-header .search-input {
+  display: block;
+  margin: 0 auto;
 }
 
 /* Masonry layout */

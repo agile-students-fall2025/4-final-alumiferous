@@ -157,17 +157,16 @@ export default function App() {
               }
             />
 
-            {/* Chat & Messages */}
-            <Route
-              path="/chat"
-              element={
-                <>
-                  {/* <Header /> */}
-                  <Chat />
-                  <Footer />
-                </>
-              }
-            />
+          <Route
+            path="/chat"
+            element={
+              <>
+                <Header />
+                <Chat />
+                <Footer />
+              </>
+            }
+          />
 
             <Route
               path="/chat/:id"

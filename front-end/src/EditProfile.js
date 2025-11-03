@@ -1,23 +1,21 @@
 import React from 'react';
-import './Profile.css'; // reuse styles
-import './EditProfile.css'; 
+// import './Profile.css'; // reuse styles
+import './EditProfile.css';
+import './Messages.css'; // reuse messages-style header
 
 const EditProfile = () => (
-  <main className="Profile EditProfileContainer">
-    <header className="ProfileHeader">
-      <button className="BackButton" onClick={() => window.history.back()}>
-        ←
-      </button>
-      <h2>Back</h2>
+  <main className="edit-profile-page">
+    <header className="messages-header">
+      <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
     </header>
-    <section className="ProfileCard">
-        <div className="ProfilePhotoSection">
-            <img className="Avatar" src="/images/avatar-default.png" alt="Profile" />
-            <button className="UploadButton">Upload/Change Photo</button>
-        </div>
+    <div className="edit-profile-content">
+      <div className="ProfilePhotoSection">
+        <img className="Avatar" src="/images/avatar-default.png" alt="Profile" />
+        <button className="UploadButton">Upload/Change Photo</button>
+      </div>
       <div className="AboutSection">
         <label htmlFor="about">About Me:</label>
-        <textarea id="about" maxLength={500} />
+        <textarea id="about" className="form-input" maxLength={500} />
       </div>
       <div className="SkillsSection">
         <div>
@@ -32,7 +30,7 @@ const EditProfile = () => (
         </div>
       </div>
       <button className="SaveButton">Save Changes</button>
-    </section>
+    </div>
   </main>
 );
 

@@ -67,13 +67,16 @@ export default function Requests() {
   if (error) return <p className="no-requests">{error}</p>;
 
   return (
-    <div className="requests-container">
-      <h2 className="requests-title">Incoming Requests</h2>
+    <div className="requests-page">
+      <header className="requests-header">
+        <h2>Incoming Requests</h2>
+      </header>
 
-      {requests.length === 0 ? (
-        <p className="no-requests">No new requests 📭</p>
-      ) : (
-        requests.map((req) => (
+      <div className="requests-content">
+        {requests.length === 0 ? (
+          <p className="no-requests">No new requests 📭</p>
+        ) : (
+          requests.map((req) => (
           <div key={req.id} className="request-card">
             <div className="request-info">
               <span className="request-name">{req.name}</span>
@@ -102,6 +105,7 @@ export default function Requests() {
           </div>
         ))
       )}
+      </div>
     </div>
   );
 }

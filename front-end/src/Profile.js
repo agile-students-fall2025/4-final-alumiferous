@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import './Profile.css'
 
 const Profile = () => {
@@ -12,6 +13,8 @@ const Profile = () => {
     skillsWanted: ['Knitting', 'Javascript'],
   })
   const [feedback, setFeedback] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
 
   useEffect(() => {
     //alert('Welcome to your Profile Page!')
@@ -23,16 +26,65 @@ const Profile = () => {
     console.log('Edit Profile clicked')
   }
 
+  const handleSave = () => {
+    try {
+      // Persist the full profile only
+      localStorage.setItem('profile', JSON.stringify(user))
+      setFeedback('Profile saved')
+    } catch (e) {
+      console.error('Failed to save profile', e)
+      setFeedback('Failed to save')
+    } finally {
+      setMenuOpen(false)
+    }
+  }
+
+  // Close menu on outside click or Escape
+  useEffect(() => {
+    if (!menuOpen) return
+    const onClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
   return (
     <main className="Profile">
       <header className="ProfileHeader">
-        <button className="BackButton" onClick={() => window.history.back()}>
-          ← Back
-        </button>
-        <input className="SearchBar" placeholder="Search..." />
-        <button className="MenuButton">☰ Menu</button>
+        <h1 className="ProfileTitle">Profile</h1>
+        {/* Search removed per request */}
+        <div className="ProfileMenu" ref={menuRef}>
+          <button
+            className="MenuButton"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <Bars3Icon />
+          </button>
+          {menuOpen && (
+            <div className="MenuDropdown" role="menu">
+              <button className="MenuItem" role="menuitem" onClick={handleSave}>
+                <Link to="/saved" className="MenuItemLink">Save</Link>
+              </button>
+              <button className="MenuItem" role="menuitem" onClick={() => { setMenuOpen(false) }}>
+                <Link to="/settings" className="MenuItemLink">Settings</Link>
+              </button>
+            </div>
+          )}
+        </div>
       </header>
-      <section className="ProfileCard">
+      <div className="ProfileBody">
         <img className="Avatar" src={user.avatar} alt="User Avatar" />
         <div className="UserInfo">
           <h2>{user.name}</h2>
@@ -67,8 +119,8 @@ const Profile = () => {
             <button className="AccountSettingsButton">Account Settings</button>
           </Link>
         </div>
-      </section>
-      {feedback && <div className="Profile-feedback">{feedback}</div>}
+        {feedback && <div className="Profile-feedback">{feedback}</div>}
+      </div>
     </main>
   )
 }

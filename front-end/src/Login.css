@@ -81,27 +81,7 @@ h2 {
   font-size: 1em;
 }
 
-.Login input[type="text"],
-.Login input[type="email"],
-.Login input[type="password"] {
-  padding: 18px 20px;
-  border: 2px solid #a8a8a8;
-  border-radius: 8px;
-  font-size: 16px; 
-  background: #fff;
-  transition: border-color 0.2s ease;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  -webkit-appearance: none; 
-  appearance: none;
-}
-
-.Login input[type="text"]:focus,
-.Login input[type="email"]:focus,
-.Login input[type="password"]:focus {
-  border-color: #666;
-}
+/* Form inputs now use global .form-input class from App.css */
 
 .Login input[type="submit"] {
   background: #2f76bc;
@@ -230,17 +210,7 @@ body.dark-mode .Login {
   color: #f1f1f1 !important;
 }
 
-body.dark-mode .Login input[type="text"],
-body.dark-mode .Login input[type="email"],
-body.dark-mode .Login input[type="password"] {
-  background: #2a2a2a !important;
-  color: #fff !important;
-  border: 1px solid #444 !important;
-}
-
-body.dark-mode .Login input::placeholder {
-  color: #aaa !important;
-}
+/* Dark mode input styles now handled globally in App.css */
 
 body.dark-mode .Login input[type="submit"] {
   background: #2f76bc !important;
@@ -254,7 +224,7 @@ body.dark-mode .Login input[type="submit"]:hover {
 }
 
 body.dark-mode .form-toggle {
-  background: #1e1e1e !important;
+  background: #121212 !important;
   border: 2px solid #333 !important;
 }
 

@@ -8,17 +8,25 @@
   background: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Header */
 .chat-header {
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) - 8px); /* peek slightly under main header */
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 16px 20px;
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100vw;
+  flex-shrink: 0;
 }
 
 .chat-title {
@@ -26,6 +34,11 @@
   font-weight: 600;
   margin: 0;
   color: #333;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-page .header-actions {
@@ -37,52 +50,49 @@
   background: transparent;
   border: none;
   font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
+  color: #333;
   border-radius: 50%;
+  padding: 8px;
+  margin-right: 16px;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: none;
+  outline: none;
   transition: background 0.2s ease;
-}
-
-.chat-page .requests-btn:hover {
-  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Size the Heroicons bell */
 .chat-page .requests-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
-/* Search Container */
+/* Search Container - positioned below fixed header */
 .chat-page .search-container {
-  padding: 16px 20px;
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) + 60px); /* below chat-header */
+  left: 0;
+  right: 0;
+  z-index: 9;
+  text-align: center;
+  padding: 16px 0;
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.chat-page .search-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  box-sizing: border-box;
-  border-radius: 25px;
-  font-size: 16px;
-  background: #f8f9fa;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.chat-page .search-input:focus {
-  border-color: #007bff;
-  background: #ffffff;
-}
 
 /* Chat List */
 .chat-page .chat-list {
   flex: 1;
   overflow-y: auto;
   background: #ffffff;
+  padding-top: calc(var(--app-header-offset, 64px) + 120px); /* account for fixed header + search container */
+  padding-bottom: calc(var(--app-footer-offset, 200px) + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Individual Chat Item */
@@ -291,7 +301,7 @@ body.dark-mode .chat-page {
 }
 
 body.dark-mode .chat-header {
-  background: #1a1a1a !important;
+  background: #121212 !important;
   border-bottom: 1px solid #2c2c2c !important;
   box-shadow: none !important;
 }
@@ -307,9 +317,16 @@ body.dark-mode .settings-btn:hover {
   background: #2b2b2b !important;
 }
 
+body.dark-mode .requests-btn {
+  color: #f1f1f1 !important;
+}
+body.dark-mode .requests-btn:hover {
+  background: #2b2b2b !important;
+}
+
 /* Search bar */
 body.dark-mode .search-container {
-  background: #1a1a1a !important;
+  background: #121212 !important;
   border-bottom: 1px solid #2a2a2a !important;
 }
 body.dark-mode .search-input {

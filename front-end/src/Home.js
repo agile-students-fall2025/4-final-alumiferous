@@ -57,9 +57,10 @@ const Home = () => {
   return (
     <div className="home-container">
       <header className="home-header">
-        <input
-          type="text"
-          placeholder="Search a skill (min 3 characters)"
+        <input 
+          type="text" 
+          className="search-input"
+          placeholder="Search a skill (min 3 characters)" 
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyUp={handleSearchChange}

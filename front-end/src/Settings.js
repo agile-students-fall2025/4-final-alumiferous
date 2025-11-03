@@ -8,47 +8,69 @@ const Settings = () => {
   const navigate = useNavigate();
 
   return (
-    <div className={`settings-container ${darkMode ? "dark" : "light"}`}>
-      <div className="settings-box">
-        <h2 className="settings-title">Settings</h2>
+    <main className="settings-page">
+      <header className="settings-header">
+        <h1 className="settings-title">Settings</h1>
+      </header>
 
-        <button className="settings-btn" onClick={toggleTheme}>
-          Appearance: {darkMode ? "Dark" : "Light"}
-        </button>
+      <div className="settings-body">
+        <div className="settings-content">
+          {/* Account Section */}
+          <div className="settings-section">
+            <button className="settings-btn" onClick={toggleTheme}>
+              <span>Appearance</span>
+              <span className="settings-value">{darkMode ? "Dark" : "Light"}</span>
+            </button>
+          </div>
 
-        <button
-          className="settings-btn"
-          onClick={() => navigate("/reset-password")}
-        >
-          Reset Password
-        </button>
+          {/* Security Section */}
+          <div className="settings-section">
+            <button
+              className="settings-btn"
+              onClick={() => navigate("/reset-password")}
+            >
+              <span>Reset Password</span>
+              <span className="settings-arrow">›</span>
+            </button>
+          </div>
 
-        <button
-          className="settings-btn"
-          onClick={() => navigate("/report-problem")}
-        >
-          Report a Problem
-        </button>
+          {/* Support Section */}
+          <div className="settings-section">
+            <button
+              className="settings-btn"
+              onClick={() => navigate("/report-problem")}
+            >
+              <span>Report a Problem</span>
+              <span className="settings-arrow">›</span>
+            </button>
+          </div>
 
-        <button
-          className="settings-btn"
-          onClick={() => {
-            localStorage.clear();
-            alert("You have been logged out.");
-            navigate("/login");
-          }}
-        >
-          Logout
-        </button>
+          {/* Logout Section */}
+          <div className="settings-section">
+            <button
+              className="settings-btn"
+              onClick={() => {
+                localStorage.clear();
+                alert("You have been logged out.");
+                navigate("/login");
+              }}
+            >
+              <span>Logout</span>
+            </button>
+          </div>
 
-        <button
-          className="settings-btn delete"
-          onClick={() => navigate("/delete-account")}
-        >
-          Delete Account
-        </button>
+          {/* Danger Zone */}
+          <div className="settings-section danger">
+            <button
+              className="settings-btn delete"
+              onClick={() => navigate("/delete-account")}
+            >
+              <span>Delete Account</span>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

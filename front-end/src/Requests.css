@@ -1,31 +1,57 @@
-.requests-container {
-  max-width: 500px;
-  margin: 80px auto 0 auto;
-  padding: 16px;
-  background-color: #fafafa;
-  min-height: calc(100vh - 100px);
-  font-family: "Inter", sans-serif;
+/* Requests Page - Consistent with app styling */
+.requests-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #fafafa;
+  overflow: hidden;
 }
 
-.requests-title {
-  text-align: center;
-  font-size: 1.6rem;
+/* Fixed header */
+.requests-header {
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) - 8px);
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.requests-header h2 {
+  font-size: 24px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin: 0;
   color: #333;
 }
 
-.no-requests {
+/* Scrollable content */
+.requests-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+  padding-top: calc(var(--app-header-offset, 64px) + 4rem);
+  padding-bottom: calc(var(--app-footer-offset, 200px) + 1rem);
+}
+
+.requests-content .no-requests {
   text-align: center;
   color: #777;
   margin-top: 40px;
 }
 
-.request-card {
+.requests-content .request-card {
+  max-width: 500px;
+  margin: 0 auto 16px auto;
   background: #fff;
   border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 16px;
+  /* padding: 18px; */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
@@ -33,7 +59,7 @@
   transition: transform 0.1s ease;
 }
 
-.request-card:hover {
+.requests-content .request-card:hover {
   transform: scale(1.02);
 }
 
@@ -68,31 +94,42 @@
 .decline-btn {
   flex: 1;
   max-width: 120px;
-  padding: 12px 0;
+  padding: var(--btn-padding, 12px 24px);
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius, 10px);
+  font-size: var(--btn-font-size, 16px);
+  font-weight: var(--btn-font-weight, 600);
   cursor: pointer;
-  transition: 0.2s ease-in-out;
+  transition: all var(--transition-fast, 0.2s ease);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .accept-btn {
-  background-color: #4caf50;
+  background-color: var(--primary-color, #1976d2);
   color: white;
 }
 
 .decline-btn {
-  background-color: #f44336;
+  background-color: var(--danger-color, #e63946);
   color: white;
 }
 
 .accept-btn:hover {
-  background-color: #43a047;
+  background-color: var(--primary-hover, #1565c0);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transform: translateY(-1px);
 }
 
 .decline-btn:hover {
-  background-color: #e53935;
+  background-color: var(--danger-hover, #d62839);
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+  transform: translateY(-1px);
+}
+
+.accept-btn:active,
+.decline-btn:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 480px) {
@@ -113,8 +150,22 @@
   }
 }
 
+/* Dark mode */
+body.dark-mode .requests-page {
+  background-color: #121212 !important;
+}
+
+body.dark-mode .requests-header {
+  background-color: #121212 !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+body.dark-mode .requests-header h2 {
+  color: #f1f1f1 !important;
+}
+
 body.dark-mode .requests-container {
-  background-color: #1a1a1a !important;
+  background-color: #121212 !important;
   color: #f1f1f1 !important;
 }
 
@@ -123,7 +174,7 @@ body.dark-mode .requests-title {
 }
 
 body.dark-mode .request-card {
-  background: #222 !important;
+  background: transparent !important;
   color: #f1f1f1 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
 }

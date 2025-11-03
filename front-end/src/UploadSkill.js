@@ -48,9 +48,13 @@ export default function UploadSkill() {
   };
 
   return (
-    <div className="upload-skill-container">
-      <h2 className="upload-skill-title">Upload New Skill</h2>
+    <div className="upload-skill-page">
+      <header className="upload-skill-header">
+        <h1 className="upload-skill-title">Upload</h1>
+      </header>
 
+      <div className="upload-skill-body">
+      <div className="upload-skill-container">
       <form className="upload-skill-form" onSubmit={handleSubmit}>
         {/* Category dropdown */}
         <label htmlFor="category">Select Category</label>
@@ -58,7 +62,7 @@ export default function UploadSkill() {
           id="category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="category-select"
+          className="form-input"
         >
           <option value="">-- Choose a category --</option>
           {categories.map((cat, index) => (
@@ -73,6 +77,7 @@ export default function UploadSkill() {
         <input
           id="skillName"
           type="text"
+          className="form-input"
           placeholder="e.g. Graphic Design"
           value={skillName}
           onChange={(e) => setSkillName(e.target.value)}
@@ -82,6 +87,7 @@ export default function UploadSkill() {
         <label htmlFor="description">Description / Expertise</label>
         <textarea
           id="description"
+          className="form-input"
           placeholder="Describe your experience, projects, or strengths in this skill..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -105,11 +111,13 @@ export default function UploadSkill() {
         )}
 
         <button type="submit" className="submit-btn">
-          Submit Skill
+          Submit
         </button>
       </form>
 
       {message && <p className="upload-message">{message}</p>}
+      </div>
+      </div>
     </div>
   );
 }

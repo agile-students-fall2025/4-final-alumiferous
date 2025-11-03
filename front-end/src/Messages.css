@@ -9,21 +9,42 @@
 .messages-header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	padding: 12px 16px;
+	justify-content: flex-start; 
+	padding: 10px 14px; /* compact header padding */
+	min-height: 48px; 
 	background: #fff;
 	border-bottom: 1px solid #ececec;
+	position: sticky; /* keep header visible */
+	/* Peek slightly under the global app header */
+	top: calc(var(--app-header-offset, 10px) - var(--messages-header-peek, 8px));
+	z-index: 5;
 }
+
+.messages-page { --messages-header-peek: 8px; }
+
 
 .messages-header .back-btn {
 	background: transparent;
 	border: none;
-	font-size: 18px;
+	font-size: 20px;
+	color: #333;
+	border-radius: 50%;
+	padding: 6px;
+	min-width: 36px;
+	min-height: 36px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+    margin-right: 8px; /* space before title */
+}
+.messages-header .back-btn:hover,
+.messages-header .back-btn:focus {
+	background: #f0f0f0;
 }
 
 .messages-header .title {
 	margin: 0;
 	font-size: 18px;
+	font-weight: 600;
 }
 
 .messages-list {
@@ -92,12 +113,11 @@
 	border-top: 1px solid #ececec;
 }
 
+/* Form inputs now use global .form-input class from App.css */
 .composer input {
 	flex: 1;
-	border: 1px solid #ddd;
+	/* Specific styling for message composer */
 	border-radius: 18px;
-	padding: 10px 12px;
-	font-size: 14px;
 }
 
 .composer button {
@@ -110,4 +130,46 @@
 	font-size: 16px;
 }
 
+/* --- Dark mode: keep styles local to Messages to avoid cross-page bleed --- */
+body.dark-mode .messages-page {
+	background: #121212 !important;
+	color: #f1f1f1 !important;
+}
+body.dark-mode .messages-header {
+	background: #121212 !important;
+	border-bottom: 1px solid #2c2c2c !important;
+	padding: 10px 14px; /* mirror compact size */
+	min-height: 48px;
+}
+body.dark-mode .messages-header .title { color: #ffffff !important; }
+body.dark-mode .messages-header .back-btn {
+	color: #f1f1f1 !important;
+	background: transparent !important;
+}
+body.dark-mode .messages-header .back-btn:hover,
+body.dark-mode .messages-header .back-btn:focus {
+	background: #2b2b2b !important;
+}
+body.dark-mode .messages-list {
+	background: transparent !important;
+}
+body.dark-mode .message-item .bubble {
+	background: #2b2b2b !important;
+	color: #eaeaea !important;
+}
+body.dark-mode .message-item.mine .bubble {
+	background: #4dabf7 !important;
+	color: #fff !important;
+}
+body.dark-mode .message-item .meta { color: #aaa !important; }
+body.dark-mode .composer {
+	background: #121212 !important;
+	border-top: 1px solid #2c2c2c !important;
+}
+body.dark-mode .composer input {
+	background: #2b2b2b !important;
+	color: #fff !important;
+	border: 1px solid #444 !important;
+}
+body.dark-mode .composer input::placeholder { color: #aaa !important; }
 
