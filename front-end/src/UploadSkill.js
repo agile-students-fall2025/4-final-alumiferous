@@ -1,12 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./UploadSkill.css";
 
 export default function UploadSkill() {
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
   const [description, setDescription] = useState("");
   const [video, setVideo] = useState(null);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const url = `${process.env.REACT_APP_SKILLS_URL}?count=${process.env.REACT_APP_MOCKAROO_COUNT}&key=${process.env.REACT_APP_MOCKAROO_KEY}`;
+        const res = await axios.get(url);
+        console.log("Mockaroo skills sample:", res.data[0]);
+
+        const uniqueCategories = [
+          ...new Set(res.data.map((skill) => skill.category)),
+        ];
+        setCategories(uniqueCategories);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,15 +68,15 @@ export default function UploadSkill() {
           className="category-select"
         >
           <option value="">-- Choose a category --</option>
-          <option value="Technology">Technology</option>
-          <option value="Art & Design">Art & Design</option>
-          <option value="Music">Music</option>
-          <option value="Education">Education</option>
-          <option value="Fitness & Health">Fitness & Health</option>
-          <option value="Cooking">Cooking</option>
-          <option value="Language">Language</option>
-          <option value="Business">Business</option>
-          <option value="Other">Other</option>
+          {categories.length > 0 ? (
+            categories.map((cat, index) => (
+              <option key={index} value={cat}>
+                {cat}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading categories...</option>
+          )}
         </select>
 
         <label htmlFor="skillName">Skill Name</label>
