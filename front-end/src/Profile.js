@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import './Profile.css';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     // Check for locally edited profile first
@@ -14,24 +18,8 @@ const Profile = () => {
       setLoading(false);
       return;
     }
-    
     // Otherwise, fetch from Mockaroo
     const apiKey = process.env.REACT_APP_MOCKAROO_KEY;
-    
-    // If no API key, use mock data
-    if (!apiKey) {
-      const mockUser = {
-        username: 'demo_user',
-        profilePhoto: '/images/avatar-default.png',
-        about: 'Welcome to your profile! Edit your profile to add your bio and skills.',
-        skillsAcquired: ['JavaScript', 'React', 'CSS'],
-        skillsWanted: ['Node.js', 'Python', 'Design']
-      };
-      setUser(mockUser);
-      setLoading(false);
-      return;
-    }
-    
     fetch(`https://my.api.mockaroo.com/users.json?key=${apiKey}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch users');
@@ -42,16 +30,17 @@ const Profile = () => {
         setLoading(false);
       })
       .catch(err => {
-        console.error('Profile fetch error:', err);
-        // Use mock data as fallback on error
+        setFeedback('Error: ' + err.message);
         const mockUser = {
-          username: 'demo_user',
-          profilePhoto: '/images/avatar-default.png',
-          about: 'Welcome to your profile! Edit your profile to add your bio and skills.',
-          skillsAcquired: ['JavaScript', 'React', 'CSS'],
-          skillsWanted: ['Node.js', 'Python', 'Design']
-        };
-        setUser(mockUser);
+        username: 'demo_user',
+        profilePhoto: '/images/avatar-default.png',
+        about: 'Welcome to your profile! Edit your profile to add your bio and skills.',
+        skillsAcquired: ['JavaScript', 'React', 'CSS'],
+        skillsWanted: ['Node.js', 'Python', 'Design']
+      };
+      setUser(mockUser);
+      setLoading(false);
+
         setLoading(false);
       });
   }, []);
@@ -59,6 +48,7 @@ const Profile = () => {
   // Menu and localStorage save omitted for brevity
 
   if (loading) return <main>Loading profile...</main>;
+  if (feedback && !user) return <main>{feedback}</main>;
   if (!user) return <main>No user found.</main>;
 
   return (
@@ -100,6 +90,7 @@ const Profile = () => {
             <button className="AccountSettingsButton">Account Settings</button>
           </Link>
         </div>
+        {feedback && <div className="Profile-feedback">{feedback}</div>}
       </div>
     </main>
   );
