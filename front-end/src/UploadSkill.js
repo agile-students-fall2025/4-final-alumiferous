@@ -1,50 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./UploadSkill.css";
+import { SkillsContext } from "./SkillsContext";
 
 export default function UploadSkill() {
+  const { skills } = useContext(SkillsContext);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
   const [description, setDescription] = useState("");
   const [video, setVideo] = useState(null);
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const apiKey = process.env.REACT_APP_MOCKAROO_KEY;
-        if (!apiKey) throw new Error("Missing REACT_APP_MOCKAROO_KEY env var");
-
-        const res = await fetch(
-          "https://api.mockaroo.com/api/b9916500?count=1000",
-          {
-            headers: { "X-API-Key": apiKey },
-          }
-        );
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-        const data = await res.json();
-
-        const unique = [
-          ...new Set(data.map((skill) => skill.category).filter(Boolean)),
-        ];
-        if (isMounted) setCategories(unique);
-      } catch (err) {
-        console.error("Failed to load categories:", err);
-        if (isMounted) setError("Failed to load categories.");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    fetchCategories();
-    return () => (isMounted = false);
-  }, []);
+    // Extract unique categories from skills
+    if (skills.length > 0) {
+      const unique = [
+        ...new Set(skills.map((skill) => skill.category).filter(Boolean)),
+      ];
+      setCategories(unique.sort());
+    }
+  }, [skills]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,9 +46,6 @@ export default function UploadSkill() {
   const handleVideoChange = (e) => {
     setVideo(e.target.files[0]);
   };
-
-  if (loading) return <p className="upload-message">Loading categories…</p>;
-  if (error) return <p className="upload-message error">{error}</p>;
 
   return (
     <div className="upload-skill-container">
