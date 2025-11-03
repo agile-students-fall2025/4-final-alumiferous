@@ -6,20 +6,17 @@ import "./Savedskills.css";
 const Savedskills = () => {
   const { skills, handleUnsaveSkill } = useContext(SkillsContext);
 
-  // Only saved skills
-  const savedSkills = skills.filter(skill => skill.saved);
-
   // Search and filtered states
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSaved, setFilteredSaved] = useState(savedSkills);
+  const [filteredSaved, setFilteredSaved] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Update filtered list when savedSkills changes
-  useEffect(() => {
-    setFilteredSaved(savedSkills);
-  }, [savedSkills.length]);
+  // Only saved skills - memoize to prevent recalculation
+  const savedSkills = React.useMemo(() => {
+    return skills.filter(skill => skill.saved);
+  }, [skills]);
 
-  // Handle search
+  // Update filtered list when savedSkills or search term changes
   useEffect(() => {
     if (searchTerm.trim().length < 3) {
       setFilteredSaved(savedSkills);
