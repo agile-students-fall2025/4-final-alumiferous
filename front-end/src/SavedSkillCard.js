@@ -46,7 +46,6 @@ const SavedSkillCard = ({ skill, onUnsave, onReport }) => {
             <p>{skill.brief}</p>
             <ul>
               <li onClick={handleUnsave}>Unsave Skill</li>
-              <li>View Details</li>
               <li onClick={handleReport}>Report</li>
             </ul>
           </div>

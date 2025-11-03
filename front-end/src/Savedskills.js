@@ -6,12 +6,9 @@ import "./Savedskills.css";
 const Savedskills = () => {
   const { skills, handleUnsaveSkill } = useContext(SkillsContext);
 
-  // Only saved skills
-  const savedSkills = skills.filter(skill => skill.saved);
-
   // Search and filtered states
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSaved, setFilteredSaved] = useState(savedSkills);
+  const [filteredSaved, setFilteredSaved] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
