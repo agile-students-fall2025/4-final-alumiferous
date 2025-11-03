@@ -5,12 +5,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f7f8fa;
+  background: #ffffff !important;
   padding: 40px 20px;
 }
 
 .card {
-  background: #fff;
+  background: #ffffff !important;
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -21,7 +21,7 @@
 .title {
   font-size: 32px;
   margin-bottom: 24px;
-  color: #222;
+  color: #222 !important;
 }
 
 .image {
@@ -35,7 +35,18 @@
 .description {
   font-size: 16px;
   line-height: 1.6;
-  color: #444;
+  color: #222 !important;
+}
+
+.meta {
+  margin-top: 20px;
+  color: #222 !important;
+  text-align: center;
+}
+
+.meta p {
+  margin: 8px 0;
+  color: #222 !important;
 }
 
 .button {
@@ -57,32 +68,35 @@
 }
 
 /* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .page {
-    background: #1a1a1a;
-  }
+body.dark-mode .page {
+  background: #1a1a1a !important;
+}
 
-  .card {
-    background: #2b2b2b;
-  }
+body.dark-mode .card {
+  background: #2b2b2b !important;
+}
 
-  .title {
-    color: #ffffff;
-  }
+body.dark-mode .title {
+  color: #ffffff !important;
+}
 
-  .description {
-    color: #e0e0e0; /* Much brighter in dark mode */
-  }
+body.dark-mode .description {
+  color: #e0e0e0 !important;
+}
 
-  .button {
-    background: var(--primary-color, #1976d2);
-  }
+body.dark-mode .meta,
+body.dark-mode .meta p {
+  color: #e0e0e0 !important;
+}
 
-  .button:hover {
-    background: var(--primary-hover, #1565c0);
-  }
+body.dark-mode .button {
+  background: var(--primary-color, #1976d2);
+}
 
-  .back {
-    color: var(--primary-color, #1976d2);
-  }
+body.dark-mode .button:hover {
+  background: var(--primary-hover, #1565c0);
+}
+
+body.dark-mode .back {
+  color: var(--primary-color, #1976d2);
 }

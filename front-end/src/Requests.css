@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
   background: #fafafa;
   overflow: hidden;
 }
@@ -36,8 +35,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  width: 100%;
-  padding: 1rem;
+  padding: 0;
   padding-top: calc(var(--app-header-offset, 64px) + 4rem);
   padding-bottom: calc(var(--app-footer-offset, 200px) + 1rem);
 }
@@ -53,7 +51,7 @@
   margin: 0 auto 16px auto;
   background: #fff;
   border-radius: 16px;
-  padding: 18px;
+  /* padding: 18px; */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
