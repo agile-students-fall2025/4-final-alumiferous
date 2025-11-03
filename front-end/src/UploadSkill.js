@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useContext } from "react";
 import "./UploadSkill.css";
+import { SkillsContext } from "./SkillsContext";
 
 export default function UploadSkill() {
+  const { skills } = useContext(SkillsContext);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
@@ -11,23 +12,14 @@ export default function UploadSkill() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const url = `${process.env.REACT_APP_SKILLS_URL}?count=${process.env.REACT_APP_MOCKAROO_COUNT}&key=${process.env.REACT_APP_MOCKAROO_KEY}`;
-        const res = await axios.get(url);
-        console.log("Mockaroo skills sample:", res.data[0]);
-
-        const uniqueCategories = [
-          ...new Set(res.data.map((skill) => skill.category)),
-        ];
-        setCategories(uniqueCategories);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+    // Extract unique categories from skills
+    if (skills.length > 0) {
+      const unique = [
+        ...new Set(skills.map((skill) => skill.category).filter(Boolean)),
+      ];
+      setCategories(unique.sort());
+    }
+  }, [skills]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,7 +56,8 @@ export default function UploadSkill() {
       <div className="upload-skill-body">
       <div className="upload-skill-container">
       <form className="upload-skill-form" onSubmit={handleSubmit}>
-        <label htmlFor="category">Category</label>
+        {/* Category dropdown */}
+        <label htmlFor="category">Select Category</label>
         <select
           id="category"
           value={category}
@@ -72,17 +65,14 @@ export default function UploadSkill() {
           className="form-input"
         >
           <option value="">-- Choose a category --</option>
-          {categories.length > 0 ? (
-            categories.map((cat, index) => (
-              <option key={index} value={cat}>
-                {cat}
-              </option>
-            ))
-          ) : (
-            <option disabled>Loading categories...</option>
-          )}
+          {categories.map((cat, index) => (
+            <option key={index} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
 
+        {/* Skill name */}
         <label htmlFor="skillName">Skill Name</label>
         <input
           id="skillName"
@@ -93,6 +83,7 @@ export default function UploadSkill() {
           onChange={(e) => setSkillName(e.target.value)}
         />
 
+        {/* Description */}
         <label htmlFor="description">Description / Expertise</label>
         <textarea
           id="description"
@@ -100,7 +91,10 @@ export default function UploadSkill() {
           placeholder="Describe your experience, projects, or strengths in this skill..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-        />        <label htmlFor="video">Attach Demo Video</label>
+        />
+
+        {/* Video input */}
+        <label htmlFor="video">Attach Demo Video</label>
         <input
           id="video"
           type="file"
