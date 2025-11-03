@@ -75,7 +75,7 @@ const Profile = () => {
           {menuOpen && (
             <div className="MenuDropdown" role="menu">
               <button className="MenuItem" role="menuitem" onClick={handleSave}>
-                Save
+                <Link to="/saved" className="MenuItemLink">Save</Link>
               </button>
               <button className="MenuItem" role="menuitem" onClick={() => { setMenuOpen(false) }}>
                 <Link to="/settings" className="MenuItemLink">Settings</Link>
