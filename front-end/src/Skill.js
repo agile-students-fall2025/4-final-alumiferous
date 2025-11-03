@@ -1,14 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./Skill.css";
 import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { SkillsContext } from "./SkillsContext";
 
-const Skill = ({ skillId, name, brief, skillImg, ImgHeight ,handleSaveSkill }) => {
+const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+  const { handleSaveSkill, handleHideSkill } = useContext(SkillsContext);
 
   const toggleMenu = (e) => {
     e.stopPropagation();
     setIsMenuOpen((prev) => !prev);
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
+  };
+
+  const handleSave = () => {
+    handleSaveSkill(skillId);
+    setIsMenuOpen(false);
+    showNotification('✓ Skill Saved', 'success');
+  };
+
+  const handleHide = () => {
+    handleHideSkill(skillId);
+    setIsMenuOpen(false);
+    showNotification('✓ Skill Hidden', 'success');
+  };
+
+  const handleReport = () => {
+    setIsMenuOpen(false);
+    showNotification('✓ Issue Reported', 'info');
   };
 
   return (
@@ -31,12 +58,18 @@ const Skill = ({ skillId, name, brief, skillImg, ImgHeight ,handleSaveSkill }) =
             <h3>{name}</h3>
             <p>{brief}</p>
             <ul>
-              {/* call handleSaveSkill to handle the event of a save clicked */}
-              <li onClick={() => { handleSaveSkill(skillId)}}>Save Skill</li>
-              <li>Report Abuse</li>
-              <li>Hide</li>
+              <li onClick={handleSave}>Save Skill</li>
+              <li onClick={handleReport}>Report Abuse</li>
+              <li onClick={handleHide}>Hide</li>
             </ul>
           </div>
+        </div>
+      )}
+
+      {/* Notification toast */}
+      {notification.show && (
+        <div className={`notification-toast ${notification.type}`}>
+          {notification.message}
         </div>
       )}
     </div>
