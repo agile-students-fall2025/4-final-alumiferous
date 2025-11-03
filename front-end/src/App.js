@@ -1,12 +1,12 @@
 import { ThemeProvider } from "./ThemeContext";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import "./App.css";
 
 // Shared layout
 import Header from "./Header";
 import Footer from "./Footer";
 
-// Core pages
+// main pages
 import Home from "./Home";
 import Login from "./Login";
 import Profile from "./Profile";
@@ -24,7 +24,7 @@ import DeleteAccount from "./DeleteAccount";
 
 // Chat & Skills
 import Chat from "./Chat";
-import Messages from "./Messages"; 
+import Messages from "./Messages";
 import Requests from "./Requests";
 import UploadSkill from "./UploadSkill";
 import OnBoarding from "./OnBoarding";
@@ -32,182 +32,62 @@ import Savedskills from "./Savedskills";
 
 import { SkillsProvider } from "./SkillsContext";
 
+// ✅ Shared layout wrapper
+function AppLayout() {
+  return (
+    <>
+      <Header />
+      <Outlet /> {/* Child routes */}
+      <Footer />
+    </>
+  );
+}
+
 export default function App() {
   return (
     <ThemeProvider>
-      <div className="App">
-        <SkillsProvider>
+      <SkillsProvider>
         <BrowserRouter>
           <Routes>
-            {/* Auth */}
-            <Route path="/login" element={<Login />} />
+            {/*Auth & Onboarding Routes*/}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Navigate to="/login" replace />} />
             <Route path="/onboarding" element={<OnBoarding />} />
 
-            {/* Main pages */}
-            <Route
-              path="/home"
-              element={
-                <>
-                  <Header />
-                  <Home />
-                  <Footer />
-                </>
-              }
-            />
-           <Route
-            path="/"
-            element={
-              <>
-                <Header />
-                <Savedskills />
-                <Footer />
-              </>
-            }
-          />
-            <Route
-              path="/profile"
-              element={
-                <>
-                  <Header />
-                  <Profile />
-                  <Footer />
-                </>
-              }
-            />
+            {/*Has headers and footers*/}
+            <Route element={<AppLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/saved" element={<Savedskills />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/skills/:id" element={<SkillDescription />} />
+              <Route path="/requests/new" element={<DraftRequest />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/report-problem" element={<ReportProblem />} />
+              <Route path="/delete-account" element={<DeleteAccount />} />
+              <Route path="/requests" element={<Requests />} />
+              <Route path="/upload" element={<UploadSkill />} />
+            </Route>
 
-            <Route
-              path="/edit-profile"
-              element={
-                <>
-                  <Header />
-                  <EditProfile />
-                  <Footer />
-                </>
-              }
-            />
-
-            {/* Skills & Requests */}
-            <Route
-              path="/skills/:id"
-              element={
-                <>
-                  <Header />
-                  <SkillDescription />
-                  <Footer />
-                </>
-              }
-            />
-
-            <Route
-              path="/requests/new"
-              element={
-                <>
-                  <Header />
-                  <DraftRequest />
-                  <Footer />
-                </>
-              }
-            />
-
-            {/* Settings & Account */}
-            <Route
-              path="/settings"
-              element={
-                <>
-                  <Header />
-                  <Settings />
-                  <Footer />
-                </>
-              }
-            />
-
-            <Route
-              path="/reset-password"
-              element={
-                <>
-                  <Header />
-                  <ResetPassword />
-                  <Footer />
-                </>
-              }
-            />
-
-            <Route
-              path="/report-problem"
-              element={
-                <>
-                  <Header />
-                  <ReportProblem />
-                  <Footer />
-                </>
-              }
-            />
-
-            <Route
-              path="/delete-account"
-              element={
-                <>
-                  <Header />
-                  <DeleteAccount />
-                  <Footer />
-                </>
-              }
-            />
-
-            {/* Chat & Messages */}
+            {/*Chat Pages with only footer */}
             <Route
               path="/chat"
               element={
                 <>
-                  {/* <Header /> */}
                   <Chat />
                   <Footer />
                 </>
               }
             />
+            <Route path="/chat/:id" element={<Messages />} />
 
-            <Route
-              path="/chat/:id"
-              element={
-                <>
-                  {/* <Header /> */}
-                  <Messages />
-                  {/* <Footer /> */}
-                </>
-              }
-            />
-
-            {/* Requests & Upload */}
-            <Route
-              path="/requests"
-              element={
-                <>
-                  <Header />
-                  <Requests />
-                  <Footer />
-                </>
-              }
-            />
-
-          <Route
-            path="/upload"
-            element={
-              <>
-                <Header />
-                <UploadSkill />
-                <Footer />
-              </>
-            }
-          />
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
-        
-      </BrowserRouter>
+            {/* Default & Fallback to the log in page*/}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
       </SkillsProvider>
-    </div>
     </ThemeProvider>
   );
 }
