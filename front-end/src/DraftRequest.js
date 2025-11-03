@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import "./DraftRequest.css";
+import "./Messages.css"; // reuse messages-style header
 
 export default function DraftRequest() {
   // Read ?skillId=...&skillName=...&owner=... from the URL
@@ -29,36 +30,40 @@ export default function DraftRequest() {
 
   // Page layout: a simple centered card-style form
   return (
-    <div className="page">
-      <div className="container">
-        {/* Back button at top left of the container */}
-        <Link to={`/skills/${encodeURIComponent(skillId)}`} className="backLink">
-          ← Back
-        </Link>
-        
-        <h1 className="title">Send Skill Request</h1>
+    <div className="draft-request-page">
+      <header className="messages-header">
+        <button 
+          className="back-btn" 
+          onClick={() => nav(`/skills/${encodeURIComponent(skillId)}`)}
+          aria-label="Back"
+        >
+          ←
+        </button>
+      </header>
+      
+      <div className="draft-request-content">
 
         {/* Simple form with three fields:
             - To:      (pre-filled with the skill owner; editable)
             - Skill:   (read-only pill showing which skill this request is for)
             - About you: (text area for the message body)
         */}
-  <form onSubmit={handleSubmit} className="form">
-          <label className="label">
+        <form onSubmit={handleSubmit} className="draft-request-form">
+          <label className="form-label">
             To:
-            <div className="skillBox">{ownerParam || "Skill owner"}</div>
+            <div className="skill-display-box">{ownerParam || "Skill owner"}</div>
           </label>
 
-          <label className="label">
+          <label className="form-label">
             Interested in skill:
             {/* Read-only display so users are sure which skill they're contacting about */}
-            <div className="skillBox">{skill.name || "(unknown skill)"}</div>
+            <div className="skill-display-box">{skill.name || "(unknown skill)"}</div>
           </label>
 
-          <label className="label">
+          <label className="form-label">
             Say something about yourself:
             <textarea
-              className="textarea"
+              className="form-input"
               rows={6}
               value={aboutYou}
               onChange={(e) => setAboutYou(e.target.value)}
@@ -68,7 +73,7 @@ export default function DraftRequest() {
           </label>
 
           {/* Mock submit */}
-          <button type="submit" className="button">Send Request</button>
+          <button type="submit" className="btn btn-primary">Send Request</button>
         </form>
       </div>
     </div>

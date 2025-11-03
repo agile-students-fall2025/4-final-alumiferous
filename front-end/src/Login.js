@@ -95,16 +95,16 @@ const Login = props => {
         <section className="main-content">
           <form onSubmit={handleSubmit}>
             {/* Email field (for both login and signup) */}
-            <input type="email" name="email" placeholder="Email" required />
+            <input type="email" name="email" className="form-input" placeholder="Email" required />
             
             {/* Name fields (only for signup) - on same row with animation */}
             <div className={`name-row ${!isLogin ? 'show' : ''}`}>
-              <input type="text" name="firstName" placeholder="First Name" required={!isLogin} />
-              <input type="text" name="lastName" placeholder="Last Name" required={!isLogin} />
+              <input type="text" name="firstName" className="form-input" placeholder="First Name" required={!isLogin} />
+              <input type="text" name="lastName" className="form-input" placeholder="Last Name" required={!isLogin} />
             </div>
             
             {/* Password field */}
-            <input type="password" name="password" placeholder="Password" required />
+            <input type="password" name="password" className="form-input" placeholder="Password" required />
             
             <input type="submit" value={isLogin ? 'Log In' : 'Sign Up'} />
           </form>

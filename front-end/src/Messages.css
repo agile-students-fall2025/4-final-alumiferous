@@ -113,12 +113,11 @@
 	border-top: 1px solid #ececec;
 }
 
+/* Form inputs now use global .form-input class from App.css */
 .composer input {
 	flex: 1;
-	border: 1px solid #ddd;
+	/* Specific styling for message composer */
 	border-radius: 18px;
-	padding: 10px 12px;
-	font-size: 14px;
 }
 
 .composer button {

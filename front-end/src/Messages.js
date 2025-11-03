@@ -117,6 +117,7 @@ const Messages = () => {
             <form className="composer" onSubmit={onSend}>
                 <input
                     type="text"
+                    className="form-input"
                     placeholder="Type a message…"
                     value={draft}
                     onChange={e => setDraft(e.target.value)}

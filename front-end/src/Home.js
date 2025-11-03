@@ -70,6 +70,7 @@ const Home = () => {
       <header className="home-header">
         <input 
           type="text" 
+          className="search-input"
           placeholder="Search a skill (min 3 characters)" 
           value={searchTerm}
           onChange={handleSearchChange}

@@ -37,6 +37,7 @@ const ResetPassword = () => {
         <form onSubmit={handleSubmit}>
           <input
             type="email"
+            className="form-input"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -44,6 +45,7 @@ const ResetPassword = () => {
 
           <input
             type="password"
+            className="form-input"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
@@ -51,6 +53,7 @@ const ResetPassword = () => {
 
           <input
             type="password"
+            className="form-input"
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

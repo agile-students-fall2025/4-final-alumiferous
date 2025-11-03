@@ -5,22 +5,28 @@
   align-items: normal;
   height: 100vh;
   width: 100vw;
-  /* Offset for the global App header so it doesn't overlap */
-  padding-top: var(--app-header-offset, 64px);
   background: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Header */
 .chat-header {
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) - 8px); /* peek slightly under main header */
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 16px 20px;
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100vw;
+  flex-shrink: 0;
 }
 
 .chat-title {
@@ -28,6 +34,11 @@
   font-weight: 600;
   margin: 0;
   color: #333;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-page .header-actions {
@@ -39,50 +50,49 @@
   background: transparent;
   border: none;
   font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
+  color: #333;
   border-radius: 50%;
+  padding: 8px;
+  margin-right: 16px;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: none;
+  outline: none;
   transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Size the Heroicons bell */
 .chat-page .requests-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
-/* Search Container (mirror Home header input style) */
+/* Search Container - positioned below fixed header */
 .chat-page .search-container {
-  padding: 16px 20px;
-  background: #f8f9fb; /* match Home */
-  border-bottom: none;
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) + 60px); /* below chat-header */
+  left: 0;
+  right: 0;
+  z-index: 9;
   text-align: center;
-}
-
-
-.chat-page .search-input {
-  width: 90%; /* match Home */
-  padding: 0.6rem 1rem; /* match Home */
-  border: 1px solid #ccc; /* match Home */
-  box-sizing: border-box;
-  border-radius: 8px; /* match Home */
-  font-size: 1rem; /* match Home */
+  padding: 16px 0;
   background: #ffffff;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.chat-page .search-input:focus {
-  border-color: #007bff;
-  background: #ffffff;
-}
 
 /* Chat List */
 .chat-page .chat-list {
   flex: 1;
   overflow-y: auto;
   background: #ffffff;
+  padding-top: calc(var(--app-header-offset, 64px) + 120px); /* account for fixed header + search container */
+  padding-bottom: calc(var(--app-footer-offset, 200px) + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Individual Chat Item */
@@ -304,6 +314,13 @@ body.dark-mode .settings-btn {
   color: #f1f1f1 !important;
 }
 body.dark-mode .settings-btn:hover {
+  background: #2b2b2b !important;
+}
+
+body.dark-mode .requests-btn {
+  color: #f1f1f1 !important;
+}
+body.dark-mode .requests-btn:hover {
   background: #2b2b2b !important;
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import './Profile.css'
 
 const Profile = () => {
@@ -69,7 +70,7 @@ const Profile = () => {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            ☰
+            <Bars3Icon />
           </button>
           {menuOpen && (
             <div className="MenuDropdown" role="menu">

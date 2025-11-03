@@ -98,3 +98,85 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* === Dark Mode === */
+body.dark-mode .onboarding-container {
+  background: #1a1a1a !important;
+}
+
+body.dark-mode .onboarding-form {
+  background: #2b2b2b !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .onboarding-step {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .onboarding-form h1,
+body.dark-mode .onboarding-step h1 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .onboarding-form h2,
+body.dark-mode .onboarding-step h2 {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .onboarding-form p,
+body.dark-mode .onboarding-step p,
+body.dark-mode .onboarding-form label,
+body.dark-mode .onboarding-step label {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .onboarding-form input,
+body.dark-mode .onboarding-form select {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .onboarding-form input:focus,
+body.dark-mode .onboarding-form select:focus {
+  border-color: #4dabf7 !important;
+  outline: none !important;
+}
+
+body.dark-mode .onboarding-form button[type="button"] {
+  background: #333 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .onboarding-form button[type="button"]:hover {
+  background: #444 !important;
+}
+
+body.dark-mode .onboarding-form button[type="submit"],
+body.dark-mode .onboarding-form button[type="button"]:last-child {
+  background: var(--primary-color, #1976d2) !important;
+  color: white !important;
+}
+
+body.dark-mode .onboarding-form button[type="submit"]:hover,
+body.dark-mode .onboarding-form button[type="button"]:last-child:hover {
+  background: var(--primary-hover, #1565c0) !important;
+}
+
+body.dark-mode .skill-option {
+  background: #1a1a1a !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .skill-option.selected {
+  background: var(--primary-color, #1976d2) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color, #1976d2) !important;
+}
+
+body.dark-mode .skill-option:hover {
+  background: #333 !important;
+}

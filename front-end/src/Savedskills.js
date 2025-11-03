@@ -4,7 +4,8 @@ const Savedskills = () => {
             <header className="page-title">
                 <h2> Saved skills</h2>
             </header>
-            <input className="saved-search-box"
+            <input 
+            className="search-input"
             type="text"
             placeholder="Search for a saved skill"
             />

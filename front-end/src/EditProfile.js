@@ -15,7 +15,7 @@ const EditProfile = () => (
       </div>
       <div className="AboutSection">
         <label htmlFor="about">About Me:</label>
-        <textarea id="about" maxLength={500} />
+        <textarea id="about" className="form-input" maxLength={500} />
       </div>
       <div className="SkillsSection">
         <div>

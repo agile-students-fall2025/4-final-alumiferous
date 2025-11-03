@@ -83,6 +83,7 @@ const OnBoarding = () => {
             <input
               type="text"
               name="username"
+              className="form-input"
               placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
@@ -150,6 +151,7 @@ const OnBoarding = () => {
             <h1>What best describes how you plan to use InstaSkill?</h1>
             <select
               name="preferredLanguage"
+              className="form-input"
               value={formData.preferredLanguage}
               onChange={handleChange}
               
@@ -180,6 +182,7 @@ const OnBoarding = () => {
             <h1>How much time can you commit weekly?</h1>
             <select
               name="weeklyCommitment"
+              className="form-input"
               value={formData.weeklyCommitment}
               onChange={handleChange}
             >

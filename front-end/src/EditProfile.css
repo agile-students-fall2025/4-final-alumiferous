@@ -12,16 +12,15 @@
 .edit-profile-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   width: 100%;
-  max-width: 520px;
-  padding: 20px 16px;
-  padding-top: 150px; /* account for fixed header height + breathing room */
-  padding-bottom: 80px; /* extra bottom padding */
-  margin: 0 auto;
+  max-width: 100vw;
+  padding-top: calc(var(--app-header-offset, 64px) + 80px); /* account for fixed header + breathing room */
+  padding-bottom: calc(var(--app-footer-offset, 60px) + 20px + env(safe-area-inset-bottom)); /* footer clearance + extra space */
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center; /* center all sections horizontally */
   gap: 16px;
 }
 
@@ -29,6 +28,7 @@
 .edit-profile-content .AboutSection,
 .edit-profile-content .SkillsSection {
   width: 100%;
+  max-width: 520px; /* constrain section width for better readability */
 }
 
 /* Avatar styling inherits from Profile.css for consistency */
@@ -38,32 +38,48 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 14px;
+  width: 100%;
+  max-width: 520px; /* match other sections */
 }
 
 /* Avatar margin handled by Profile.css */
 
 .UploadButton {
-  padding: 10px 22px;
-  background: #3856e6;
+  padding: var(--btn-padding, 12px 24px);
+  background: var(--primary-color, #1976d2);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius, 10px);
+  font-size: var(--btn-font-size, 16px);
+  font-weight: var(--btn-font-weight, 600);
   margin-bottom: 12px;
-  box-shadow: 0 1px 8px rgba(56,86,230,0.08);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
   cursor: pointer;
-  transition: background 0.18s;
+  transition: all var(--transition-fast, 0.2s ease);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .UploadButton:hover {
-  background: #2237be;
+  background: var(--primary-hover, #1565c0);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transform: translateY(-1px);
+}
+
+.UploadButton:active {
+  transform: translateY(0);
 }
 
 /* Textarea styling */
+.AboutSection {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .AboutSection textarea {
   width: 100%;
   min-height: 80px;
+  max-height: 200px;
   border-radius: 10px;
   border: 1px solid #e0e3ec;
   padding: 10px;
@@ -71,6 +87,8 @@
   margin-bottom: 18px;
   font-size: 1rem;
   background: #f5f7fb;
+  resize: vertical; /* allow vertical resizing */
+  box-sizing: border-box;
 }
 
 /* Skill areas layout */
@@ -92,39 +110,55 @@
 /* Align skill buttons below text */
 .SkillsSection button {
   margin: 7px 6px 0 0;
-  padding: 7px 20px;
-  font-size: 0.97rem;
-  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 15px;
+  border-radius: var(--btn-border-radius, 10px);
   border: none;
   background: #ebeffa;
-  color: #24317a;
+  color: var(--primary-color, #1976d2);
   font-weight: 600;
-  transition: background 0.2s;
+  transition: all var(--transition-fast, 0.2s ease);
+  cursor: pointer;
 }
 
 .SkillsSection button:hover {
-  background: #3856e6;
+  background: var(--primary-color, #1976d2);
   color: #fff;
+  transform: translateY(-1px);
+}
+
+.SkillsSection button:active {
+  transform: translateY(0);
 }
 
 /* Save button styling consistent with profile page */
 .SaveButton {
   margin-top: 18px;
-  background: #3856e6;
+  background: var(--primary-color, #1976d2);
   color: #fff;
   border: none;
-  border-radius: 99px;
-  font-size: 1.09rem;
-  padding: 12px 34px;
-  font-weight: 600;
-  box-shadow: 0 1px 10px rgba(56,86,230,0.09);
+  border-radius: var(--btn-border-radius, 10px);
+  font-size: var(--btn-font-size, 16px);
+  padding: var(--btn-padding, 12px 24px);
+  font-weight: var(--btn-font-weight, 600);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
   cursor: pointer;
-  transition: background 0.2s;
-  align-self: center; /* center button in the column like Profile actions */
+  transition: all var(--transition-fast, 0.2s ease);
+  align-self: center;
+  width: auto;
+  min-width: 200px;
+  max-width: 300px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .SaveButton:hover {
-  background: #2237be;
+  background: var(--primary-hover, #1565c0);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transform: translateY(-1px);
+}
+
+.SaveButton:active {
+  transform: translateY(0);
 }
 
 /* Responsive tweaks */
@@ -132,6 +166,17 @@
   .SkillsSection {
     flex-direction: column;
     gap: 10px;
+  }
+  
+  .AboutSection textarea {
+    min-height: 100px; /* slightly taller on mobile */
+    font-size: 16px; /* prevent zoom on iOS */
+  }
+  
+  .SaveButton {
+    width: 100%;
+    max-width: 100%;
+    min-width: auto;
   }
 }
 
@@ -175,5 +220,46 @@ body.dark-mode .edit-profile-page .messages-header .back-btn {
 
 body.dark-mode .edit-profile-content {
   background: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+/* Dark mode for buttons */
+body.dark-mode .UploadButton,
+body.dark-mode .SaveButton {
+  background: #1976d2 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .UploadButton:hover,
+body.dark-mode .SaveButton:hover {
+  background: #1565c0 !important;
+}
+
+/* Dark mode for skills section buttons */
+body.dark-mode .SkillsSection button {
+  background: #2c2c2c !important;
+  color: #1976d2 !important;
+}
+
+body.dark-mode .SkillsSection button:hover {
+  background: #1976d2 !important;
+  color: #fff !important;
+}
+
+/* Dark mode for textarea */
+body.dark-mode .AboutSection textarea {
+  background: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+body.dark-mode .AboutSection textarea::placeholder {
+  color: #aaa !important;
+}
+
+/* Dark mode for labels and headings */
+body.dark-mode .AboutSection label,
+body.dark-mode .SkillsSection h4 {
   color: #f1f1f1 !important;
 }
