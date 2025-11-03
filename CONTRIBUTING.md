@@ -80,25 +80,33 @@ These norms are practical and reflect our team's real values and working style. 
 
 1. **Clone the repository:**
 	```bash
-	git clone <repo-url>
+	git clone https://github.com/agile-students-fall2025/4-final-alumiferous.git
 	```
 2. **Synchronize your git and GitHub usernames:**
 	- Run `git config --global user.name "<your-github-username>"`
 	- Ensure your GitHub profile's Name field is blank
 	- Verify with `git log` and `git config user.name`
 3. **Install dependencies:**
-	- Follow instructions in the `README.md` or relevant subproject docs
+	```bash
+	cd front-end
+	npm install
+	```
 4. **Create a feature branch:**
 	```bash
 	git checkout -b feature/<short-description>
 	```
+5. **Start the development server:**
+	```bash
+	npm start
+	```
 
 ## Building & Testing
 
-Instructions for building and testing will be updated as the project progresses. For now:
-- Refer to the `README.md` for any available build/test steps
-- Ask in the team Discord channel if you need help
+### Running the Application
+From the front-end directory:
+- `npm start` - Runs the app in development mode at http://localhost:3000
+- `npm test` - Launches the test runner in interactive watch mode
+- `npm run build` - Builds the app for production to the build folder
 
----
-
-Thank you for contributing!
+### Backend Setup
+The backend is currently in development. Setup instructions will be added once the Node.js/Express server is implemented.

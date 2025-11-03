@@ -43,43 +43,63 @@ InstaSkill is designed for anyone interested in learning or teaching through col
 
 
 ## Technology Stack
-Frontend: React 
-Backend: Node.js and Express  
-Database: MongoDB  
-Authentication: JWT (JSON Web Token)  
-Testing: Jest 
+Frontend: React with React Router DOM  
+Backend: Node.js and Express (in development)  
+Database: MongoDB (planned)  
+Authentication: JWT (JSON Web Token) (planned)  
+Testing: Jest and React Testing Library  
 
-## UX and Design Documentation
-The design phase included app maps, wireframes, and user flow diagrams to define the app’s main functionality.  
-Key screens include:
-- Login and Signup  
-- Home and Skill Discovery  
-- User Profile  
-- Messaging  
-- Scheduling and Reviews  
-- Dashboard  
+## Development Progress
 
-All wireframes are available in the design folder and represent the initial user experience.
+The front-end application has been developed using React. The following components and features have been implemented:
+
+- User authentication interface (Login, ResetPassword)
+- User profile management (Profile, EditProfile, DeleteAccount)
+- Onboarding flow for new users
+- Skill management (UploadSkill, Skill, SkillDescription, SkillSelector, SavedSkills)
+- Messaging system (Messages, Chat)
+- Request management (Requests, DraftRequest)
+- Settings and account management
+- Theme support via ThemeContext
+- Global skills state management via SkillsContext
+- API integration setup in the api folder
+
+The backend development is planned but not yet implemented. Database integration will follow backend setup.
+
+## How to Run the Application
+
+### Prerequisites
+- Node.js (version 14 or higher recommended)
+- npm package manager
+
+### Setup and Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/agile-students-fall2025/4-final-alumiferous.git
+   cd 4-final-alumiferous
+   ```
+
+2. Navigate to the front-end directory and install dependencies:
+   ```
+   cd front-end
+   npm install
+   ```
+
+3. Start the development server:
+   ```
+   npm start
+   ```
+
+4. The application will open in your browser at http://localhost:3000
+
+### Other Available Commands
+
+In the front-end directory, you can run:
+
+- `npm test` - Launches the test runner in interactive watch mode
+- `npm run build` - Builds the app for production to the build folder
+- `npm run eject` - Ejects from Create React App (this is irreversible)
 
 ## How to Contribute
 Refer to the CONTRIBUTING.md file for details on how to follow branching and commit conventions, submit pull requests and review and test code.
- 
-# Project Repository
-
-This repository will be used for team projects.
-
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
-
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
-
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
-
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
-
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
-
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
-
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
-
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
