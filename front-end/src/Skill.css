@@ -48,10 +48,7 @@
   transition: all 0.25s ease;
 }
 
-/* .skill-menu-button:hover {
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-1px);
-} */
+
 
 .skill-menu-icon {
   width: 20px;
@@ -74,7 +71,7 @@
   justify-content: center;
   align-items: center;
   animation: fadeIn 0.25s ease forwards;
-  z-index: 999;
+  z-index: 50;
 }
 
 .skill-menu-popup {

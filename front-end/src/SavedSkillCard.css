@@ -1,0 +1,83 @@
+.savedcard-wrapper {
+  width: 48%;
+  break-inside: avoid;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+.savedcard {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.savedcard-image {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.savedcard-menu-button {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 10px;
+  padding: 4px 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.savedcard-menu-icon {
+  width: 20px;
+  height: 20px;
+  color: #333;
+}
+
+.savedcard-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.savedcard-menu-popup {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 85%;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.savedcard-menu-popup ul {
+  list-style: none;
+  padding: 0;
+}
+
+.savedcard-menu-popup li {
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.savedcard-menu-popup li:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+  .savedcard-wrapper {
+    width: 30%;
+  }
+}

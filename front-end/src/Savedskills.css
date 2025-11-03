@@ -1,16 +1,22 @@
-.savedskills-container {
+.savedskills-page {
   margin-top: 80px;
   padding: 1rem;
   min-height: 90vh;
   background: #f8f9fb;
 }
 
-.page-title {
+.savedskills-header {
   text-align: center;
   margin-bottom: 1rem;
 }
 
-.saved-search-box {
+.savedskills-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.savedskills-search {
   display: block;
   width: 90%;
   max-width: 400px;
@@ -21,20 +27,15 @@
   font-size: 1rem;
 }
 
-.skill-grid {
-  column-count: 2;
-  column-gap: 0.8rem;
-}
-
-@media (min-width: 768px) {
-  .skill-grid {
-    column-count: 3;
-  }
-}
-
-.no-saved {
+.savedskills-status {
   text-align: center;
   color: #777;
-  margin-top: 2rem;
-  font-size: 1rem;
+  padding: 1rem;
+}
+
+.savedskills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
 }

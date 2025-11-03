@@ -1,92 +1,73 @@
 import React, { useContext, useState, useEffect } from "react";
 import { SkillsContext } from "./SkillsContext";
-import Skill from "./Skill";
+import SavedSkillCard from "./SavedSkillCard";
 import "./Savedskills.css";
 
 const Savedskills = () => {
-  const { skills } = useContext(SkillsContext);
+  const { skills, handleUnsaveSkill } = useContext(SkillsContext);
 
-  // Filter only saved skills
+  // Only saved skills
   const savedSkills = skills.filter(skill => skill.saved);
 
-  // State for search functionality
+  // Search and filtered states
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSavedSkills, setFilteredSavedSkills] = useState(savedSkills);
+  const [filteredSaved, setFilteredSaved] = useState(savedSkills);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Update filtered list when skills or saved ones change
+  // Update filtered list when savedSkills changes
   useEffect(() => {
-    setFilteredSavedSkills(savedSkills);
-  }, [skills]);
+    setFilteredSaved(savedSkills);
+  }, [savedSkills.length]);
 
-  // Handle search with local filtering (same as in Home)
+  // Handle search
   useEffect(() => {
-    if (searchTerm.length < 3) {
-      setFilteredSavedSkills(savedSkills);
+    if (searchTerm.trim().length < 3) {
+      setFilteredSaved(savedSkills);
       setIsSearching(false);
       return;
     }
 
-    const filtered = savedSkills.filter(skill => {
-      const lowerSearch = searchTerm.toLowerCase();
-      return (
-        skill.name.toLowerCase().includes(lowerSearch) ||
-        skill.brief.toLowerCase().includes(lowerSearch) ||
-        skill.category.toLowerCase().includes(lowerSearch) ||
-        skill.username.toLowerCase().includes(lowerSearch)
-      );
-    });
+    const lower = searchTerm.toLowerCase();
+    const filtered = savedSkills.filter(
+      skill =>
+        skill.name.toLowerCase().includes(lower) ||
+        skill.brief.toLowerCase().includes(lower) ||
+        skill.category.toLowerCase().includes(lower) ||
+        skill.username.toLowerCase().includes(lower)
+    );
 
-    setFilteredSavedSkills(filtered);
+    setFilteredSaved(filtered);
   }, [searchTerm, savedSkills]);
 
-  const handleSearchChange = e => {
-    setSearchTerm(e.target.value);
-  };
-
   return (
-    <div className="savedskills-container">
-      <header className="page-title">
-        <h2>Saved Skills</h2>
+    <div className="savedskills-page">
+      <header className="savedskills-header">
+        <h2 className="savedskills-title">Your Saved Skills</h2>
       </header>
 
       <input
-        className="saved-search-box"
         type="text"
         placeholder="Search your saved skills (min 3 characters)"
+        className="savedskills-search"
         value={searchTerm}
-        onChange={handleSearchChange}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      {isSearching && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <p>Searching...</p>
-        </div>
-      )}
+      {isSearching && <p className="savedskills-status">Searching...</p>}
 
-      {!isSearching &&
-        filteredSavedSkills.length === 0 &&
-        searchTerm.length >= 3 && (
-          <div style={{ textAlign: "center", padding: "20px" }}>
-            <p>No saved skills found matching "{searchTerm}"</p>
-          </div>
-        )}
-
-      <div className="skill-grid">
-        {!isSearching &&
-          filteredSavedSkills.map((skill, i) => (
-            <Skill
+      {!isSearching && filteredSaved.length === 0 ? (
+        <p className="savedskills-status">No saved skills found.</p>
+      ) : (
+        <div className="savedskills-grid">
+          {filteredSaved.map((skill, i) => (
+            <SavedSkillCard
               key={i}
-              skillId={skill.skillId}
-              name={skill.name}
-              brief={skill.brief}
-              skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
-              category={skill.category}
-              username={skill.username}
-              ImgHeight={skill.height}
+              skill={skill}
+              onUnsave={() => handleUnsaveSkill(skill.skillId)}
             />
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
