@@ -24,18 +24,18 @@ const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
   const handleSave = () => {
     handleSaveSkill(skillId);
     setIsMenuOpen(false);
-    showNotification('✓ Skill Saved', 'success');
+    showNotification('Skill Saved', 'success');
   };
 
   const handleHide = () => {
     handleHideSkill(skillId);
     setIsMenuOpen(false);
-    showNotification('✓ Skill Hidden', 'success');
+    showNotification('Skill Hidden', 'success');
   };
 
   const handleReport = () => {
     setIsMenuOpen(false);
-    showNotification('✓ Issue Reported', 'info');
+    showNotification('Issue Reported', 'info');
   };
 
   return (

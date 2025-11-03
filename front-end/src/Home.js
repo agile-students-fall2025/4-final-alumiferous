@@ -45,21 +45,6 @@ const Home = () => {
     });
     setFilteredSkills(filtered);
 
-    // BACKEND FILTERING (uncomment when backend is ready)
-    /*
-    setIsSearching(true);
-    searchSkills(searchTerm)
-      .then((results) => {
-        setFilteredSkills(results);
-        setIsSearching(false);
-      })
-      .catch((error) => {
-        console.error("Search error:", error);
-        setIsSearching(false);
-        // Fallback to showing all visible skills on error
-        setFilteredSkills(visibleSkills);
-      });
-    */
   }, [searchTerm, visibleSkills]);
 
   // Handle input change on keyup
