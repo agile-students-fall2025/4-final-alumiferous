@@ -6,7 +6,7 @@ export const SkillsContext = createContext();
 export const SkillsProvider = ({ children }) => {
    //a state variable with a blank array
   const [skills, setSkills] = useState([]);
-
+  
   // Fetch or load cached data once when app starts
   useEffect(() => {
     //create a local storage to prevent unneccesary API calls
@@ -29,6 +29,7 @@ export const SkillsProvider = ({ children }) => {
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
           saved: false,
+          hidden: false,
         }));
         setSkills(updatedData); //set skills data to updated data
         localStorage.setItem("skills", JSON.stringify(updatedData)); //set the newly fected data to local storage
@@ -185,8 +186,35 @@ export const SkillsProvider = ({ children }) => {
     localStorage.setItem("skills", JSON.stringify(updatedSkills));
   };
 
+  // Handle unsaving skills
+  const handleUnsaveSkill = id => {
+    const updatedSkills = skills.map(skill =>
+      skill.skillId === id ? { ...skill, saved: false } : skill
+    );
+    setSkills(updatedSkills);
+    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+  };
+
+  // Handle hiding skills
+  const handleHideSkill = id => {
+    const updatedSkills = skills.map(skill =>
+      skill.skillId === id ? { ...skill, hidden: true } : skill
+    );
+    setSkills(updatedSkills);
+    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+  };
+
+  // Handle unhiding skills
+  const handleUnhideSkill = id => {
+    const updatedSkills = skills.map(skill =>
+      skill.skillId === id ? { ...skill, hidden: false } : skill
+    );
+    setSkills(updatedSkills);
+    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+  };
+
   return (
-    <SkillsContext.Provider value={{ skills, handleSaveSkill }}>
+    <SkillsContext.Provider value={{ skills, handleSaveSkill, handleUnsaveSkill, handleHideSkill, handleUnhideSkill }}>
       {children}
     </SkillsContext.Provider>
   );

@@ -1,0 +1,101 @@
+.savedskills-page {
+  margin-top: 80px;
+  padding: 1rem;
+  min-height: 90vh;
+  background: #f8f9fb;
+}
+
+.savedskills-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.savedskills-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.savedskills-search {
+  display: block;
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.savedskills-status {
+  text-align: center;
+  color: #777;
+  padding: 1rem;
+}
+
+.savedskills-grid {
+  column-count: 2;
+  column-gap: 0.8rem;
+  padding: 0 0.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .savedskills-grid {
+    column-count: 3;
+    column-gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .savedskills-grid {
+    column-count: 4;
+    column-gap: 1.2rem;
+  }
+}
+
+/* Notification toast */
+.notification-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6495ED;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  animation: slideUpFade 0.3s ease forwards, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.notification-toast.success {
+  background: #6495ED;
+}
+
+.notification-toast.info {
+  background: #6495ED;
+}
+
+.notification-toast.warning {
+  background: #6495ED;
+}
+
+@keyframes slideUpFade {
+  from { 
+    transform: translate(-50%, 20px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translate(-50%, 0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
