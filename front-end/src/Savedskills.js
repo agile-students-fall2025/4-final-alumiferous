@@ -26,11 +26,11 @@ const Savedskills = () => {
 
   const handleUnsave = (skillId) => {
     handleUnsaveSkill(skillId);
-    showNotification('✓ Skill Unsaved', 'success');
+    showNotification('Skill Unsaved', 'success');
   };
 
   const handleReport = () => {
-    showNotification('✓ Issue Reported', 'info');
+    showNotification('Issue Reported', 'info');
   };
 
   // Update filtered list when savedSkills or search term changes
