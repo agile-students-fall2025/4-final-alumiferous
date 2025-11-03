@@ -100,6 +100,35 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
+/* Notification toast */
+.notification-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6495ED;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  animation: slideUpFade 0.3s ease forwards, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.notification-toast.success {
+  background: #6495ED;
+}
+
+.notification-toast.info {
+  background: #6495ED;
+}
+
+.notification-toast.warning {
+  background: #6495ED;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -108,4 +137,20 @@
 @keyframes slideUp {
   from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUpFade {
+  from { 
+    transform: translate(-50%, 20px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translate(-50%, 0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

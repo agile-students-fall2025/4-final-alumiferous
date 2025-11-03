@@ -1,16 +1,19 @@
 .savedcard-wrapper {
-  width: 48%;
+  width: 100%;
   break-inside: avoid;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
   background: transparent;
+  margin-bottom: 0.8rem;
+  display: inline-block;
 }
 
 .savedcard {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
+  width: 100%;
 }
 
 .savedcard-image {
@@ -74,10 +77,4 @@
 
 .savedcard-menu-popup li:hover {
   background: rgba(0, 0, 0, 0.05);
-}
-
-@media (min-width: 768px) {
-  .savedcard-wrapper {
-    width: 30%;
-  }
 }
