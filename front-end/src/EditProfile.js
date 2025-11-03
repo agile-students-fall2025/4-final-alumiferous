@@ -1,14 +1,14 @@
 import React from 'react';
-import './Profile.css'; // reuse page + body styles
+// import './Profile.css'; // reuse styles
 import './EditProfile.css';
 import './Messages.css'; // reuse messages-style header
 
 const EditProfile = () => (
-  <main className="Profile">
-    <header className="messages-header edit-profile-header">
+  <main className="edit-profile-page">
+    <header className="messages-header">
       <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
     </header>
-    <div className="ProfileBody edit-profile-body">
+    <div className="edit-profile-content">
       <div className="ProfilePhotoSection">
         <img className="Avatar" src="/images/avatar-default.png" alt="Profile" />
         <button className="UploadButton">Upload/Change Photo</button>
