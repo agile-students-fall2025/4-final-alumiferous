@@ -10,11 +10,28 @@ const Savedskills = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSaved, setFilteredSaved] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   // Only saved skills - memoize to prevent recalculation
   const savedSkills = React.useMemo(() => {
     return skills.filter(skill => skill.saved);
   }, [skills]);
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: '' });
+    }, 3000);
+  };
+
+  const handleUnsave = (skillId) => {
+    handleUnsaveSkill(skillId);
+    showNotification('✓ Skill Unsaved', 'success');
+  };
+
+  const handleReport = () => {
+    showNotification('✓ Issue Reported', 'info');
+  };
 
   // Update filtered list when savedSkills or search term changes
   useEffect(() => {
@@ -60,9 +77,17 @@ const Savedskills = () => {
             <SavedSkillCard
               key={i}
               skill={skill}
-              onUnsave={() => handleUnsaveSkill(skill.skillId)}
+              onUnsave={handleUnsave}
+              onReport={handleReport}
             />
           ))}
+        </div>
+      )}
+
+      {/* Notification toast */}
+      {notification.show && (
+        <div className={`notification-toast ${notification.type}`}>
+          {notification.message}
         </div>
       )}
     </div>

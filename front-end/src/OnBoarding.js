@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
 import { useNavigate } from "react-router-dom";
+import { SkillsContext } from "./SkillsContext";
 
 const OnBoarding = () => {
   //state variables for each step of the onboarding process
@@ -9,7 +10,8 @@ const OnBoarding = () => {
   //state variable to store data collected
 
   //variable for navigations
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { skills } = useContext(SkillsContext);
   const [formData, setFormData] = useState({
     username: "",
     skillsOffered: [],
@@ -59,19 +61,11 @@ const OnBoarding = () => {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  //custom array of skill user can choose from
-  const allSkills = [
-    "Python",
-    "Public Speaking",
-    "Cooking",
-    "Graphic Design",
-    "3D Modeling",
-    "Photography",
-    "Web Development",
-    "Marketing",
-    "Music Production",
-    "UI Design",
-  ];
+  // Get unique skill names from SkillsContext
+  const allSkills = useMemo(() => {
+    const uniqueSkills = [...new Set(skills.map(skill => skill.name))];
+    return uniqueSkills.sort(); // Sort alphabetically for better UX
+  }, [skills]);
 
   return (
     <div className="onboarding-container">

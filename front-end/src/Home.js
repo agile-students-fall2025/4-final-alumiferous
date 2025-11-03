@@ -6,30 +6,35 @@ import { SkillsContext } from "./SkillsContext";
 
 const Home = () => {
   //import the already fetched data from skill context
-  const { skills, handleSaveSkill } = useContext(SkillsContext);
+  const { skills } = useContext(SkillsContext);
 
   // State for search input and filtered skills
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Initialize filteredSkills with all skills
-  useEffect(() => {
-    setFilteredSkills(skills);
+  // Filter out hidden skills and initialize filteredSkills
+  const visibleSkills = React.useMemo(() => {
+    return skills.filter(skill => !skill.hidden);
   }, [skills]);
+
+  // Initialize filteredSkills with visible skills
+  useEffect(() => {
+    setFilteredSkills(visibleSkills);
+  }, [visibleSkills]);
 
   // Handle search with debouncing - only search when 3+ characters
   useEffect(() => {
-    // If search term is less than 3 characters, show all skills
+    // If search term is less than 3 characters, show all visible skills
     if (searchTerm.length < 3) {
-      setFilteredSkills(skills);
+      setFilteredSkills(visibleSkills);
       setIsSearching(false);
       return;
     }
 
     // LOCAL FILTERING (current implementation)
     // Remove this block when backend is ready
-    const filtered = skills.filter((skill) => {
+    const filtered = visibleSkills.filter((skill) => {
       const lowerSearch = searchTerm.toLowerCase();
       return (
         skill.name.toLowerCase().includes(lowerSearch) ||
@@ -51,11 +56,11 @@ const Home = () => {
       .catch((error) => {
         console.error("Search error:", error);
         setIsSearching(false);
-        // Fallback to showing all skills on error
-        setFilteredSkills(skills);
+        // Fallback to showing all visible skills on error
+        setFilteredSkills(visibleSkills);
       });
     */
-  }, [searchTerm, skills]);
+  }, [searchTerm, visibleSkills]);
 
   // Handle input change on keyup
   const handleSearchChange = (e) => {
@@ -103,7 +108,6 @@ const Home = () => {
               category={skill.category}
               username={skill.username}
               ImgHeight={skill.height}
-              handleSaveSkill={handleSaveSkill}
             />
           ))}
       </div>
