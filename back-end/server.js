@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+// Import the express app from app.js (ES module import style)
+import app from './app.js';
+
+// Use environment variable PORT or default to 3000
+const port = process.env.PORT || 3000;
+
+// Start listening for incoming HTTP(S) requests on the specified port
+const listener = app.listen(port, function () {
+  console.log(`Server running on port: ${port}`);
+});
+
+// Function to stop the server (useful for automated testing)
+// This allows other modules to programmatically shut down the server if needed
+const close = () => {
+  listener.close();
+};
+
+// Export the close function so tests and other tools can access it
+export { close };
