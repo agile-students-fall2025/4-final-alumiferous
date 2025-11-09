@@ -1,0 +1,203 @@
+// Authentication routes for login and signup
+import express from 'express'
+const router = express.Router()
+
+/**
+ * Route for user login
+ * POST /api/auth/login
+ * Expects: { email, password }
+ * Returns: { success, username, token, message }
+ */
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
+      })
+    }
+
+    // TODO: Replace with actual database lookup
+
+    // Mock user lookup (replace with DB query)
+    const mockUser = {
+      id: 1,
+      email: email,
+      username: email.split('@')[0],
+      firstName: 'Demo',
+      lastName: 'User',
+    }
+
+    // Mock password check (replace with bcrypt.compare)
+    const isPasswordValid = password.length >= 6 // Simple validation for demo
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      })
+    }
+
+    // Successful login
+    res.json({
+      success: true,
+      username: mockUser.username,
+      userId: mockUser.id,
+      token: 'mock-jwt-token-' + Date.now(), // will have to replace with actual JWT
+      message: 'Login successful',
+    })
+  } catch (err) {
+    console.error('Login error:', err)
+    res.status(500).json({
+      success: false,
+      message: 'Server error during login',
+      error: err.message,
+    })
+  }
+})
+
+/**
+ * Route for user signup/registration
+ * POST /api/auth/signup
+ * Expects: { email, password, firstName, lastName }
+ * Returns: { success, username, userId, token, message }
+ */
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password, firstName, lastName } = req.body
+
+    // Validate input
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required',
+      })
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format',
+      })
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters',
+      })
+    }
+
+    // TODO: Replace with actual database operations
+    // Mock user creation (have to replace with DB insert)
+    const newUser = {
+      id: Date.now(), // Mock ID
+      email: email,
+      username: `${firstName} ${lastName}`,
+      firstName: firstName,
+      lastName: lastName,
+      createdAt: new Date().toISOString(),
+    }
+
+    // Successful signup
+    res.status(201).json({
+      success: true,
+      username: newUser.username,
+      userId: newUser.id,
+      token: 'mock-jwt-token-' + Date.now(), // Replace with actual JWT
+      message: 'Account created successfully',
+    })
+  } catch (err) {
+    console.error('Signup error:', err)
+    res.status(500).json({
+      success: false,
+      message: 'Server error during signup',
+      error: err.message,
+    })
+  }
+})
+
+/**
+ * Route for user logout
+ * POST /api/auth/logout
+ * Returns: { success, message }
+ */
+router.post('/logout', (req, res) => {
+  try {
+    // TODO: In production with JWT:
+    // 1. Invalidate token (add to blacklist)
+    // 2. Clear any server-side sessions
+    
+    res.json({
+      success: true,
+      message: 'Logged out successfully',
+    })
+  } catch (err) {
+    console.error('Logout error:', err)
+    res.status(500).json({
+      success: false,
+      message: 'Server error during logout',
+      error: err.message,
+    })
+  }
+})
+
+/**
+ * Route to verify authentication token
+ * GET /api/auth/verify
+ * Expects: Authorization header with Bearer token
+ * Returns: { success, user, message }
+ */
+router.get('/verify', (req, res) => {
+  try {
+    // TODO: Extract and verify JWT token from Authorization header
+    const authHeader = req.headers.authorization
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided',
+      })
+    }
+
+    const token = authHeader.substring(7) // Remove 'Bearer ' prefix
+
+    // TODO: Verify JWT token
+    // For now, mock verification
+    const isValidToken = token.startsWith('mock-jwt-token-')
+
+    if (!isValidToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired token',
+      })
+    }
+
+    // Return user info if token is valid
+    res.json({
+      success: true,
+      user: {
+        id: 1,
+        username: 'demo_user',
+        email: 'demo@example.com',
+      },
+      message: 'Token is valid',
+    })
+  } catch (err) {
+    console.error('Token verification error:', err)
+    res.status(500).json({
+      success: false,
+      message: 'Server error during token verification',
+      error: err.message,
+    })
+  }
+})
+
+// Export the router
+export default router

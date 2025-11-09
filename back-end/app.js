@@ -3,6 +3,9 @@ import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
 
+// Import route modules
+import authRoutes from './routes/auth.js';
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -20,6 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
+
+// Mount API routes
+app.use('/api/auth', authRoutes);
 
 // Example root route: responds with a confirmation message
 app.get('/', (req, res) => {
