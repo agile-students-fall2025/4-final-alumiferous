@@ -44,19 +44,33 @@ const Login = props => {
       const firstName = isLogin ? null : e.target.firstName.value
       const lastName = isLogin ? null : e.target.lastName.value
 
-      // Process login/signup
-      const username = isLogin ? email.split('@')[0] : `${firstName} ${lastName}` // Use full name for signup, email prefix for login
-      setStatus({ success: true, username });
-      setErrorMessage('');
-       // all navigation handled here 
-    if (isLogin) {
-      navigate("/home"); // regular login goes straight home
-    } else {
-      navigate("/onboarding"); // new user goes to onboarding flow
-    }
+      // Call the backend API
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup'
+      const payload = isLogin 
+        ? { email, password }
+        : { email, password, firstName, lastName }
+
+      console.log(`Sending ${isLogin ? 'login' : 'signup'} request to backend...`)
+      
+      const response = await axios.post(`http://localhost:3000${endpoint}`, payload)
+      
+      if (response.data.success) {
+        console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, response.data.username)
+        setStatus({ success: true, username: response.data.username })
+        setErrorMessage('')
+        
+        // Navigate based on login/signup
+        if (isLogin) {
+          navigate("/home") // regular login goes straight home
+        } else {
+          navigate("/onboarding") // new user goes to onboarding flow
+        }
+      } else {
+        setErrorMessage(response.data.message || 'Authentication failed')
+      }
     } catch (err) {
-      // throw an error
-      throw new Error(err)
+      console.error('Authentication error:', err)
+      setErrorMessage(err.response?.data?.message || 'An error occurred. Please try again.')
     }
   }
 

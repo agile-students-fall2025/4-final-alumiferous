@@ -3,7 +3,6 @@ import express from 'express';
 const router = express.Router();
 
 /**
- * Route for user login
  * POST /api/auth/login
  * Expects: { email, password }
  * Returns: { success, username, token, message }
@@ -11,7 +10,6 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   console.log('LOGIN REQUEST received:', {
     email: req.body.email,
-    timestamp: new Date().toISOString(),
   });
 
   try {
@@ -67,8 +65,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/**
- * Route for user signup/registration
+
+
+
+/*
  * POST /api/auth/signup
  * Expects: { email, password, firstName, lastName }
  * Returns: { success, username, userId, token, message }
@@ -78,7 +78,6 @@ router.post('/signup', async (req, res) => {
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    timestamp: new Date().toISOString(),
   });
 
   try {
@@ -142,7 +141,10 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-/**
+
+
+
+/*
  * Route for user logout
  * POST /api/auth/logout
  * Returns: { success, message }
@@ -162,57 +164,6 @@ router.post('/logout', (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error during logout',
-      error: err.message,
-    });
-  }
-});
-
-/**
- * Route to verify authentication token
- * GET /api/auth/verify
- * Expects: Authorization header with Bearer token
- * Returns: { success, user, message }
- */
-router.get('/verify', (req, res) => {
-  try {
-    // TODO: Extract and verify JWT token from Authorization header
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided',
-      });
-    }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // TODO: Verify JWT token
-    // For now, mock verification
-    const isValidToken = token.startsWith('mock-jwt-token-');
-
-    if (!isValidToken) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid or expired token',
-      });
-    }
-
-    // Return user info if token is valid
-    res.json({
-      success: true,
-      user: {
-        id: 1,
-        username: 'demo_user',
-        email: 'demo@example.com',
-      },
-      message: 'Token is valid',
-    });
-  } catch (err) {
-    console.error('Token verification error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during token verification',
       error: err.message,
     });
   }
