@@ -3,14 +3,29 @@ import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
 import cors from 'cors' // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
+       
+
+// models
+import "./models/Skill.js";
+
+// routes
+import skillsRoutes from "./routes/skills.js";
+
 // Load environment variables from .env file
 dotenv.config();
 
 // Create an Express app instance
 const app = express();
 
+// Enable CORS for frontend on localhost:3000
+app.use(
+  cors({
+    origin: "http://localhost:3000", // your React dev server
+  })
+);
+
 // Log all incoming HTTP requests in dev format
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 app.use(cors()) // allow cross-origin resource sharing
 // Decode JSON-formatted POST data
@@ -20,12 +35,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Make 'public' directory readable with /static route for static content
-app.use('/static', express.static('public'));
+app.use("/static", express.static("public"));
 
 // Example root route: responds with a confirmation message
-app.get('/', (req, res) => {
-  res.send('Express backend for Alumiferous is running!');
+app.get("/", (req, res) => {
+  res.send("Express backend for Alumiferous is running!");
 });
+
+// Skills API
+app.use("/api/skills", skillsRoutes);
 
 // Export the Express app for use by server.js and test code
 export default app;
