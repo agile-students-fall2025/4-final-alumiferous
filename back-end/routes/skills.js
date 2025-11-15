@@ -7,7 +7,7 @@ const router = express.Router();
 
 // In-memory "database" for now.
 // Later you can replace this with your Mockaroo data or real DB.
-const skills = [];
+let skills = [];
 
 // back-up data incase fetching fails
 const backupSkills = [
