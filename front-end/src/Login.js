@@ -3,7 +3,7 @@ import {Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import './Login.css'
 
-const Login = props => {
+ const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
 
   //variable for navigation
@@ -21,7 +21,7 @@ const Login = props => {
     const qsError = urlSearchParams.get('error') // get any 'error' field in the URL query string
     if (qsError === 'protected')
       setErrorMessage(
-        'Please log in to view our fabulous protected animals list.'
+        'Please log in to use app.'
       )
   }, [])
 
