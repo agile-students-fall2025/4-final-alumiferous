@@ -36,18 +36,23 @@ app.use(express.json());
 // Decode URL-encoded POST data (e.g., from forms)
 app.use(express.urlencoded({ extended: true }));
 
+// Enable Cross-Origin Resource Sharing (CORS)
+app.use(cors());
+
 // Make 'public' directory readable with /static route for static content
-app.use("/static", express.static("public"));
+app.use('/static', express.static('public'));
 
 // Example root route: responds with a confirmation message
 app.get("/", (req, res) => {
   res.send("Express backend for Alumiferous is running!");
 });
 
-// Skills API
+// Mount API routes
+app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
+
 
 
 // Export the Express app for use by server.js and test code
