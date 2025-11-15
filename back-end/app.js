@@ -37,8 +37,6 @@ app.use(express.json());
 // Decode URL-encoded POST data (e.g., from forms)
 app.use(express.urlencoded({ extended: true }));
 
-// Enable Cross-Origin Resource Sharing (CORS)
-app.use(cors());
 
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
