@@ -2,6 +2,7 @@
 import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
+import cors from 'cors'; // Middleware for enabling CORS
 
 // Import route modules
 import authRoutes from './routes/auth.js';
@@ -20,6 +21,9 @@ app.use(express.json());
 
 // Decode URL-encoded POST data (e.g., from forms)
 app.use(express.urlencoded({ extended: true }));
+
+// Enable Cross-Origin Resource Sharing (CORS)
+app.use(cors());
 
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
