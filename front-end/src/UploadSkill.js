@@ -12,7 +12,6 @@ export default function UploadSkill() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    // Extract unique categories from skills
     if (skills && skills.length > 0) {
       const unique = [
         ...new Set(skills.map((skill) => skill.category).filter(Boolean)),
@@ -21,6 +20,7 @@ export default function UploadSkill() {
     }
   }, [skills]);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -30,6 +30,11 @@ export default function UploadSkill() {
       return;
     }
 
+    const briefText =
+      description.length > 120
+        ? description.slice(0, 117) + "..."
+        : description;
+
     try {
       const response = await fetch("http://localhost:4000/api/skills", {
         method: "POST",
@@ -37,10 +42,14 @@ export default function UploadSkill() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          category,
+          // matching Mockaroo schema
           name: skillName,
-          description,
-          // later: add videoUrl when you support uploads on backend
+          brief: briefText,
+          detail: description,
+          category,
+          image: "",        
+          userId: 1,        // temp values
+          username: "demo", // temp
         }),
       });
 
@@ -52,7 +61,9 @@ export default function UploadSkill() {
       const savedSkill = await response.json();
       console.log("Saved skill:", savedSkill);
 
-      setMessage(`"${savedSkill.name}" added under "${savedSkill.category}"!`);
+      setMessage(
+        `"${savedSkill.name}" added under "${savedSkill.category}"!`
+      );
       setCategory("");
       setSkillName("");
       setDescription("");
@@ -62,6 +73,7 @@ export default function UploadSkill() {
       setMessage(`Error: ${err.message}`);
     }
   };
+
 
   const handleVideoChange = (e) => {
     setVideo(e.target.files[0]);
