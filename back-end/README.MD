@@ -42,6 +42,7 @@ back-end/
 ├──server.js # Entry point, starts the server
 ├──public/ # Static assets (images, CSS, uploads)
 ├──test/ # Unit and integration tests (Mocha, Chai)
+├──routes/ # Route definitions (organizes HTTP endpoints)
 ├──.env.example # Sample environment variable file
 ```
 
