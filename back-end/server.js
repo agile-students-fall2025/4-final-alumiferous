@@ -1,21 +1,35 @@
 #!/usr/bin/env node
 
-// Import the express app from app.js (ES module import style)
-import app from './app.js';
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import app from "./app.js";
 
-// Use environment variable PORT or default to 3000
-const port = process.env.PORT || 3000;
+dotenv.config();
 
-// Start listening for incoming HTTP(S) requests on the specified port
-const listener = app.listen(port, function () {
-  console.log(`Server running on port: ${port}`);
-});
+const port = process.env.PORT || 4000;
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/alumiferous_test";
 
-// Function to stop the server (useful for automated testing)
-// This allows other modules to programmatically shut down the server if needed
-const close = () => {
-  listener.close();
-};
+async function start() {
+  try {
+    // Connect to MongoDB
+    await mongoose.connect(MONGODB_URI);
+    console.log("Connected to MongoDB");
 
-// Export the close function so tests and other tools can access it
-export { close };
+    // Start HTTP server
+    const listener = app.listen(port, () => {
+      console.log(`Server running on port: ${port}`);
+    });
+
+    const close = () => {
+      listener.close();
+      mongoose.connection.close();
+    };
+
+  } catch (err) {
+    console.error("❌ Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+start();
