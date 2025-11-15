@@ -39,7 +39,11 @@
       "last 1 safari version"
     ]
   },
+  "proxy": "http://localhost:4000",
   "devDependencies": {
-    "react-scripts": "^5.0.1"
+    "chai": "^6.2.1",
+    "mocha": "^11.7.5",
+    "react-scripts": "^5.0.1",
+    "supertest": "^7.1.4"
   }
 }
