@@ -77,12 +77,10 @@ const EditProfile = () => {
 
   // Load profile from backend on mount
   useEffect(() => {
-    // Replace '1' with the ID of the user you want to edit
     fetch('/api/profile/1')
       .then(res => res.json())
       .then(data => setProfile(data))
       .catch(() => setProfile({
-        // Provide fallback in case backend fails
         userId: 1,
         username: '',
         profilePhoto: '/images/avatar-default.png',
@@ -97,6 +95,21 @@ const EditProfile = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  // NEW: Change photo by picking a random photo from other mock users
+  const handleChangePhoto = async () => {
+    try {
+      const res = await fetch('/api/profile'); // assuming GET /api/profile returns all users
+      const users = await res.json();
+      const randomUser = users[Math.floor(Math.random() * users.length)];
+      setProfile(prev => ({
+        ...prev,
+        profilePhoto: randomUser.profilePhoto
+      }));
+    } catch (err) {
+      alert("Could not load mock photo.");
+    }
   };
 
   const handleSave = async () => {
@@ -146,7 +159,7 @@ const EditProfile = () => {
           <img className="Avatar" src={profile.profilePhoto} alt="Profile" />
           <button
             className="UploadButton"
-            onClick={() => alert('Upload photo clicked')}
+            onClick={handleChangePhoto}
           >
             Upload/Change Photo
           </button>
@@ -183,5 +196,3 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
-
-

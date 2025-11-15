@@ -4,6 +4,20 @@ dotenv.config();
 
 const router = express.Router();
 
+// GET all users from Mockaroo
+router.get("/", async (req, res) => {
+  try {
+    const response = await fetch(
+      `https://my.api.mockaroo.com/users.json?key=${process.env.MOCKAROO_KEY}`
+    );
+    const users = await response.json();
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching all users from Mockaroo:", err);
+    res.status(500).json({ error: "Failed to fetch users from Mockaroo." });
+  }
+});
+
 // GET user profile by id from Mockaroo
 router.get("/:id", async (req, res) => {
   try {
@@ -18,7 +32,7 @@ router.get("/:id", async (req, res) => {
   catch (err) {
     console.error("Error fetching from Mockaroo:", err);
     res.status(500).json({ error: "Failed to fetch from Mockaroo." });
-}
+  }
 });
 
 // PUT update profile by id (can still just echo for now)
@@ -27,3 +41,4 @@ router.put("/:id", (req, res) => {
 });
 
 export default router;
+
