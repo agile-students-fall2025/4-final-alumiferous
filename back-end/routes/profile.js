@@ -9,7 +9,7 @@ const router = express.Router();
 // GET all users from Mockaroo
 router.get("/", async (req, res) => {
   try {
-    const response = await axios.get(
+    const response = await fetch(
       `https://my.api.mockaroo.com/users.json?key=${process.env.API_SECRET_KEY}`
     );
     console.log('Mockaroo response:', response.data);

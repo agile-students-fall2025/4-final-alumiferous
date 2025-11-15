@@ -18,7 +18,7 @@ export const SkillsProvider = ({ children }) => {
     const fetchSkills = async () => {
       try {
         console.log("Fetching skill details from backend...");
-        const res = await axios.get('https://localhost:4000/api/skills');
+        const res = await axios.get('http://localhost:4000/api/skills');
 
 
         setSkills(res.data);
@@ -27,6 +27,8 @@ export const SkillsProvider = ({ children }) => {
         console.error("Backend fetch failed:", err);
       }
     };
+
+    fetchSkills();
   }, []);
 
   /*** Action handlers ***/
