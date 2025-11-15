@@ -111,9 +111,9 @@ router.get('/', async(req, res) => {
       return res.json(skills);
     }
 
-    const apiKey = process.env.MOCKAROO_KEY;
+    const apiKey = process.env.API_SECRET_KEY;
     if (!apiKey) {
-      console.error("Missing MOCKAROO_KEY env variable");
+      console.error("Missing API_SECRET_KEY env variable");
       skills = backupSkills.map(addComputedFields);
       return res.json(skills);
     }
