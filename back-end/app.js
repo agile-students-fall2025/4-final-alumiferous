@@ -2,7 +2,7 @@
 import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
-
+import cors from 'cors' // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
 // Load environment variables from .env file
 dotenv.config();
 
@@ -12,6 +12,7 @@ const app = express();
 // Log all incoming HTTP requests in dev format
 app.use(morgan('dev'));
 
+app.use(cors()) // allow cross-origin resource sharing
 // Decode JSON-formatted POST data
 app.use(express.json());
 
