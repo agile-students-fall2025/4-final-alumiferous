@@ -20,7 +20,7 @@ export default function UploadSkill() {
     }
   }, [skills]);
 
-  
+  // handle submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
