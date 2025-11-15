@@ -11,6 +11,7 @@ import "./models/Skill.js";
 // routes
 import skillsRoutes from "./routes/skills.js";
 import profileRoutes from "./routes/profile.js";
+import authRoutes from "./routes/auth.js";
 
 
 // Load environment variables from .env file
