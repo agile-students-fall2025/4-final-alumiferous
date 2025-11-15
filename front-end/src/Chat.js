@@ -15,46 +15,37 @@ const Chat = props => {
     // Helper to generate stable Picsum avatar URLs per user
     const avatarUrl = (seed, size = 50) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`
 
-    // Load chat list from Mockaroo mock API
+    // Load chat list from backend API
     useEffect(() => {
         let isMounted = true
         const loadChats = async () => {
             try {
                 setLoading(true)
                 setError(null)
-                const apiKey = process.env.REACT_APP_MOCKAROO_KEY
-                if (!apiKey) {
-                    throw new Error('Missing REACT_APP_MOCKAROO_KEY env var')
-                }
-                const res = await fetch('https://my.api.mockaroo.com/chats.json', {
-                    headers: {
-                        'X-API-Key': apiKey,
-                    }
-                })
+                console.log('Fetching chat list from backend...')
+                const res = await fetch('http://localhost:3000/api/chats')
+                console.log('Response status:', res.status)
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`)
                 const data = await res.json()
-              
+                console.log('Received chat data:', data)
                 // Normalize records to the shape used by the UI
                 const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
-                    const name = item.name
+                    const name = item.name || item.chat_name || 'Unknown'
                     return {
-                        id: item.id ,
+                        id: item.id,
                         name,
                         photo: avatarUrl(name),
-                        last_message: item.last_message,
-                        timestamp: item.timestamp,
-                        unread: item.unread ,
-                        online: item.online,
+                        last_message: item.last_message || '',
+                        timestamp: item.timestamp || item.created_at || '',
+                        unread: item.unread || 0,
+                        online: item.online || false,
                     }
                 })
-                
                 if (isMounted) setChatList(normalized)
             } 
             catch (err) {
                 console.error('Failed to load chats:', err)
-                const message = String(err).includes('REACT_APP_MOCKAROO_KEY')
-                    ? 'Missing API key. Create a .env with REACT_APP_MOCKAROO_KEY=your_key and restart the dev server.'
-                    : 'Failed to load conversations'
+                const message = 'Failed to load conversations'
                 if (isMounted) setError(message)
             } 
             finally {

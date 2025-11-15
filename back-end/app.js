@@ -2,9 +2,10 @@
 import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
-import authRoutes from './routes/auth.js';
+// import authRoutes from './routes/auth.js';
 import messagesRoutes from './routes/messages.js';
 import chatsRoutes from './routes/chats.js';
+import cors from 'cors';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,8 +25,14 @@ app.use(express.urlencoded({ extended: true }));
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
 
+app.use(cors({
+  origin: 'http://localhost:3001', // allow frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 // Mount API routes
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/chats', chatsRoutes);
 
