@@ -52,7 +52,7 @@ import './Login.css'
 
       console.log(`Sending ${isLogin ? 'login' : 'signup'} request to backend...`)
       
-      const response = await axios.post(`http://localhost:3000${endpoint}`, payload)
+      const response = await axios.post(`http://localhost:4000${endpoint}`, payload)
       
       if (response.data.success) {
         console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, response.data.username)

@@ -9,6 +9,7 @@ import "./models/Skill.js";
 
 // routes
 import skillsRoutes from "./routes/skills.js";
+import authRoutes from "./routes/auth.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -38,16 +39,15 @@ app.use(cors());
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
 
-// Mount API routes
-app.use('/api/auth', authRoutes);
-
 // Example root route: responds with a confirmation message
 app.get("/", (req, res) => {
   res.send("Express backend for Alumiferous is running!");
 });
 
-// Skills API
+// Mount API routes
+app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
+
 
 // Export the Express app for use by server.js and test code
 export default app;
