@@ -2,8 +2,13 @@ console.log("server.js loaded"); // Top of server.js
 // Import the express app from app.js (ES module import style)
 import app from './app.js';
 
+// load environment variables from .env file (ES module friendly)
+import dotenv from 'dotenv';
+dotenv.config();
+
 // Use environment variable PORT or default to 4000
 const port = process.env.PORT || 4000;
+
 
 // Start listening for incoming HTTP(S) requests on the specified port
 const listener = app.listen(port, function () {
