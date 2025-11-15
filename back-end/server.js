@@ -1,3 +1,4 @@
+console.log("server.js loaded"); // Top of server.js
 // Import the express app from app.js (ES module import style)
 import app from './app.js';
 
@@ -17,3 +18,4 @@ const close = () => {
 
 // Export the close function so tests and other tools can access it
 export { close };
+

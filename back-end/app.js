@@ -2,13 +2,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import cors from "cors";          
+import cors from "cors";
 
 // models
 import "./models/Skill.js";
 
 // routes
 import skillsRoutes from "./routes/skills.js";
+import profileRoutes from "./routes/profile.js";
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -19,7 +21,7 @@ const app = express();
 // Enable CORS for frontend on localhost:3000
 app.use(
   cors({
-    origin: "http://localhost:3000", // your React dev server
+    origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
   })
 );
 
@@ -42,6 +44,9 @@ app.get("/", (req, res) => {
 
 // Skills API
 app.use("/api/skills", skillsRoutes);
+// Profile API
+app.use("/api/profile", profileRoutes);          
+
 
 // Export the Express app for use by server.js and test code
 export default app;
