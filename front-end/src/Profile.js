@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Bars3Icon } from '@heroicons/react/24/outline';
 import './Profile.css';
 
 const Profile = () => {
@@ -11,46 +10,25 @@ const Profile = () => {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    // Check for locally edited profile first
-    const storedProfile = localStorage.getItem('profile');
-    if (storedProfile) {
-      setUser(JSON.parse(storedProfile));
-      setLoading(false);
-      return;
-    }
-    // Otherwise, fetch from Mockaroo
-    const apiKey = process.env.REACT_APP_MOCKAROO_KEY;
-    fetch(`https://my.api.mockaroo.com/users.json?key=${apiKey}`)
+    // Fetch the profile from backend only
+    fetch('/api/profile/1')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch users');
+        if (!res.ok) throw new Error('Failed to fetch user');
         return res.json();
       })
       .then(data => {
-        setUser(data[0]);
+        setUser(data);
         setLoading(false);
       })
       .catch(err => {
         setFeedback('Error: ' + err.message);
-        const mockUser = {
-        username: 'demo_user',
-        profilePhoto: '/images/avatar-default.png',
-        about: 'Welcome to your profile! Edit your profile to add your bio and skills.',
-        skillsAcquired: ['JavaScript', 'React', 'CSS'],
-        skillsWanted: ['Node.js', 'Python', 'Design']
-      };
-      setUser(mockUser);
-      setLoading(false);
-
         setLoading(false);
       });
   }, []);
 
+  // save logic
   const handleSave = () => {
-    if (user) {
-      localStorage.setItem('profile', JSON.stringify(user));
-      setFeedback('Profile saved successfully!');
-      setTimeout(() => setFeedback(''), 3000);
-    }
+    setTimeout(() => setFeedback(''), 3000);
     setMenuOpen(false);
   };
 
@@ -62,7 +40,6 @@ const Profile = () => {
     <main className="Profile">
       <header className="ProfileHeader">
         <h1 className="ProfileTitle">Profile</h1>
-        {/* Search removed per request */}
         <div className="ProfileMenu" ref={menuRef}>
           <button
             className="MenuButton"
@@ -124,5 +101,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-

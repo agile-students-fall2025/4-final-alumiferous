@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './EditProfile.css';
 import './Messages.css';
 
@@ -73,19 +73,24 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
 }
 
 const EditProfile = () => {
-  const getInitialProfile = () => {
-    const stored = localStorage.getItem('profile');
-    if (stored) return JSON.parse(stored);
-    return {
-      username: '',
-      profilePhoto: '/images/avatar-default.png',
-      about: '',
-      skillsAcquired: [],
-      skillsWanted: []
-    };
-  };
+  const [profile, setProfile] = useState(null);
 
-  const [profile, setProfile] = useState(getInitialProfile());
+  // Load profile from backend on mount
+  useEffect(() => {
+    // Replace '1' with the ID of the user you want to edit
+    fetch('/api/profile/1')
+      .then(res => res.json())
+      .then(data => setProfile(data))
+      .catch(() => setProfile({
+        // Provide fallback in case backend fails
+        userId: 1,
+        username: '',
+        profilePhoto: '/images/avatar-default.png',
+        about: '',
+        skillsAcquired: [],
+        skillsWanted: []
+      }));
+  }, []);
 
   const handleChange = (field, value) => {
     setProfile(prev => ({
@@ -94,25 +99,42 @@ const EditProfile = () => {
     }));
   };
 
-  // Save handler
-  const handleSave = () => {
-    localStorage.setItem('profile', JSON.stringify(profile));
-    window.history.back();
+  const handleSave = async () => {
+    if (!profile || !profile.userId) {
+      alert('Profile missing userId!');
+      return;
+    }
+    try {
+      const res = await fetch(`/api/profile/${profile.userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+      if (res.ok) {
+        window.history.back();
+      } else {
+        alert('Failed to save profile changes.');
+      }
+    } catch (err) {
+      alert('Network error occurred.');
+    }
   };
 
-  // Skill change handlers
   const addSkill = (type, skill) => {
     setProfile(prev => ({
       ...prev,
       [type]: [...prev[type], skill]
     }));
   };
+
   const removeSkill = (type, skill) => {
     setProfile(prev => ({
       ...prev,
       [type]: prev[type].filter(s => s !== skill)
     }));
   };
+
+  if (!profile) return <div>Loading...</div>;
 
   return (
     <main className="edit-profile-page">
@@ -161,4 +183,5 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+
 

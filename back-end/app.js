@@ -1,15 +1,17 @@
 // Import and instantiate Express
-import express from "express";
-import dotenv from "dotenv";
-import morgan from "morgan";
-import cors from "cors";          
+import express from 'express'; // ES module import style
+import dotenv from 'dotenv'; // Load environmental variables from .env
+import morgan from 'morgan'; // Middleware for logging HTTP requests
+import cors from 'cors' // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
+       
 
 // models
 import "./models/Skill.js";
 
 // routes
 import skillsRoutes from "./routes/skills.js";
-import authRoutes from "./routes/auth.js";
+import profileRoutes from "./routes/profile.js";
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -20,13 +22,14 @@ const app = express();
 // Enable CORS for frontend on localhost:3000
 app.use(
   cors({
-    origin: "http://localhost:3000", // your React dev server
+    origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
   })
 );
 
 // Log all incoming HTTP requests in dev format
 app.use(morgan("dev"));
 
+app.use(cors()) // allow cross-origin resource sharing
 // Decode JSON-formatted POST data
 app.use(express.json());
 
@@ -47,6 +50,9 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
+// Profile API
+app.use("/api/profile", profileRoutes);          
+
 
 
 // Export the Express app for use by server.js and test code
