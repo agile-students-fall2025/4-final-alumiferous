@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const response = await fetch(
-      `https://my.api.mockaroo.com/users.json?key=${process.env.MOCKAROO_KEY}`
+      `https://my.api.mockaroo.com/users.json?key=${process.env.API_SECRET_KEY}`
     );
     const users = await response.json();
     const user = users.find(u => u.userId === Number(req.params.id));
