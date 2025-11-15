@@ -1,8 +1,9 @@
 // Import the express app from app.js (ES module import style)
 import app from './app.js';
 
-// load environment variables from .env file
-require('dotenv').config({silent: true})
+// load environment variables from .env file (ES module friendly)
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Use environment variable PORT or default to 4000
 const port = process.env.PORT || 4000;
