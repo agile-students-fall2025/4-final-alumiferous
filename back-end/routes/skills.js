@@ -141,7 +141,7 @@ router.get('/', async(req, res) => {
  * skillId, name, brief, detail, image, userId, username, category
  */
 router.post("/", (req, res) => {
-  const { name, category, brief, detail, image, userId, username } = req.body;
+  const { name, category, brief, detail, description, image, userId, username } = req.body;
 
   // must at least have name + category
   if (!name || !category) {
@@ -153,7 +153,7 @@ router.post("/", (req, res) => {
   // Auto-generate a new skillId 
   const newSkillId = skills.length ? skills[skills.length - 1].skillId + 1 : 1;
 
-  const finalDetail = detail || brief || "";
+  const finalDetail = detail || description || brief || "";
   const finalBrief =
     brief ||
     (finalDetail.length > 120
@@ -162,9 +162,11 @@ router.post("/", (req, res) => {
 
   const newSkill = {
     skillId: newSkillId,
+    id: newSkillId,
     name,
     brief: finalBrief,
     detail: finalDetail,
+    description: finalDetail,
     image:
       image ||
       `https://via.placeholder.com/300x200?text=${encodeURIComponent(name)}`,
