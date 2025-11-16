@@ -46,13 +46,11 @@ export default function DraftRequest() {
         throw new Error(errorData.error || "Failed to send request");
       }
 
-      const result = await response.json();
-      console.log("Request sent:", result);
+      await response.json();
       
       alert(`Request sent to ${ownerParam}!`);
       nav(`/skills/${encodeURIComponent(skillId)}`);
     } catch (err) {
-      console.error("Error:", err);
       setError(err.message);
     } finally {
       setIsSubmitting(false);
