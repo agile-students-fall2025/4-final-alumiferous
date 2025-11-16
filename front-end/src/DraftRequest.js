@@ -1,34 +1,64 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import "./DraftRequest.css";
-import "./Messages.css"; // reuse messages-style header
+import "./Messages.css";
 
 export default function DraftRequest() {
-  // Read ?skillId=...&skillName=...&owner=... from the URL
   const [params] = useSearchParams();
   const nav = useNavigate();
 
-  // Get values from query string
   const skillId = params.get("skillId") || "";
   const skillName = params.get("skillName") || "";
   const ownerParam = params.get("owner") || "";
+  const ownerIdParam = params.get("ownerId") || null;
 
-  // Local UI state
   const [aboutYou, setAboutYou] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Skill object for display (just name for now)
   const skill = { id: skillId, name: skillName };
 
-  // "Send" the request (mock): log to console, show alert, then route back to the skill page
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("REQUEST:", { to: ownerParam, skillId, aboutYou });
-    alert("Request sent (mock).");
-    // After "sending", return to the same skill's description page
-    nav(`/skills/${encodeURIComponent(skillId)}`);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const requestData = {
+        skillId: parseInt(skillId),
+        skillName: skillName,
+        ownerId: ownerIdParam ? parseInt(ownerIdParam) : 1,
+        ownerName: ownerParam,
+        requesterId: 1, // TODO: get from auth
+        requesterName: "Guest User",
+        message: aboutYou,
+      };
+
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      const response = await fetch(`${apiUrl}/api/requests`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send request");
+      }
+
+      const result = await response.json();
+      console.log("Request sent:", result);
+      
+      alert(`Request sent to ${ownerParam}!`);
+      nav(`/skills/${encodeURIComponent(skillId)}`);
+    } catch (err) {
+      console.error("Error:", err);
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  // Page layout: a simple centered card-style form
   return (
     <div className="draft-request-page">
       <header className="messages-header">
@@ -42,13 +72,9 @@ export default function DraftRequest() {
       </header>
       
       <div className="draft-request-content">
-
-        {/* Simple form with three fields:
-            - To:      (pre-filled with the skill owner; editable)
-            - Skill:   (read-only pill showing which skill this request is for)
-            - About you: (text area for the message body)
-        */}
         <form onSubmit={handleSubmit} className="draft-request-form">
+          {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+          
           <label className="form-label">
             To:
             <div className="skill-display-box">{ownerParam || "Skill owner"}</div>
@@ -56,7 +82,6 @@ export default function DraftRequest() {
 
           <label className="form-label">
             Interested in skill:
-            {/* Read-only display so users are sure which skill they're contacting about */}
             <div className="skill-display-box">{skill.name || "(unknown skill)"}</div>
           </label>
 
@@ -69,11 +94,13 @@ export default function DraftRequest() {
               onChange={(e) => setAboutYou(e.target.value)}
               placeholder="Briefly introduce yourself and what you need…"
               required
+              disabled={isSubmitting}
             />
           </label>
 
-          {/* Mock submit */}
-          <button type="submit" className="btn btn-primary">Send Request</button>
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+            {isSubmitting ? "Sending..." : "Send Request"}
+          </button>
         </form>
       </div>
     </div>

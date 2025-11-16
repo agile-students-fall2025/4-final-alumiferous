@@ -71,14 +71,6 @@ export default function SkillDescription() {
           </p>
         </div>
 
-        {/* Draft Request button.
-           VERY IMPORTANT:
-           We pass what the next page will need using the same keys:
-           - skillId (number)
-           - name (string)
-           - username (string, who owns it)
-           You can also pass category if your request form needs it.
-        */}
         <button
           className="button"
           onClick={() =>
@@ -89,6 +81,8 @@ export default function SkillDescription() {
                 skill.name
               )}&owner=${encodeURIComponent(
                 skill.username || ""
+              )}&ownerId=${encodeURIComponent(
+                skill.userId || ""
               )}&category=${encodeURIComponent(
                 skill.category || ""
               )}`
