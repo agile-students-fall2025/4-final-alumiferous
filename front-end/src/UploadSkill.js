@@ -20,7 +20,6 @@ export default function UploadSkill() {
     }
   }, [skills]);
 
-  // handle submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -36,21 +35,25 @@ export default function UploadSkill() {
         : description;
 
     try {
+      // Use FormData instead of JSON so we can send the video file
+      const formData = new FormData();
+      formData.append("name", skillName);
+      formData.append("category", category);
+      formData.append("brief", briefText);
+      formData.append("detail", description);
+      formData.append("userId", 1);          // temp values
+      formData.append("username", "demo");   // temp values
+      // optional image URL (empty for now)
+      formData.append("image", "");
+
+      // Attach video file if user selected one
+      if (video) {
+        formData.append("video", video);     // field name MUST match multer.single("video")
+      }
+
       const response = await fetch("http://localhost:4000/api/skills", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // matching Mockaroo schema
-          name: skillName,
-          brief: briefText,
-          detail: description,
-          category,
-          image: "",        
-          userId: 1,        // temp values
-          username: "demo", // temp
-        }),
+        body: formData, // ❗ no Content-Type header, browser sets it
       });
 
       if (!response.ok) {
@@ -61,9 +64,7 @@ export default function UploadSkill() {
       const savedSkill = await response.json();
       console.log("Saved skill:", savedSkill);
 
-      setMessage(
-        `"${savedSkill.name}" added under "${savedSkill.category}"!`
-      );
+      setMessage(`"${savedSkill.name}" added under "${savedSkill.category}"!`);
       setCategory("");
       setSkillName("");
       setDescription("");
@@ -73,7 +74,6 @@ export default function UploadSkill() {
       setMessage(`Error: ${err.message}`);
     }
   };
-
 
   const handleVideoChange = (e) => {
     setVideo(e.target.files[0]);

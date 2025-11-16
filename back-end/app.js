@@ -3,10 +3,7 @@ import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
 import cors from 'cors' // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
-       
-
-// models
-import "./models/Skill.js";
+      
 
 // routes
 import skillsRoutes from "./routes/skills.js";
@@ -14,6 +11,7 @@ import profileRoutes from "./routes/profile.js";
 import authRoutes from "./routes/auth.js";
 import chatsRoutes from './routes/chats.js';
 import messagesRoutes from './routes/messages.js';
+import requestsRoutes from "./routes/requests.js";
 
 
 
@@ -56,7 +54,7 @@ app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
-
+app.use("/api/requests", requestsRoutes);  
 
 
 // Export the Express app for use by server.js and test code

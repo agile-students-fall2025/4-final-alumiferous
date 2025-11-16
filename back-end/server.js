@@ -9,7 +9,6 @@ dotenv.config();
 // Use environment variable PORT or default to 4000
 const port = process.env.PORT || 4000;
 
-
 // Start listening for incoming HTTP(S) requests on the specified port
 const listener = app.listen(port, function () {
   console.log(`Server running on port: ${port}`);
