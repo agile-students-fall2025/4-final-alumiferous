@@ -12,6 +12,10 @@ import "./models/Skill.js";
 import skillsRoutes from "./routes/skills.js";
 import profileRoutes from "./routes/profile.js";
 import authRoutes from "./routes/auth.js";
+import chatsRoutes from './routes/chats.js';
+import messagesRoutes from './routes/messages.js';
+import onboardingRoutes from './routes/onboarding.js';
+
 
 
 // Load environment variables from .env file
@@ -24,21 +28,20 @@ const app = express();
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
+  
   })
 );
 
 // Log all incoming HTTP requests in dev format
 app.use(morgan("dev"));
 
-app.use(cors()) // allow cross-origin resource sharing
+// app.use(cors()) // allow cross-origin resource sharing
 // Decode JSON-formatted POST data
 app.use(express.json());
 
 // Decode URL-encoded POST data (e.g., from forms)
 app.use(express.urlencoded({ extended: true }));
 
-// Enable Cross-Origin Resource Sharing (CORS)
-app.use(cors());
 
 // Make 'public' directory readable with /static route for static content
 app.use('/static', express.static('public'));
@@ -51,6 +54,9 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
+app.use('/api/chats', chatsRoutes);
+app.use('/api/messages', messagesRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
 
