@@ -14,12 +14,9 @@ router.get('/', async (req, res) => {
   }
   try {
     const url = `${process.env.API_BASE_URL}/messages.json?chat_id=${encodeURIComponent(chat_id)}&key=${process.env.API_SECRET_KEY}`;
-    console.log('Fetching messages from Mockaroo:', url);
     const response = await fetch(url);
-    console.log('Mockaroo response status:', response.status);
     if (!response.ok) throw new Error(`Mockaroo request failed: ${response.status}`);
     const data = await response.json();
-    console.log('Received messages data from Mockaroo:', data);
     res.json(Array.isArray(data) ? data : [data]);
   } catch (err) {
     console.error('Error fetching messages:', err);
@@ -30,7 +27,6 @@ router.get('/', async (req, res) => {
 
 // POST can remain as local echo or you can mock it similarly
 router.post('/', (req, res) => {
-  console.log('Received POST /api/messages request with body:', req.body);
   const { chat_id, sender_name, content } = req.body;
   if (!chat_id || !sender_name || !content) {
     console.log('POST /api/messages missing required fields');
@@ -45,7 +41,6 @@ router.post('/', (req, res) => {
     timestamp: new Date().toISOString(),
     is_me: false
   };
-  console.log('Created new message:', newMsg);
   res.status(201).json(newMsg);
 });
 

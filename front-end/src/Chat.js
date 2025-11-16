@@ -27,7 +27,6 @@ const Chat = props => {
                 console.log('Response status:', res.status)
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`)
                 const data = await res.json()
-                console.log('Received chat data:', data)
                 // Normalize records to the shape used by the UI
                 const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
                     const name = item.name || item.chat_name || 'Unknown'

@@ -33,7 +33,6 @@ const Messages = () => {
                 console.log('Response status:', res.status)
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`)
                 const data = await res.json()
-                console.log('Received messages data:', data)
 
                 const array = Array.isArray(data) ? data : [data]
                 const normalized = array.map((item, idx) => {
