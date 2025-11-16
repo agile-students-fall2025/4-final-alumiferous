@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './EditProfile.css';
 import './Messages.css';
 
+const blankProfile = {
+  userId: 1,
+  username: '',
+  profilePhoto: '/images/avatar-default.png',
+  about: '',
+  skillsAcquired: [],
+  skillsWanted: [],
+};
+
 // Skill List Editor component
 function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
   const [showAdd, setShowAdd] = useState(false);
@@ -73,21 +82,21 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
 }
 
 const EditProfile = () => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState(blankProfile);
 
   // Load profile from backend on mount
   useEffect(() => {
     fetch('/api/profile/1')
       .then(res => res.json())
-      .then(data => setProfile(data))
-      .catch(() => setProfile({
-        userId: 1,
-        username: '',
-        profilePhoto: '/images/avatar-default.png',
-        about: '',
-        skillsAcquired: [],
-        skillsWanted: []
-      }));
+      .then(data => setProfile({
+        userId: data.userId || blankProfile.userId,
+        username: data.username || blankProfile.username,
+        profilePhoto: data.profilePhoto || blankProfile.profilePhoto,
+        about: data.about || blankProfile.about,
+        skillsAcquired: data.skillsAcquired || blankProfile.skillsAcquired,
+        skillsWanted: data.skillsWanted || blankProfile.skillsWanted
+      }))
+      .catch(() => setProfile(blankProfile));
   }, []);
 
   const handleChange = (field, value) => {
@@ -100,12 +109,12 @@ const EditProfile = () => {
   // NEW: Change photo by picking a random photo from other mock users
   const handleChangePhoto = async () => {
     try {
-      const res = await fetch('/api/profile'); // assuming GET /api/profile returns all users
+      const res = await fetch('/api/profile');
       const users = await res.json();
       const randomUser = users[Math.floor(Math.random() * users.length)];
       setProfile(prev => ({
         ...prev,
-        profilePhoto: randomUser.profilePhoto
+        profilePhoto: randomUser.profilePhoto || blankProfile.profilePhoto
       }));
     } catch (err) {
       alert("Could not load mock photo.");
@@ -156,7 +165,7 @@ const EditProfile = () => {
       </header>
       <div className="edit-profile-content">
         <div className="ProfilePhotoSection">
-          <img className="Avatar" src={profile.profilePhoto} alt="Profile" />
+          <img className="Avatar" src={profile.profilePhoto || blankProfile.profilePhoto} alt="Profile" />
           <button
             className="UploadButton"
             onClick={handleChangePhoto}
@@ -196,3 +205,4 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+
