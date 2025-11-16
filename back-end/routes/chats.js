@@ -1,32 +1,29 @@
+
 import express from 'express';
 import fetch from 'node-fetch';
 
 const router = express.Router();
 
+// In-memory chats array for local testing and changes
+let chats = [
+  {
+    id: '1',
+    user_id: 'testuser',
+    chat_name: 'Test Chat',
+    created_at: new Date().toISOString(),
+  }
+];
+
 // GET /api/chats
 router.get('/', async (req, res) => {
-  const { chat_id } = req.query;
-  if (!chat_id) {
-    try {
-      const url = `${process.env.API_BASE_URL}/chats.json?key=${process.env.API_SECRET_KEY}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Mockaroo request failed: ${response.status}`);
-      const data = await response.json();
-      res.json(Array.isArray(data) ? data : [data]);
-    } catch (err) {
-      console.error('Error fetching chats:', err);
-      res.status(500).json({ success: false, message: err.message });
-    }
-    return;
-  }
   try {
-    const url = `${process.env.API_BASE_URL}/messages.json?chat_id=${encodeURIComponent(chat_id)}&key=${process.env.API_SECRET_KEY}`;
+    const url = `${process.env.API_BASE_URL}/chats.json?key=${process.env.API_SECRET_KEY}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Mockaroo request failed: ${response.status}`);
     const data = await response.json();
     res.json(Array.isArray(data) ? data : [data]);
   } catch (err) {
-    console.error('Error fetching messages:', err);
+    console.error('Error fetching chats:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -44,6 +41,7 @@ router.post('/', (req, res) => {
     chat_name,
     created_at: new Date().toISOString(),
   };
+  chats.push(newChat);
   res.status(201).json(newChat);
 });
 
