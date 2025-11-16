@@ -29,7 +29,7 @@ router.get("/:id", async (req, res) => {
     );
     console.log('Mockaroo response:', response.data);
     const users = Array.isArray(response.data) ? response.data : [response.data];
-    const user = users.find(u => u.id === Number(req.params.id));
+    const user = users.find(u => u.userId === Number(req.params.id));
     if (user) return res.json(user);
     res.status(404).json({ error: "User not found" });
   } 
