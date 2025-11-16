@@ -12,6 +12,9 @@ import "./models/Skill.js";
 import skillsRoutes from "./routes/skills.js";
 import profileRoutes from "./routes/profile.js";
 import authRoutes from "./routes/auth.js";
+import chatsRoutes from './routes/chats.js';
+import messagesRoutes from './routes/messages.js';
+
 
 
 // Load environment variables from .env file
@@ -30,7 +33,7 @@ app.use(
 // Log all incoming HTTP requests in dev format
 app.use(morgan("dev"));
 
-app.use(cors()) // allow cross-origin resource sharing
+// app.use(cors()) // allow cross-origin resource sharing
 // Decode JSON-formatted POST data
 app.use(express.json());
 
@@ -49,6 +52,8 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
+app.use('/api/chats', chatsRoutes);
+app.use('/api/messages', messagesRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
 

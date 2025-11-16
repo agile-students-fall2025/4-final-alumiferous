@@ -27,25 +27,21 @@ const Messages = () => {
                 setLoading(true)
                 setError(null)
 
-                const apiKey = process.env.REACT_APP_MOCKAROO_KEY
-                if (!apiKey) {
-                    throw new Error('Missing REACT_APP_MOCKAROO_KEY env var')
-                }
-
-                // Expect a Mockaroo Mock API or Generate API that returns messages for a chat
-                const url = `https://my.api.mockaroo.com/messages.json?chat_id=${encodeURIComponent(id)}`
-                const res = await fetch(url, { headers: { 'X-API-Key': apiKey } })
+                console.log('Fetching messages from backend for chat:', id)
+                const url = `http://localhost:3000/api/messages?chat_id=${encodeURIComponent(id)}`
+                const res = await fetch(url)
+                console.log('Response status:', res.status)
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`)
                 const data = await res.json()
 
                 const array = Array.isArray(data) ? data : [data]
                 const normalized = array.map((item, idx) => {
-                    const sender = item.sender_name 
-                    const content = item.content 
-                    const ts = item.timestamp 
-                    const me = item.is_me
+                    const sender = item.sender_name || 'Unknown'
+                    const content = item.content || ''
+                    const ts = item.timestamp || ''
+                    const me = item.is_me || false
                     return {
-                        id: item.id ,
+                        id: item.id,
                         chat_id: item.chat_id ?? id,
                         sender_name: sender,
                         sender_photo: avatarUrl(sender),
