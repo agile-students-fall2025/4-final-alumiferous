@@ -59,7 +59,7 @@ const OnBoarding = () => {
     try {
       console.log("Sending onboarding data:", formData);
 
-      await axios.post("http://localhost:5000/api/onboarding", formData);
+      await axios.post("/api/onboarding", formData);
 
       console.log("Onboarding data sent successfully!");
       navigate("/home");

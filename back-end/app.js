@@ -14,6 +14,7 @@ import profileRoutes from "./routes/profile.js";
 import authRoutes from "./routes/auth.js";
 import chatsRoutes from './routes/chats.js';
 import messagesRoutes from './routes/messages.js';
+import onboardingRoutes from './routes/onboarding.js';
 
 
 
@@ -27,6 +28,7 @@ const app = express();
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
+  
   })
 );
 
@@ -54,6 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
 
