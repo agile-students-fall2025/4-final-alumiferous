@@ -62,6 +62,7 @@ InstaSkill is designed for anyone interested in learning or teaching through col
 
 ## Development Progress
 
+### Sprint 1
 The front-end application has been developed using React. The following components and features have been implemented:
 
 - User authentication interface (Login, ResetPassword)
@@ -74,6 +75,44 @@ The front-end application has been developed using React. The following componen
 - Theme support via ThemeContext
 - Global skills state management via SkillsContext
 - API integration setup in the api folder
+
+### Sprint 2
+Backend API integration, testing, and enhanced features have been implemented:
+
+**Backend API Development:**
+- `/api/auth` - User authentication (login, signup, logout)
+- `/api/skills` - Get all skills, create new skills with video upload support
+- `/api/requests` - Create and manage skill exchange requests, view incoming requests
+- `/api/profile` - User profile management and photo upload
+- `/api/chats` - Chat creation and management
+- `/api/messages` - Real-time messaging between users
+- `/api/onboarding` - User onboarding flow
+- `/api/reports` - Report problems and reset password functionality
+- CORS middleware configured for cross-origin requests
+- Environment variables properly configured for secure API access
+
+**Frontend-Backend Integration:**
+- Login/Signup flow connected to authentication API with error handling
+- SkillDescription page displays skill details from backend
+- DraftRequest form submits skill exchange requests to backend
+- UploadSkill page posts new skills with video upload capability
+- Profile page with photo upload and edit functionality
+- Skills data fetched from backend API and managed via SkillsContext
+- Chat and messaging system integrated with backend
+- Incoming requests feature displays skill exchange requests
+- Error handling and loading states implemented across all components
+
+**Testing & Quality Assurance:**
+- Backend API tests using Mocha + Chai + Supertest
+- Test coverage for all major endpoints: skills, requests, chats, messages, auth, onboarding
+- Automated tests validate API functionality and error handling
+- Code coverage tracking with c8
+
+**Additional Features:**
+- Video upload capability for skill demonstrations
+- Profile photo upload and management
+- Improved UI with hamburger menus and navigation
+- Enhanced error messages and user feedback
 
 
 ## How to Run the Application
