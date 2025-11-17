@@ -60,6 +60,8 @@ app.use('/api/onboarding', onboardingRoutes);
 app.use("/api/profile", profileRoutes);          
 app.use("/api/requests", requestsRoutes);  
 app.use("/api/reports", reportsRoutes); 
+app.use("/uploads", express.static("public/uploads"));
+
 
 
 // Export the Express app for use by server.js and test code

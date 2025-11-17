@@ -11,11 +11,11 @@ const blankProfile = {
   skillsWanted: [],
 };
 
-// Skill List Editor component
+// Skill List Editor component ...
 function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
+  // (Unchanged)
   const [showAdd, setShowAdd] = useState(false);
   const [newSkill, setNewSkill] = useState('');
-
   const handleAdd = () => {
     if (newSkill.trim()) {
       onAdd(newSkill.trim());
@@ -23,7 +23,6 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
       setShowAdd(false);
     }
   };
-
   return (
     <div className="SkillsEditor">
       <h4 className="SkillsLabel">{label}</h4>
@@ -83,6 +82,7 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
 
 const EditProfile = () => {
   const [profile, setProfile] = useState(blankProfile);
+  const [photoFile, setPhotoFile] = useState(null);
 
   // Load profile from backend on mount
   useEffect(() => {
@@ -106,19 +106,10 @@ const EditProfile = () => {
     }));
   };
 
-  // NEW: Change photo by picking a random photo from other mock users
-  const handleChangePhoto = async () => {
-    try {
-      const res = await fetch('/api/profile');
-      const users = await res.json();
-      const randomUser = users[Math.floor(Math.random() * users.length)];
-      setProfile(prev => ({
-        ...prev,
-        profilePhoto: randomUser.profilePhoto || blankProfile.profilePhoto
-      }));
-    } catch (err) {
-      alert("Could not load mock photo.");
-    }
+  // New: Handle photo upload input and preview
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) setPhotoFile(file);
   };
 
   const handleSave = async () => {
@@ -127,10 +118,21 @@ const EditProfile = () => {
       return;
     }
     try {
+      const formData = new FormData();
+      formData.append('userId', profile.userId);
+      formData.append('username', profile.username);
+      formData.append('about', profile.about);
+      formData.append('skillsAcquired', JSON.stringify(profile.skillsAcquired));
+      formData.append('skillsWanted', JSON.stringify(profile.skillsWanted));
+      if (photoFile) {
+        formData.append('profilePhoto', photoFile);
+      } else {
+        formData.append('profilePhoto', profile.profilePhoto);
+      }
+
       const res = await fetch(`/api/profile/${profile.userId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
+        body: formData
       });
       if (res.ok) {
         window.history.back();
@@ -165,14 +167,32 @@ const EditProfile = () => {
       </header>
       <div className="edit-profile-content">
         <div className="ProfilePhotoSection">
-          <img className="Avatar" src={profile.profilePhoto || blankProfile.profilePhoto} alt="Profile" />
-          <button
-            className="UploadButton"
-            onClick={handleChangePhoto}
-          >
-            Upload/Change Photo
-          </button>
-        </div>
+  <img
+    className="Avatar"
+    src={
+      photoFile
+        ? URL.createObjectURL(photoFile)
+        : profile.profilePhoto || blankProfile.profilePhoto
+    }
+    alt="Profile"
+  />
+  <input
+    type="file"
+    accept="image/*"
+    id="profile-photo-upload"
+    style={{ display: "none" }}
+    onChange={handlePhotoChange}
+  />
+  {/* Use styled label as the button, NOT a <button> */}
+  <label
+    htmlFor="profile-photo-upload"
+    className="UploadButton"
+    tabIndex={0}
+    style={{ cursor: "pointer", display: "inline-block", marginTop: 10 }}
+  >
+    Upload/Change Photo
+  </label>
+</div>
         <div className="AboutSection">
           <label htmlFor="about">About Me:</label>
           <textarea
@@ -205,4 +225,5 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+
 
