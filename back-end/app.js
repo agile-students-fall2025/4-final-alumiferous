@@ -13,6 +13,8 @@ import chatsRoutes from './routes/chats.js';
 import messagesRoutes from './routes/messages.js';
 import requestsRoutes from "./routes/requests.js";
 import onboardingRoutes from './routes/onboarding.js';
+import reportsRoutes from "./routes/reports.js";
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -56,7 +58,7 @@ app.use('/api/onboarding', onboardingRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
 app.use("/api/requests", requestsRoutes);  
-
+app.use("/api/reports", reportsRoutes); 
 
 
 // Export the Express app for use by server.js and test code

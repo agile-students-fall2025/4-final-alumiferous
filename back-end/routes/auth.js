@@ -66,8 +66,6 @@ router.post('/login', async (req, res) => {
 });
 
 
-
-
 /*
  * POST /api/auth/signup
  * Expects: { email, password, firstName, lastName }
@@ -142,6 +140,53 @@ router.post('/signup', async (req, res) => {
 });
 
 
+/*
+ * PUT /api/auth/reset-password
+ * Expects: { email, newPassword }
+ * (In a real app you’d also verify a reset token or old password)
+ * For this sprint: we validate input and simulate the update.
+ */
+router.put('/reset-password', async (req, res) => {
+  console.log('RESET PASSWORD REQUEST received:', {
+    email: req.body.email,
+  });
+
+  try {
+    const { email, newPassword } = req.body;
+
+    // Basic validation
+    if (!email || !newPassword) {
+      console.log('RESET PASSWORD FAILED: Missing email or newPassword');
+      return res.status(400).json({
+        success: false,
+        message: 'Email and newPassword are required',
+      });
+    }
+
+    if (newPassword.length < 6) {
+      console.log('RESET PASSWORD FAILED: Password too short');
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters long',
+      });
+    }
+
+    // TODO: Replace with DB lookup + password hash update
+    console.log(`RESET PASSWORD SUCCESS (mock) for user: ${email}`);
+
+    return res.json({
+      success: true,
+      message: 'Password reset successfully (mock implementation).',
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during password reset',
+      error: err.message,
+    });
+  }
+});
 
 
 /*
