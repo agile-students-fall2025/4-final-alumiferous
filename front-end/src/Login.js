@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react'
-import {Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import './Login.css'
 
- const Login = props => {
+const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
 
-  //variable for navigation
+  // variable for navigation
   const navigate = useNavigate()
 
   // State for toggle between login and signup
   const [isLogin, setIsLogin] = useState(true)
   
   // create state variables to hold form data
-  const [status, setStatus] = useState({}) // the API will return an object indicating the login status in a success field of the response object
+  const [status, setStatus] = useState({}) 
   const [errorMessage, setErrorMessage] = useState(``) 
 
   // if the user got here by trying to access our Protected page, there will be a query string parameter called 'error' with the value 'protected'
   useEffect(() => {
-    const qsError = urlSearchParams.get('error') // get any 'error' field in the URL query string
+    const qsError = urlSearchParams.get('error')
     if (qsError === 'protected')
-      setErrorMessage(
-        'Please log in to use app.'
-      )
+      setErrorMessage('Please log in to use app.')
   }, [])
 
   // if the user's logged-in status changes, call the setuser function that was passed to this component from the PrimaryNav component.
   useEffect(() => {
-    // Signup status effect
     if (status.success) {
       console.log(`User successfully logged in: ${status.username}`)
-    //   props.setuser(status)
+      // props.setuser && props.setuser(status)
     }
   }, [status])
 
@@ -53,20 +50,39 @@ import './Login.css'
       console.log(`Sending ${isLogin ? 'login' : 'signup'} request to backend...`)
       
       const response = await axios.post(`http://localhost:4000${endpoint}`, payload)
-      
-      if (response.data.success) {
-        console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, response.data.username)
-        setStatus({ success: true, username: response.data.username })
+      const data = response.data
+
+      if (data.success) {
+        console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, data.username)
+
+        // ⭐⭐ STORE USER INFO FOR LATER (Requests page, etc.)
+        if (data.userId) {
+          localStorage.setItem('userId', data.userId)
+        }
+        if (data.username) {
+          localStorage.setItem('username', data.username)
+        }
+        if (data.token) {
+          localStorage.setItem('token', data.token)
+        }
+
+        // Update local state
+        setStatus({
+          success: true,
+          username: data.username,
+          userId: data.userId,
+          token: data.token,
+        })
         setErrorMessage('')
         
         // Navigate based on login/signup
         if (isLogin) {
-          navigate("/home") // regular login goes straight home
+          navigate('/home')        // regular login goes straight home
         } else {
-          navigate("/onboarding") // new user goes to onboarding flow
+          navigate('/onboarding')  // new user goes to onboarding flow
         }
       } else {
-        setErrorMessage(response.data.message || 'Authentication failed')
+        setErrorMessage(data.message || 'Authentication failed')
       }
     } catch (err) {
       console.error('Authentication error:', err)
@@ -111,22 +127,41 @@ import './Login.css'
             {/* Email field (for both login and signup) */}
             <input type="email" name="email" className="form-input" placeholder="Email" required />
             
-            {/* Name fields (only for signup) - on same row with animation */}
+            {/* Name fields (only for signup) */}
             <div className={`name-row ${!isLogin ? 'show' : ''}`}>
-              <input type="text" name="firstName" className="form-input" placeholder="First Name" required={!isLogin} />
-              <input type="text" name="lastName" className="form-input" placeholder="Last Name" required={!isLogin} />
+              <input
+                type="text"
+                name="firstName"
+                className="form-input"
+                placeholder="First Name"
+                required={!isLogin}
+              />
+              <input
+                type="text"
+                name="lastName"
+                className="form-input"
+                placeholder="Last Name"
+                required={!isLogin}
+              />
             </div>
             
             {/* Password field */}
-            <input type="password" name="password" className="form-input" placeholder="Password" required />
+            <input
+              type="password"
+              name="password"
+              className="form-input"
+              placeholder="Password"
+              required
+            />
             
             <input type="submit" value={isLogin ? 'Log In' : 'Sign Up'} />
           </form>
         </section>
       </div>
     )
+
   // otherwise, if the user has successfully logged-in, redirect them to a different page
-  //else return <Navigate to="/home" />
+  // else return <Navigate to="/home" />
 }
 
 export default Login
