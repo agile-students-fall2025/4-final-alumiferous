@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
     const response = await fetch(
       `https://my.api.mockaroo.com/users.json?key=${process.env.API_SECRET_KEY}`
     );
-    console.log('Mockaroo response:', response.data);
+    //console.log('Mockaroo response:', response.data);
     const users = Array.isArray(response.data) ? response.data : [response.data];
     res.json(users);
   } catch (err) {
@@ -27,7 +27,7 @@ router.get("/:id", async (req, res) => {
     const response = await axios.get(
       `https://my.api.mockaroo.com/users.json?key=${process.env.API_SECRET_KEY}`
     );
-    console.log('Mockaroo response:', response.data);
+    //console.log('Mockaroo response:', response.data);
     const users = Array.isArray(response.data) ? response.data : [response.data];
     const user = users.find(u => u.userId === Number(req.params.id));
     if (user) return res.json(user);
