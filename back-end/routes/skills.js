@@ -37,7 +37,6 @@ const videoUpload = multer({
 });
 
 
-
 // In-memory "database" for now.
 // Later you can replace this with your Mockaroo data or real DB.
 let skills = [];
