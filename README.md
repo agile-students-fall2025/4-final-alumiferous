@@ -43,11 +43,22 @@ InstaSkill is designed for anyone interested in learning or teaching through col
 
 
 ## Technology Stack
-Frontend: React with React Router DOM  
-Backend: Node.js and Express (in development)  
-Database: MongoDB (planned)  
-Authentication: JWT (JSON Web Token) (planned)  
-Testing: Jest and React Testing Library  
+
+- **Front-End**
+  - React
+  - React Router DOM
+
+- **Back-End**
+  - Node.js
+  - **Express.js** (all back-end routes are implemented using Express)
+
+- **Database**
+  - MongoDB (planned, not required for this sprint; mock data is used for now)
+
+- **Testing**
+  - Front-end: Jest + React Testing Library (for UI components)
+  - Back-end: **Mocha + Chai** for unit tests
+  - Coverage: **c8** for back-end code coverage
 
 ## Development Progress
 
@@ -64,7 +75,6 @@ The front-end application has been developed using React. The following componen
 - Global skills state management via SkillsContext
 - API integration setup in the api folder
 
-The backend development is planned but not yet implemented. Database integration will follow backend setup.
 
 ## How to Run the Application
 
@@ -79,19 +89,29 @@ The backend development is planned but not yet implemented. Database integration
    git clone https://github.com/agile-students-fall2025/4-final-alumiferous.git
    cd 4-final-alumiferous
    ```
-
-2. Navigate to the front-end directory and install dependencies:
+   
+2. In Terminal 1, navigate to the front-end directory, install dependencies, and start the React app
    ```
    cd front-end
    npm install
-   ```
-
-3. Start the development server:
-   ```
    npm start
    ```
+   The front-end will be available at: http://localhost:3000
 
-4. The application will open in your browser at http://localhost:3000
+3. In a new Terminal (Terminal 2), navigate to the back-end directory, install dependencies, and start the Express server:
+   ```
+   cd back-end
+   npm install
+   npm start
+   ```
+   The back-end API will be available at: http://localhost:4000
+   
+4. (Optional) To run back-end tests from Terminal 2:
+   ```
+   cd back-end    
+   npm test
+
+   ```
 
 ### Other Available Commands
 
