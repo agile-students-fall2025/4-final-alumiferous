@@ -24,6 +24,7 @@ const app = express();
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
+    credentials: true
   
   })
 );
