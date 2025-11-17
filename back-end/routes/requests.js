@@ -1,19 +1,36 @@
 // back-end/routes/requests.js
 import express from "express";
+import axios from "axios";
 
 const router = express.Router();
 
 // In-memory "database" for requests
-// Structure: { requestId, skillId, skillName, requesterId, requesterName, ownerId, ownerName, message, status, createdAt }
+// Structure: {
+//   requestId, skillId, skillName,
+//   ownerId, ownerName,
+//   requesterId, requesterName,
+//   message, status, createdAt, updatedAt?,
+//   skillsAcquired?, skillsWanted?
+// }
 let requests = [];
+let mockRequestsCache = [];
 
 /**
  * POST /api/requests
- * Creates a new request to learn a skill
- * Expects: { skillId, skillName, ownerId, ownerName, requesterId, requesterName, message }
+ * Creates a new request to learn a skill.
+ * Body expects:
+ * { skillId, skillName, ownerId, ownerName, requesterId, requesterName, message }
  */
 router.post("/", (req, res) => {
-  const { skillId, skillName, ownerId, ownerName, requesterId, requesterName, message } = req.body;
+  const {
+    skillId,
+    skillName,
+    ownerId,
+    ownerName,
+    requesterId,
+    requesterName,
+    message,
+  } = req.body;
 
   // Validate required fields
   if (!skillId || !ownerId || !requesterId || !message) {
@@ -22,16 +39,17 @@ router.post("/", (req, res) => {
     });
   }
 
-  // Auto-generate a new requestId
-  const newRequestId = requests.length ? requests[requests.length - 1].requestId + 1 : 1;
+  const newRequestId = requests.length
+    ? requests[requests.length - 1].requestId + 1
+    : 1;
 
   const newRequest = {
     requestId: newRequestId,
     skillId: Number(skillId),
     skillName: skillName || "Unknown Skill",
-    ownerId: Number(ownerId), // The user who owns the skill (will receive this request)
+    ownerId: Number(ownerId), // the user who owns the skill
     ownerName: ownerName || "Unknown Owner",
-    requesterId: Number(requesterId), // The user making the request
+    requesterId: Number(requesterId), // the user making the request
     requesterName: requesterName || "Unknown User",
     message: message.trim(),
     status: "pending", // pending, accepted, declined
@@ -39,19 +57,14 @@ router.post("/", (req, res) => {
   };
 
   requests.push(newRequest);
-  
-  // Debug logging
-  console.log(`[DEBUG] New request created:`, JSON.stringify(newRequest, null, 2));
-  console.log(`[DEBUG] Total requests now: ${requests.length}`);
+  console.log("Saved new request (manual POST):", newRequest);
 
   return res.status(201).json(newRequest);
 });
 
 /**
- * GET /api/requests/incoming
- * Fetches incoming requests for a user (requests for skills they own)
- * Query params: userId (required)
- * NOTE: This route must be defined BEFORE /:requestId to avoid route conflicts
+ * GET /api/requests/incoming?userId=123
+ * Fetches incoming requests for a skill owner from the in-memory array.
  */
 router.get("/incoming", (req, res) => {
   const userId = req.query.userId;
@@ -63,38 +76,33 @@ router.get("/incoming", (req, res) => {
   }
 
   const userIdNum = Number(userId);
-  
-  // Debug logging
-  console.log(`[DEBUG] Fetching incoming requests for userId: ${userIdNum}`);
-  console.log(`[DEBUG] Total requests in storage: ${requests.length}`);
-  console.log(`[DEBUG] All requests:`, JSON.stringify(requests, null, 2));
 
-  // Filter requests where the ownerId matches the userId
-  // These are requests from other users wanting to learn skills owned by this user
-  const incomingRequests = requests.filter(
-    (request) => request.ownerId === userIdNum && request.status === "pending"
+  const incoming = requests.filter(
+    (request) => request.ownerId === userIdNum && request.status === "pending",
   );
 
-  console.log(`[DEBUG] Filtered incoming requests: ${incomingRequests.length}`);
-  
-  return res.json(incomingRequests);
+  console.log(
+    `/api/requests/incoming userId=${userIdNum} -> ${incoming.length} requests`
+  );
+
+  return res.json(incoming);
 });
 
 /**
  * GET /api/requests/all
- * Debug endpoint to see all requests (for testing)
+ * Debug endpoint: returns all requests (for testing).
  */
 router.get("/all", (req, res) => {
   return res.json({
     total: requests.length,
-    requests: requests
+    requests,
   });
 });
 
 /**
  * PATCH /api/requests/:requestId
- * Updates request status (accept/decline)
- * Expects: { status: "accepted" | "declined" }
+ * Updates a request's status (accept / decline).
+ * Body expects: { status: "accepted" | "declined" }
  */
 router.patch("/:requestId", (req, res) => {
   const requestId = Number(req.params.requestId);
@@ -117,8 +125,88 @@ router.patch("/:requestId", (req, res) => {
   request.status = status;
   request.updatedAt = new Date().toISOString();
 
+  console.log(
+    `Updated requestId=${requestId} to status='${status}'`
+  );
+
   return res.json(request);
 });
 
-export default router;
+/**
+ * GET /api/requests/mock-incoming?userId=123
+ *
+ * Uses Mockaroo to seed the in-memory "requests" array once,
+ * then returns only pending incoming requests for that ownerId.
+ * This is what your Requests page is using.
+ */
+router.get("/mock-incoming", async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ error: "userId query parameter is required" });
+  }
 
+  const apiKey = process.env.API_SECRET_KEY;
+
+  try {
+    // 1) Fetch from Mockaroo once and cache the raw data
+    if (mockRequestsCache.length === 0) {
+      console.log("Fetching mock requests from Mockaroo…");
+
+      const response = await axios.get(
+        "https://api.mockaroo.com/api/27165660?count=200",
+        { headers: { "X-API-Key": apiKey } }
+      );
+
+      mockRequestsCache = Array.isArray(response.data)
+        ? response.data
+        : [response.data];
+      console.log("Mock requests loaded:", mockRequestsCache.length);
+    }
+
+    // 2) Seed the in-memory "requests" array ONCE from Mockaroo
+    if (requests.length === 0) {
+      requests = mockRequestsCache.map((r, i) => {
+        const skillName =
+          r.skillName ||
+          r.desiredSkill ||
+          (Array.isArray(r.skillsWanted) ? r.skillsWanted[0] : "Unknown Skill");
+
+        return {
+          requestId: r.requestId || i + 1,
+          skillId: r.skillId ? Number(r.skillId) : null,
+          skillName,
+          ownerId: Number(r.ownerId || r.tutorId || r.skillOwnerId || 1),
+          ownerName: r.ownerName || r.tutorName || "Unknown Owner",
+          requesterId: Number(r.requesterId || r.userId || r.id || 0),
+          requesterName:
+            r.requesterName ||
+            r.username ||
+            `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim(),
+          skillsAcquired: r.skillsAcquired || r._allSkills || [],
+          skillsWanted: r.skillsWanted || [],
+          message: r.message || `Wants to learn ${skillName}`,
+          status: "pending",
+          createdAt: new Date().toISOString(),
+        };
+      });
+    }
+
+    const userIdNum = Number(userId);
+
+    // 3) Now just filter the in-memory "requests" array by ownerId + pending
+    const incoming = requests.filter(
+      (req) => req.ownerId === userIdNum && req.status === "pending"
+    );
+
+    console.log(
+      ` /api/requests/mock-incoming userId=${userIdNum} -> ${incoming.length} requests`
+    );
+
+    return res.json(incoming);
+  } catch (error) {
+    console.error("Mockaroo fetch failed:", error.message);
+    return res.status(500).json({ error: "Failed to fetch mock requests" });
+  }
+});
+
+export default router;
