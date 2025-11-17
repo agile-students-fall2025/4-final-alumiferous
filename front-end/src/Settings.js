@@ -47,16 +47,24 @@ const Settings = () => {
 
           {/* Logout Section */}
           <div className="settings-section">
-            <button
-              className="settings-btn"
-              onClick={() => {
-                localStorage.clear();
-                alert("You have been logged out.");
-                navigate("/login");
-              }}
-            >
-              <span>Logout</span>
-            </button>
+              <button
+                className="settings-btn"
+                onClick={async () => {
+                  try {
+                    await fetch("http://localhost:4000/api/auth/logout", {
+                      method: "POST",
+                      credentials: "include"
+                    });
+                  } catch (err) {
+                    console.error("Logout request failed:", err);
+                  }
+                  localStorage.clear();
+                  alert("You have been logged out.");
+                  navigate("/login");
+                }}
+              >
+                <span>Logout</span>
+              </button>
           </div>
 
           {/* Danger Zone */}

@@ -150,10 +150,15 @@ router.post('/signup', async (req, res) => {
  * Returns: { success, message }
  */
 router.post('/logout', (req, res) => {
+
   try {
     // TODO: In production with JWT:
     // 1. Invalidate token (add to blacklist)
     // 2. Clear any server-side sessions
+
+    // Log the logout event (username if available)
+    const username = req.body?.username || req.body?.user || "Unknown";
+    console.log(`User successfully logged out: ${username}`);
 
     res.json({
       success: true,
