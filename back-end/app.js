@@ -3,7 +3,8 @@ import express from 'express'; // ES module import style
 import dotenv from 'dotenv'; // Load environmental variables from .env
 import morgan from 'morgan'; // Middleware for logging HTTP requests
 import cors from 'cors' // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
-      
+import mongoose from 'mongoose';
+
 
 // routes
 import skillsRoutes from "./routes/skills.js";
@@ -18,6 +19,12 @@ import reportsRoutes from "./routes/reports.js";
 
 // Load environment variables from .env file
 dotenv.config();
+
+// Connect to MongoDB Atlas via Mongoose
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
 
 // Create an Express app instance
 const app = express();
