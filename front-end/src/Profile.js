@@ -11,7 +11,7 @@ const Profile = () => {
 
   useEffect(() => {
     // Fetch the profile from backend only
-    fetch('/api/profile/1')
+    fetch('http://localhost:4000/api/profile/691d0ed8081ddc1c4a66116d')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch user');
         return res.json();
@@ -62,18 +62,18 @@ const Profile = () => {
         </div>
       </header>
       <div className="ProfileBody">
-        <img className="Avatar" src={user.profilePhoto || "/images/avatar-default.png"} alt="User Avatar" />
+        <img className="Avatar" src={user.avatarUrl || "/images/avatar-default.png"} alt="User Avatar" />
         <div className="UserInfo">
           <h2>{user.username}</h2>
         </div>
         <div className="AboutSection">
           <h3>About</h3>
-          <p>{user.about}</p>
+          <p>{user.bio}</p>
         </div>
         <div className="SkillsSection">
           <div className="SkillsOffered">
             <h4>Skills Offered</h4>
-            {user.skillsAcquired && user.skillsAcquired.map((skill, i) => (
+            {user.skillsOffered && user.skillsOffered.map((skill, i) => (
               <span key={i} className="SkillTag">{skill}</span>
             ))}
           </div>
