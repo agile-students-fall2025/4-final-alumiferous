@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./Settings.css";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "./ThemeContext";
@@ -6,6 +6,30 @@ import { ThemeContext } from "./ThemeContext";
 const Settings = () => {
   const { darkMode, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+    navigate("/home");
+  };
+
+  const handleLogoutConfirm = async () => {
+    setShowLogoutConfirm(false);
+    try {
+      await fetch("http://localhost:4000/api/auth/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+    localStorage.clear();
+    navigate("/login");
+  };
 
   return (
     <main className="settings-page">
@@ -49,19 +73,7 @@ const Settings = () => {
           <div className="settings-section">
               <button
                 className="settings-btn"
-                onClick={async () => {
-                  try {
-                    await fetch("http://localhost:4000/api/auth/logout", {
-                      method: "POST",
-                      credentials: "include"
-                    });
-                  } catch (err) {
-                    console.error("Logout request failed:", err);
-                  }
-                  localStorage.clear();
-                  alert("You have been logged out.");
-                  navigate("/login");
-                }}
+                onClick={handleLogoutClick}
               >
                 <span>Logout</span>
               </button>
@@ -78,6 +90,24 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="logout-modal-overlay" onClick={handleLogoutCancel}>
+          <div className="logout-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="logout-modal-title">Logout</h3>
+            <p className="logout-modal-text">Are you sure you want to logout?</p>
+            <div className="logout-modal-buttons">
+              <button className="logout-modal-btn cancel" onClick={handleLogoutCancel}>
+                No
+              </button>
+              <button className="logout-modal-btn confirm" onClick={handleLogoutConfirm}>
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -38,6 +38,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
+  top: 1px;
 }
 
 .logo {
@@ -198,4 +200,106 @@ body.dark-mode .settings-btn.delete {
 
 body.dark-mode .settings-btn.delete:hover {
   background-color: #3a1a1e !important;
+}
+
+/* Logout Confirmation Modal */
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.logout-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.logout-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.logout-modal-text {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.logout-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.logout-modal-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-modal-btn.cancel {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.logout-modal-btn.cancel:hover {
+  background: #e0e0e0;
+}
+
+.logout-modal-btn.confirm {
+  background: #1976d2;
+  color: #ffffff;
+}
+
+.logout-modal-btn.confirm:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+}
+
+/* Dark mode for logout modal */
+body.dark-mode .logout-modal {
+  background: #1e1e1e !important;
+}
+
+body.dark-mode .logout-modal-title {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .logout-modal-text {
+  color: #ccc !important;
+}
+
+body.dark-mode .logout-modal-btn.cancel {
+  background: #2b2b2b !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .logout-modal-btn.cancel:hover {
+  background: #333 !important;
+}
+
+body.dark-mode .logout-modal-btn.confirm {
+  background: #4dabf7 !important;
+}
+
+body.dark-mode .logout-modal-btn.confirm:hover {
+  background: #339af0 !important;
 }
