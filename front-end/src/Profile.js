@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './Profile.css';
+import { SkillsContext } from './SkillsContext';
+import Skill from './Skill';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -8,6 +10,9 @@ const Profile = () => {
   const [feedback, setFeedback] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  // Get all skills from context
+  const { skills } = useContext(SkillsContext);
 
   useEffect(() => {
     // Fetch the profile from backend only
@@ -26,6 +31,12 @@ const Profile = () => {
       });
   }, []);
 
+  // Filter user's offered and wanted skills from context, matching their userId
+const userSkills = skills.filter(
+  skill => String(skill.userId) === String(user?._id)
+);
+
+
   // save logic
   const handleSave = () => {
     setTimeout(() => setFeedback(''), 3000);
@@ -39,7 +50,7 @@ const Profile = () => {
   return (
     <main className="Profile">
       <header className="ProfileHeader">
-        <h1 className="ProfileTitle">Profile</h1>
+        <h1 className="ProfileTitle">My Skills</h1>
         <div className="ProfileMenu" ref={menuRef}>
           <button
             className="MenuButton"
@@ -70,24 +81,30 @@ const Profile = () => {
           <h3>About</h3>
           <p>{user.bio}</p>
         </div>
+
         <div className="SkillsSection">
-          <div className="SkillsOffered">
-            <h4>Skills Offered</h4>
-            {user.skillsOffered && user.skillsOffered.map((skill, i) => (
-              <span key={i} className="SkillTag">{skill}</span>
-            ))}
-          </div>
-          <div className="SkillsWanted">
-            <h4>Skills Wanted</h4>
-            {user.skillsWanted && user.skillsWanted.map((skill, i) => (
-              <span key={i} className="SkillTag wanted">{skill}</span>
-            ))}
+          <h4>My Skills</h4>
+          <div className="skill-grid">
+            {userSkills.length === 0 ? (
+              <p>No skills added yet.</p>
+            ) : (
+              userSkills.map(skill => (
+                <Skill
+                  key={skill.skillId}
+                  {...skill}
+                  skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
+                  ImgHeight={skill.height}
+                />
+              ))
+            )}
           </div>
         </div>
+
+
         <div className="ActionButtons">
           <Link to="/edit-profile">
             <button className="EditProfileButton">
-              Edit Profile
+              Create a Skill 
             </button>
           </Link>
           <Link to="/settings">
@@ -101,3 +118,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
