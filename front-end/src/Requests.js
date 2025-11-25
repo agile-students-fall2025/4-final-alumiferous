@@ -96,18 +96,10 @@ export default function Requests() {
   };
 
   const handleAccept = (id) => {
-    const req = requests.find((r) => r.id === id);
-    if (req) {
-      alert(`Accepted request from ${req.name}`);
-    }
     updateRequestStatus(id, "accepted");
   };
 
   const handleDecline = (id) => {
-    const req = requests.find((r) => r.id === id);
-    if (req) {
-      alert(`Declined request from ${req.name}`);
-    }
     updateRequestStatus(id, "declined");
   };
 

@@ -1,153 +1,188 @@
-.report-container {
+.report-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   height: 100vh;
-  background-color: #f8f8f8;
-}
-
-.report-box {
-  background: #ffffff;
-  padding: 2.5rem 2.8rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 520px; 
-  max-width: 90%;
-  text-align: center;
-  position: relative;
+  width: 100vw;
+  background: #f8f8f8;
   box-sizing: border-box;
+  overflow: hidden;
+  transition: background-color 0.3s, color 0.3s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .report-header {
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) - 8px);
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 1.8rem;
+  padding: 16px 20px 16px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100vw;
+  flex-shrink: 0;
 }
 
 .back-btn {
   appearance: none;
   -webkit-appearance: none;
   outline: none;
-
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  width: 42px;
-  height: 42px;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 1.2rem;
-  line-height: 1;
+  font-size: 20px;
+  color: #333;
+  border-radius: 50%;
+  padding: 6px;
+  min-width: 36px;
+  min-height: 36px;
   cursor: pointer;
-
-  box-sizing: border-box;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  margin-right: 8px;
 }
 
 .back-btn:hover {
-  background-color: #0056b3;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transform: translateY(-50%); 
+  background: #f0f0f0;
 }
 
 .report-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
-  color: #007bff;
   margin: 0;
+  color: #333;
+  position: relative;
+  top: 1px;
 }
 
-.report-box form {
+.report-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px;
+  padding-top: calc(var(--app-header-offset, 64px) + 80px);
+  padding-bottom: calc(var(--app-footer-offset, 200px) + env(safe-area-inset-bottom));
+}
+
+.report-content {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.report-small-box,
-.report-big-box {
-  padding: 0.9rem;
-  border: 1px solid #ccc;
+.report-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid #e0e3ec;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 16px;
+  background: #f5f7fb;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
 }
 
-.report-big-box {
-  min-height: 160px; 
+.form-textarea {
+  padding: 12px 16px;
+  border: 1px solid #e0e3ec;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f5f7fb;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  min-height: 120px;
   resize: vertical;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.report-small-box:focus,
-.report-big-box:focus {
-  border-color: #007bff;
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #1976d2;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+  background: #ffffff;
 }
 
 .report-submit {
-  background-color: #007bff;
-  color: #ffffff;
+  padding: 12px 24px;
+  background: #1976d2;
+  color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 0.9rem;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
 }
 
 .report-submit:hover {
-  background-color: #0056b3;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  background: #1565c0;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transform: translateY(-1px);
+}
+
+.report-submit:active {
+  transform: translateY(0);
 }
 
 .report-popup {
-  margin-top: 1.2rem;
-  padding: 0.75rem 1rem;
+  margin-top: 16px;
+  padding: 12px 16px;
   background: #e6ffed;
   color: #0f5132;
   border: 1px solid #badbcc;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 14px;
+  text-align: center;
 }
 
-body.dark-mode .report-container {
+/* Dark Mode */
+body.dark-mode .report-page {
   background-color: #121212 !important;
   color: #f1f1f1 !important;
 }
 
-body.dark-mode .report-box {
+body.dark-mode .report-header {
   background: #1e1e1e !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  border-bottom: 1px solid #333 !important;
 }
 
 body.dark-mode .report-title {
-  color: #4dabf7 !important;
+  color: #f1f1f1 !important;
 }
 
-body.dark-mode .report-small-box,
-body.dark-mode .report-big-box {
+body.dark-mode .report-content form {
+  background: #1e1e1e !important;
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-textarea {
   background: #2b2b2b !important;
   color: #fff !important;
   border: 1px solid #444 !important;
 }
 
-body.dark-mode .report-small-box:focus,
-body.dark-mode .report-big-box:focus {
+body.dark-mode .form-input:focus,
+body.dark-mode .form-textarea:focus {
   border-color: #4dabf7 !important;
   box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.25) !important;
+  background: #2b2b2b !important;
 }
 
 body.dark-mode .report-submit {
@@ -157,36 +192,32 @@ body.dark-mode .report-submit {
 
 body.dark-mode .report-submit:hover {
   background-color: #339af0 !important;
-  box-shadow: 0 3px 8px rgba(77, 171, 247, 0.3) !important;
 }
 
 body.dark-mode .back-btn {
-  background-color: #4dabf7 !important;
-  color: #fff !important;
+  color: #f1f1f1 !important;
 }
 
 body.dark-mode .back-btn:hover {
-  background-color: #339af0 !important;
-  box-shadow: 0 2px 8px rgba(77, 171, 247, 0.3) !important;
+  background: #2b2b2b !important;
 }
 
 @media (max-width: 480px) {
-  .report-box {
-    width: 90%;
-    padding: 1.8rem;
+  .report-content form {
+    padding: 20px;
   }
 
   .report-title {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
   .back-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     font-size: 1.1rem;
   }
 
-  .report-big-box {
-    min-height: 140px;
+  .form-textarea {
+    min-height: 100px;
   }
 }
