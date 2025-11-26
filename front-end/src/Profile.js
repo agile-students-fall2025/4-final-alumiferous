@@ -109,29 +109,26 @@ const Profile = () => {
         <div className="UserInfo">
           {isEditing ? (
             <>
-              <input
-                type="text"
-                className="ProfileUsernameInput"
-                value={formState.firstName || ""}
-                onChange={e => handleChange("firstName", e.target.value)}
-                placeholder="First Name"
-              />
-              <input
-                type="text"
-                className="ProfileUsernameInput"
-                value={formState.lastName || ""}
-                onChange={e => handleChange("lastName", e.target.value)}
-                placeholder="Last Name"
-                style={{ marginTop: 8 }}
-              />
-              <input
-                type="text"
-                className="ProfileUsernameInput"
-                value={formState.username || ""}
-                onChange={e => handleChange("username", e.target.value)}
-                placeholder="Username"
-                style={{ fontWeight: 'bold', fontSize: '1.3rem', textAlign: 'center', marginTop: 8 }}
-              />
+            <input
+              className="ProfileUsernameInput"
+              value={formState.firstName || ""}
+              onChange={e => handleChange("firstName", e.target.value)}
+              placeholder="First Name"
+            />
+            <input
+              className="ProfileUsernameInput"
+              value={formState.lastName || ""}
+              onChange={e => handleChange("lastName", e.target.value)}
+              placeholder="Last Name"
+              style={{ marginTop: 8 }}
+            />
+            <input
+              className="ProfileUsernameInput"
+              value={formState.username || ""}
+              onChange={e => handleChange("username", e.target.value)}
+              placeholder="Username"
+              style={{ marginTop: 8 }}
+            />
             </>
           ) : (
             <>
@@ -146,7 +143,7 @@ const Profile = () => {
         </div>
 
         <div className="AboutSection">
-          <h3>About</h3>
+          <div className="AboutLabel">About</div>
           {isEditing ? (
             <textarea
               value={formState.bio || ""}
@@ -154,7 +151,9 @@ const Profile = () => {
               className="ProfileBioInput"
             />
           ) : (
-            <p>{user.bio}</p>
+            <div className="BioBox">
+              {user.bio}
+            </div>
           )}
         </div>
         <div className="skill-grid">
