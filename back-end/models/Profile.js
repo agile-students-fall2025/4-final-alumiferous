@@ -1,12 +1,12 @@
-//Profile Schema
+//models/Profile 
 import mongoose from 'mongoose';
 const profileSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   username: String,
   bio: String,
-  avatarUrl: String,
-  skillsOffered: [String],
-  skillsWanted: [String],
+  avatarURL: String,
+  firstName: String,
+  lastName: String,
 });
 
 export default mongoose.model('Profile', profileSchema);

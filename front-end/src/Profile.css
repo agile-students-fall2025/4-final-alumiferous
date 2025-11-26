@@ -1,403 +1,260 @@
-body { margin: 0; }
-/* Global background handled in App.css */
-.Profile {
+body {
+  margin: 0;
+  background: #f7f8fc;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+
+/* Card container for profile content */
+.ProfileContent {
+  max-width: 390px;
+  margin: 36px auto 100px;
+  padding: 28px 16px 34px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 6px 28px rgba(34,90,160,0.12);
   display: flex;
   flex-direction: column;
-  align-items: normal;
-  height: 100vh;
-  width: 100vw;
-  padding-top: var(--app-header-offset, 64px);
-  background: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  box-sizing: border-box;
-  overflow: hidden;
+  align-items: center;
 }
 
-.Profile .ProfileCard,
-.Profile .Profile-feedback {
-  width: 100%;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+/* Responsive fix for mobile */
+@media (max-width: 500px) {
+  .ProfileContent {
+    max-width: 99vw;
+    padding: 16px 2vw 90px;
+  }
 }
 
+/* Header */
 .ProfileHeader {
-  position: fixed;
-  top: calc(var(--app-header-offset, 64px) - 8px);
-  left: 0;
-  right: 0;
-  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  width: 100vw;
-  flex-shrink: 0;
-}
-
-/* Scrollable inner content area  */
-.ProfileBody {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  background: #ffffff;
   width: 100%;
-  max-width: 100vw;
-  padding-top: calc(var(--app-header-offset, 64px) + 40px);
-  padding-bottom: calc(var(--app-footer-offset, 60px) + 20px + env(safe-area-inset-bottom));
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  margin-bottom: 0;
 }
-
-@media (max-width: 768px) {
-  .Profile {
-    padding-top: calc(var(--app-header-offset, 90px));
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-.ProfileCard { padding: 24px 16px; }
-
-/* MAIN FIX FOR PINTEREST GRID */
-.SkillsSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1100px;
-  margin: 24px auto;
-}
-
-.SkillsOffered, .SkillsWanted {
-  width: 100%;
-  max-width: none;
-  margin-bottom: 18px;
-}
-
-/* PINTEREST GRID */
-.skill-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: flex-start;
-  width: 100%;
-  margin-bottom: 32px;
-}
-
-.skill-wrapper {
-  display: inline-block;
-  width: 220px;
-  margin-bottom: 16px;
-  break-inside: avoid;
-  border-radius: 12px;
-  overflow: hidden;
-  background: transparent;
-}
-
-/* Responsive adjustments for grid */
-@media (max-width: 900px) {
-  .SkillsSection {
-    max-width: 100vw;
-    padding: 0 10px;
-  }
-  .skill-grid { gap: 10px; }
-  .skill-wrapper { width: 48vw; }
-}
-@media (max-width: 600px) {
-  .SkillsSection { max-width: 100vw; padding: 0 2px; }
-  .skill-wrapper { width: 95vw; }
-}
-
-/* Action Buttons */
-.ActionButtons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.EditProfileButton,
-.AccountSettingsButton { min-width: 180px; }
-@media (max-width: 480px) {
-  .EditProfileButton,
-  .AccountSettingsButton { width: 100%; }
-}
-
-/* Profile Title */
 .ProfileTitle {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #222;
   margin: 0;
-  color: #333;
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-
-/* Menu and Back Button */
-.BackButton, .MenuButton { 
-  background: #f7f7fa;
+.EditButton {
+  background: #1976d2;
+  color: #fff;
   border: none;
-  font-size: 24px;
-  color: #888;
-  border-radius: 12px;
+  padding: 7px 16px;
+  border-radius: 18px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 10px 14px;
-  min-width: 40px; 
-  min-height: 40px;
-  flex: 0 0 auto; 
-  box-shadow: 0 1px 4px rgba(70,33,135,0.07);
-  transition: background 0.18s;
+  box-shadow: 0 2px 10px rgba(33,89,135,0.09);
+  margin-left: 10px;
+  transition: background 0.15s;
+}
+.EditButton:active, .EditButton:hover {
+  background: #1565c0;
 }
 
-.ProfileHeader .MenuButton {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  color: #333;
-  border-radius: 50%;
-  padding: 8px;
-  margin-right: 16px;
-  min-width: 0;
-  min-height: 0;
-  box-shadow: none;
-  outline: none;
-  transition: background 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ProfileHeader .MenuButton svg {
-  width: 24px;
-  height: 24px;
-  display: block;
-}
-
-/* Avatar and User Info */
 .Avatar {
-  width: 112px;
-  height: 112px;
+  width: 104px;
+  height: 104px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 2px 12px rgba(33,89,135,0.11);
-  margin-bottom: 16px;
-  border: 5px solid #fff;
-}
-.UserInfo h2 {
-  color: #222f3e;
-  font-size: 28px;
-  margin: 0 0 8px 0;
-  font-weight: 600;
-}
-.UserInfo p {
-  color: #9198ad;
-  font-size: 16px;
+  border: 4px solid #e6f0ff;
+  margin-top: 18px;
   margin-bottom: 10px;
-}
-.UserInfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  display: block;
 }
 
-/* About Section */
-.AboutSection {
-  margin: 18px 0 0 0;
-  padding: 16px 20px;
-  background: transparent !important;
-  border-radius: 0;
-  box-shadow: none;
-  width: 100%;
-  max-width: 520px;
+/* Username and Info */
+.UserInfo {
   text-align: center;
+  margin-bottom: 16px;
+}
+.UserInfo h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 2px 0 0 0;
+  color: #222f3e;
+}
+
+.AboutSection {
+  width: 100%;
+  max-width: 380px;
+  margin: 16px auto 0 auto;
+  padding: 18px 10px;
+  background: #fbfcfe;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px rgba(20,40,80,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* <--- horizontally centers content inside */
+  text-align: center;     /* <--- centers all text */
 }
 .AboutSection h3 {
   color: #1976d2;
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 8px;
+  text-align: center;     /* <--- ensures header is centered */
 }
-
-/* Skill tags - not used with grid bubbles, but preserved for other uses */
-.SkillTag {
-  background: #e9eefc;
-  color: #1976d2;
-  border-radius: 7px;
-  padding: 6px 18px;
-  margin: 3px 0;
+.AboutSection p {
   font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 1px 4px rgba(33,89,135,0.08);
-  margin-right: 4px;
-}
-.SkillTag.wanted {
-  background: #ffecef;
-  color: #d21951;
+  margin: 0;
+  color: #444;
+  text-align: center;     /* <--- ensures about text is centered */
 }
 
-/* Action Button Styles */
- .ActionButtons {
-  margin: 18px 0 0 0;
-  display: flex;
-  gap: 16px;
+
+/* Skills grid: Pinterest style bubbles */
+.skill-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
 }
-.EditProfileButton,
-.AccountSettingsButton {
-  padding: var(--btn-padding, 12px 24px);
-  border-radius: var(--btn-border-radius, 10px);
-  border: none;
-  font-size: var(--btn-font-size, 16px);
-  font-weight: var(--btn-font-weight, 600);
-  background: var(--primary-color, #1976d2);
+.SkillCard {
+  padding: 11px 17px;
+  border-radius: 18px;
+  background: #1976d2;
   color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2.5px 13px rgba(40,120,220,0.10);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
-  transition: all var(--transition-fast, 0.2s ease);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-.EditProfileButton:hover,
-.AccountSettingsButton:hover {
-  background: var(--primary-hover, #1565c0);
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-  transform: translateY(-1px);
-}
-.EditProfileButton:active,
-.AccountSettingsButton:active {
-  transform: translateY(0);
-}
-
-.Profile-feedback {
-  background: #eaf6ff;
-  color: #1976d2;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-size: 16px;
-  box-shadow: 0 1px 4px rgba(33,89,135,0.19);
-  margin: 12px auto;
-  text-align: center;
-  width: auto;
-}
-
-/* Profile header menu dropdown */
-.ProfileMenu {
+  font-size: 15px;
+  letter-spacing: .01em;
   position: relative;
-  display: inline-block;
-  flex: 0 0 auto;
-}
-.MenuDropdown {
-  position: absolute;
-  top: calc(100% + 16px);
-  right: 0;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  padding: 6px;
-  min-width: 160px;
-  z-index: 10;
-}
-.MenuItem {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-}
-.MenuItem:hover,
-.MenuItem:focus {
-  background: #f2f4f8;
-}
-.MenuItemLink {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  width: 100%;
-}
-.MenuItem .MenuItemLink {
-  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 90px;
 }
 
-/* Bottom Navigation */
+/* Action Buttons (if used) */
+.ActionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.EditProfileButton, .AccountSettingsButton {
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+  cursor: pointer;
+  transition: background .17s;
+}
+.EditProfileButton:hover, .AccountSettingsButton:hover {
+  background: #1565c0;
+}
+
+/* Bottom navigation */
 .BottomNavigation {
   position: fixed;
-  bottom: 32px;
+  bottom: 10px;
   left: 0;
-  width: 100%;
+  width: 100vw;
+  max-width: 420px;
   background: #fff;
-  border-radius: 32px;
-  box-shadow: 0 4px 24px rgba(33,89,135,0.14);
+  border-radius: 33px;
+  box-shadow: 0 2px 12px rgba(33,89,135,0.14);
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   padding: 12px 0;
-  max-width: 520px;
   margin: 0 auto;
   z-index: 99;
 }
-.NavTab {
-  color: #888;
-  background: none;
-  border-radius: 20px;
-  padding: 10px 22px;
-  font-size: 17px;
-  font-weight: 500;
-  text-decoration: none;
-  box-shadow: none;
-  transition: background 0.2s, color 0.18s, font-weight 0.14s;
-}
-.NavTab:focus,
-.NavTab:hover {
-  color: #1976d2;
-  background: #f2faff;
-  font-weight: 600;
-}
-.NavTab.active,
-.NavTab[aria-current="page"] {
-  color: #fff;
-  background: #1976d2;
-  font-weight: 600;
+
+/* Media queries for iPhone, small screens */
+@media (max-width: 375px) {
+  .ProfileContent { max-width: 99vw; padding: 11px 1vw 80px; }
+  .Avatar { width: 72px; height: 72px; }
+  .AboutSection { max-width: 92vw; padding: 11px 3vw 6px; }
 }
 
-/* --- DARK MODE styles  --- */
-body.dark-mode .Profile { background: #121212 !important; color: #f1f1f1 !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important; }
-body.dark-mode .ProfileHeader { background: #121212 !important; color: #fff !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important; }
-body.dark-mode .ProfileBody { background: #121212 !important; color: #f1f1f1 !important; }
-body.dark-mode .BackButton { background: #333 !important; color: #eee !important; box-shadow: none !important; }
-body.dark-mode .BackButton:hover { background: #444 !important; color: #1976d2 !important; }
-body.dark-mode .MenuButton { color: #f1f1f1 !important; }
-body.dark-mode .MenuButton:hover { background: #2b2b2b !important; }
-body.dark-mode .ProfileCard { background: transparent !important; color: #fff !important; box-shadow: none !important; }
-body.dark-mode .AboutSection { background: transparent !important; color: #fff !important; }
-body.dark-mode .AboutSection h3 { color: #1976d2 !important; }
-body.dark-mode .UserInfo h2 { color: #fff !important; }
-body.dark-mode .UserInfo p { color: #ccc !important; }
-body.dark-mode .SkillTag { background: #2c2c2c !important; color: #1976d2 !important; }
-body.dark-mode .SkillTag.wanted { background: #3a1a1e !important; color: #ff7b9c !important; }
-body.dark-mode .EditProfileButton, body.dark-mode .AccountSettingsButton { background: #1976d2 !important; color: #fff !important; box-shadow: none !important; }
-body.dark-mode .EditProfileButton:hover, body.dark-mode .AccountSettingsButton:hover { background: #1565c0 !important; }
-body.dark-mode .BottomNavigation { background: #121212 !important; box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5) !important; }
-body.dark-mode .NavTab { color: #aaa !important; }
-body.dark-mode .NavTab.active, body.dark-mode .NavTab[aria-current="page"] { color: #fff !important; background: #1976d2 !important; }
-body.dark-mode .MenuDropdown { background: #121212 !important; border-color: #2a2a2a !important; box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important; }
-body.dark-mode .MenuItem { color: #f1f1f1; }
-body.dark-mode .MenuItem .MenuItemLink { color: #f1f1f1; }
-body.dark-mode .MenuItem:hover, body.dark-mode .MenuItem:focus { background: #2a2a2a; }
+.ProfileContent {
+  /* existing styles */
+  margin-top: 64px; /* Add this to push below header */
+}
+
+.SavedSkillsButton {
+  background: #fff;
+  color: #1976d2;
+  border: 2px solid #1976d2;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background .17s, color .17s;
+  margin-right: 8px;
+}
+.SavedSkillsButton:hover {
+  background: #1976d2;
+  color: #fff;
+}
+
+.ProfileUsernameInput {
+  font-size: 20px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #bcd0ee;
+  width: 80%;
+  max-width: 320px;
+  display: block;
+  margin: 16px auto 8px auto;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(80,120,180,0.07);
+  background: #f7faff;
+}
+.ProfileUsernameInput:focus {
+  border-color: #1976d2;
+  outline: none;
+  background: #fff;
+}
+
+.ProfileFullName {
+  margin: 0 0 2px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #191c1f;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+.ProfileUsername {
+  color: #6a7791;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 3px;
+  letter-spacing: 0.01em;
+}
+
+.ProfileUsernameInput {
+  width: 90%;
+  max-width: 320px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 10px 15px;
+  border-radius: 13px;
+  border: 2px solid #bcd0ee;
+  text-align: center;
+  display: block;
+  background: #f6faff;
+  margin: 1vh auto 8px auto;
+}
+.ProfileUsernameInput:focus {
+  outline: none;
+  border-color: #1976d2;
+  background: #fff;
+}
 
 
 
