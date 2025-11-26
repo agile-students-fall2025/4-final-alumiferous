@@ -1,223 +1,69 @@
-// Authentication routes for login and signup
+// Authentication routes using ES modules
 import express from 'express';
+import User from '../models/User.js';
+
+console.log('auth.js loaded');
+
 const router = express.Router();
 
-/**
- * POST /api/auth/login
- * Expects: { email, password }
- * Returns: { success, username, token, message }
- */
-router.post('/login', async (req, res) => {
-  console.log('LOGIN REQUEST received:', {
-    email: req.body.email,
-  });
-
-  try {
-    const { email, password } = req.body;
-
-    // Validate input
-    if (!email || !password) {
-      console.log('LOGIN FAILED: Missing email or password');
-      return res.status(400).json({
-        success: false,
-        message: 'Email and password are required',
-      });
-    }
-
-    // TODO: Replace with actual database lookup
-
-    // Mock user lookup (replace with DB query)
-    const mockUser = {
-      id: 1,
-      email: email,
-      username: email.split('@')[0],
-      firstName: 'Demo',
-      lastName: 'User',
-    };
-
-    // Mock password check (replace with bcrypt.compare)
-    const isPasswordValid = password.length >= 6; // Simple validation for demo
-
-    if (!isPasswordValid) {
-      console.log('LOGIN FAILED: Invalid password for', email);
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password',
-      });
-    }
-
-    // Successful login
-    console.log('LOGIN SUCCESS:', email);
-    res.json({
-      success: true,
-      username: mockUser.username,
-      userId: mockUser.id,
-      token: 'mock-jwt-token-' + Date.now(), // will have to replace with actual JWT
-      message: 'Login successful',
-    });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during login',
-      error: err.message,
-    });
-  }
-});
-
-
-/*
- * POST /api/auth/signup
- * Expects: { email, password, firstName, lastName }
- * Returns: { success, username, userId, token, message }
- */
+// Signup: POST /auth/signup
 router.post('/signup', async (req, res) => {
-  console.log('SIGNUP REQUEST received:', {
-    email: req.body.email,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-  });
-
+  console.log('Signup route hit');
+  const { email, password, firstName, lastName } = req.body;
+  if (!email || !password) {
+    return res.status(401).json({ success: false, message: 'No email or password supplied.' });
+  }
   try {
-    const { email, password, firstName, lastName } = req.body;
-
-    // Validate input
-    if (!email || !password || !firstName || !lastName) {
-      console.log('SIGNUP FAILED: Missing required fields');
-      return res.status(400).json({
-        success: false,
-        message: 'All fields are required',
-      });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.log('SIGNUP FAILED: Invalid email format:', email);
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email format',
-      });
-    }
-
-    // Validate password strength
-    if (password.length < 6) {
-      console.log('SIGNUP FAILED: Password too short');
-      return res.status(400).json({
-        success: false,
-        message: 'Password must be at least 6 characters',
-      });
-    }
-
-    // TODO: Replace with actual database operations
-    // Mock user creation (have to replace with DB insert)
-    const newUser = {
-      id: Date.now(), // Mock ID
-      email: email,
-      username: `${firstName} ${lastName}`,
-      firstName: firstName,
-      lastName: lastName,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Successful signup
-    console.log('SIGNUP SUCCESS:', email, 'User ID:', newUser.id);
-    res.status(201).json({
-      success: true,
-      username: newUser.username,
-      userId: newUser.id,
-      token: 'mock-jwt-token-' + Date.now(), // Replace with actual JWT
-      message: 'Account created successfully',
-    });
+    const user = await new User({ email, password, firstName, lastName }).save();
+    console.log(`New user: ${user.email}`);
+    const token = user.generateJWT();
+    res.json({ success: true, message: 'User saved successfully.', token, email: user.email, firstName: user.firstName, lastName: user.lastName });
   } catch (err) {
+    // Handle duplicate email error 
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+      return res.status(409).json({
+        success: false,
+        message: 'User already exists. Please use a different email.'
+      });
+    }
     console.error('Signup error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during signup',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Error saving user to database.', error: err });
   }
 });
 
-
-/*
- * PUT /api/auth/reset-password
- * Expects: { email, newPassword }
- * (In a real app you’d also verify a reset token or old password)
- * For this sprint: we validate input and simulate the update.
- */
-router.put('/reset-password', async (req, res) => {
-  console.log('RESET PASSWORD REQUEST received:', {
-    email: req.body.email,
-  });
-
+// Login: POST /auth/login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(401).json({ success: false, message: 'No email or password supplied.' });
+  }
   try {
-    const { email, newPassword } = req.body;
-
-    // Basic validation
-    if (!email || !newPassword) {
-      console.log('RESET PASSWORD FAILED: Missing email or newPassword');
-      return res.status(400).json({
-        success: false,
-        message: 'Email and newPassword are required',
-      });
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'No account found for this email. Please sign up first.' });
     }
-
-    if (newPassword.length < 6) {
-      console.log('RESET PASSWORD FAILED: Password too short');
-      return res.status(400).json({
-        success: false,
-        message: 'New password must be at least 6 characters long',
-      });
+    if (!user.validPassword(password)) {
+      return res.status(401).json({ success: false, message: 'Incorrect password.' });
     }
-
-    // TODO: Replace with DB lookup + password hash update
-    console.log(`RESET PASSWORD SUCCESS (mock) for user: ${email}`);
-
-    return res.json({
-      success: true,
-      message: 'Password reset successfully (mock implementation).',
-    });
+    console.log('User logged in successfully.');
+    const token = user.generateJWT();
+    res.json({ success: true, message: 'User logged in successfully.', token, email: user.email, firstName: user.firstName, lastName: user.lastName });
   } catch (err) {
-    console.error('Reset password error:', err);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error during password reset',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Error looking up user in database.', error: err });
   }
 });
 
-
-/*
- * Route for user logout
- * POST /api/auth/logout
- * Returns: { success, message }
- */
-router.post('/logout', (req, res) => {
-
-  try {
-    // TODO: In production with JWT:
-    // 1. Invalidate token (add to blacklist)
-    // 2. Clear any server-side sessions
-
-    // Log the logout event (username if available)
-    const username = req.body?.username || req.body?.user || "Unknown";
-    console.log(`User successfully logged out: ${username}`);
-
-    res.json({
-      success: true,
-      message: 'Logged out successfully',
-    });
-  } catch (err) {
-    console.error('Logout error:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during logout',
-      error: err.message,
-    });
-  }
+// Logout: GET /auth/logout
+router.get('/logout', (req, res) => {
+  // With JWT, logout is handled on the frontend by deleting the token
+  res.json({ success: true, message: 'Delete your token from local storage to logout.' });
 });
 
-// Export the router
+// Error handling middleware
+router.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).send('Server error');
+});
+
+
 export default router;

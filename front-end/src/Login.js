@@ -55,7 +55,6 @@ const Login = props => {
       if (data.success) {
         console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, data.username)
 
-        // ⭐⭐ STORE USER INFO FOR LATER (Requests page, etc.)
         if (data.userId) {
           localStorage.setItem('userId', data.userId)
         }
