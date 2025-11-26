@@ -10,7 +10,10 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   photo: { type: String },      // optional
-  username: { type: String }    // optional
+  username: { type: String },   // optional
+  offeredSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
+  savedSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
+  bio: {type: String}
 });
 
 
