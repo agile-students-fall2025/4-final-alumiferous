@@ -8,12 +8,12 @@ import mongoose from 'mongoose';
 // routes
 import skillsRoutes from "./routes/skills.js";
 import profileRoutes from "./routes/profile.js";
-import authRoutes from "./routes/auth.js";
 import chatsRoutes from './routes/chats.js';
 import messagesRoutes from './routes/messages.js';
 import requestsRoutes from "./routes/requests.js";
 import onboardingRoutes from './routes/onboarding.js';
 import reportsRoutes from "./routes/reports.js";
+import authRoutes from './routes/auth.js';
 
 
 // Load environment variables from .env file
@@ -31,9 +31,8 @@ const app = express();
 // Enable CORS for frontend on localhost:3000
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://10.188.201.185:3000"], // your React dev server
+    origin: ["http://localhost:3000", "http://192.168.0.177:3000"], // your React dev server
     credentials: true
-  
   })
 );
 
