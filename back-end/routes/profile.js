@@ -37,7 +37,7 @@ const imageUpload = multer({
 router.get("/:id", async (req, res) => {
   try {
     const userObjectId = new mongoose.Types.ObjectId(req.params.id);
-    const profile = await Profile.findOne({ userId: userObjectId });
+    const profile = await Profile.findOne({ _id: userObjectId });
     if (profile) return res.json(profile);
     res.status(404).json({ error: "Profile not found" });
   } catch (err) {
@@ -60,22 +60,24 @@ router.get("/", async (req, res) => {
 // PUT: Update profile by userId with photo upload
 router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
   try {
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
     const userObjectId = new mongoose.Types.ObjectId(req.params.id);
     // Build the profile update object
     const update = {
       username: req.body.username,
-      bio: req.body.bio || req.body.about, // either source
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      bio: req.body.bio || req.body.bio, // either source
       skillsOffered: JSON.parse(req.body.skillsOffered || req.body.skillsAcquired || "[]"),
       skillsWanted: JSON.parse(req.body.skillsWanted || "[]"),
     };
     if (req.file) {
-      update.avatarUrl = `/uploads/profile-photos/${req.file.filename}`;
-    } else if (req.body.avatarUrl) {
-      update.avatarUrl = req.body.avatarUrl;
-    }
+      update.avatarURL = `/uploads/profile-photos/${req.file.filename}`;
+    } //else if (req.body.avatarURL) {update.avatarURL = req.body.avatarURL;}
 
     const profile = await Profile.findOneAndUpdate(
-      { userId: userObjectId },
+      { _id: userObjectId },
       update,
       { new: true, runValidators: true }
     );
@@ -91,12 +93,12 @@ router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
 router.post("/", imageUpload.single("profilePhoto"), async (req, res) => {
   try {
     const data = {
-      userId: new mongoose.Types.ObjectId(req.body.userId),
+      _id: new mongoose.Types.ObjectId(req.body._id),
       username: req.body.username,
       bio: req.body.bio,
       skillsOffered: JSON.parse(req.body.skillsOffered || req.body.skillsAcquired || "[]"),
       skillsWanted: JSON.parse(req.body.skillsWanted || "[]"),
-      avatarUrl: req.file ? `/uploads/profile-photos/${req.file.filename}` : req.body.avatarUrl,
+      avatarURL: req.file ? `/uploads/profile-photos/${req.file.filename}` : req.body.avatarURL,
     };
     const newProfile = new Profile(data);
     await newProfile.save();
