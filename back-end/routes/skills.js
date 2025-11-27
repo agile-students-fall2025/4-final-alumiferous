@@ -1,8 +1,11 @@
 // back-end/routes/skills.js
 import express from "express";
-import axios from "axios";
+// no external mock services — rely on MongoDB and in-memory cache
 import multer from "multer";
 import path from "path"; 
+import SkillOffering from "../models/SkillOffering.js";
+import Skill from "../models/Skill.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -36,91 +39,7 @@ const videoUpload = multer({
   },
 });
 
-
-// In-memory "database" for now.
-// Later you can replace this with your Mockaroo data or real DB.
-let skills = [];
-
-// back-up data incase fetching fails
-const backupSkills = [
-  {
-    skillId: 1,
-    name: "Public Speaking",
-    brief: "Confident presentations and speeches.",
-    detail:
-      "Deliver powerful speeches and communicate ideas effectively through audience-centered presentations and storytelling.",
-    image: "https://via.placeholder.com/300x200?text=Public+Speaking",
-    userId: 1,
-    username: "jsmith",
-    category: "Public Relations",
-  },
-  {
-    skillId: 2,
-    name: "Python",
-    brief: "Programming and data analysis using Python.",
-    detail:
-      "Learn to write efficient scripts, analyze data, and build software using Python's extensive libraries.",
-    image: "https://via.placeholder.com/300x200?text=Python",
-    userId: 2,
-    username: "amorgan",
-    category: "Technology",
-  },
-  {
-    skillId: 3,
-    name: "Graphic Design",
-    brief: "Creating visuals with Adobe Illustrator.",
-    detail:
-      "Explore typography, layout, and color to produce creative designs using modern digital tools.",
-    image: "https://via.placeholder.com/300x200?text=Graphic+Design",
-    userId: 3,
-    username: "tnguyen",
-    category: "Arts",
-  },
-  {
-    skillId: 4,
-    name: "Video Editing",
-    brief: "Editing videos in Premiere Pro and Final Cut.",
-    detail:
-      "Master cutting, color grading, and transitions to create professional-level video projects.",
-    image: "https://via.placeholder.com/300x200?text=Video+Editing",
-    userId: 4,
-    username: "rpatel",
-    category: "Technology",
-  },
-  {
-    skillId: 5,
-    name: "Spanish",
-    brief: "Conversational and written fluency.",
-    detail:
-      "Improve your Spanish speaking and comprehension for travel, business, or cultural enrichment.",
-    image: "https://via.placeholder.com/300x200?text=Spanish",
-    userId: 5,
-    username: "mgomez",
-    category: "Arts",
-  },
-  {
-    skillId: 6,
-    name: "Photography",
-    brief: "Portrait and landscape photography.",
-    detail:
-      "Learn to capture stunning photos using natural light, composition, and post-processing techniques.",
-    image: "https://via.placeholder.com/300x200?text=Photography",
-    userId: 6,
-    username: "lcooper",
-    category: "Sports",
-  },
-  {
-    skillId: 7,
-    name: "Web Development",
-    brief: "Building with HTML, CSS, JavaScript.",
-    detail:
-      "Design and code responsive websites using front-end technologies and frameworks.",
-    image: "https://via.placeholder.com/300x200?text=Web+Dev",
-    userId: 7,
-    username: "dchung",
-    category: "Technology",
-  },
-];
+let skills = []; // in-memory fallback for POST when DB isn't enabled
 
 // Helper to attach computed fields, saved and hidden options
 function addComputedFields(skill) {
@@ -137,33 +56,86 @@ function addComputedFields(skill) {
  * GET /api/skills
  * Fetches skills from Mockaroo once, stores it in memory for caching
  */
+let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts: Date }
+
 router.get("/", async (req, res) => {
-  try {
-    if (skills.length > 0) {
-      // Return cached in-memory skills
-      return res.json(skills);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 20;
+  const userId = req.query.userId || null; // optional: to compute saved status
+
+  const dbEnabled = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
+
+  // Helper to compute savedSet for a user (by savedSkills array)
+  async function loadSavedSet(uid) {
+    if (!uid) return new Set();
+    try {
+      const u = await User.findById(uid).lean();
+      if (u && Array.isArray(u.savedSkills)) return new Set(u.savedSkills.map((s) => String(s)));
+    } catch (e) {
+      console.warn('Could not load user saved list:', e && e.message ? e.message : e);
     }
-
-    const apiKey = process.env.API_SECRET_KEY;
-    if (!apiKey) {
-      console.error("Missing API_SECRET_KEY env variable, using backup skills");
-      skills = backupSkills.map(addComputedFields);
-      return res.json(skills);
-    }
-
-    console.log("Fetching skills from Mockaroo...");
-
-    const response = await axios.get(
-      `https://my.api.mockaroo.com/skills.json?key=${apiKey}`
-    );
-
-    skills = response.data.map(addComputedFields);
-    return res.json(skills);
-  } catch (error) {
-    console.error("Mockaroo API failed:", error.message);
-    skills = backupSkills.map(addComputedFields);
-    return res.json(skills);
+    return new Set();
   }
+
+  // Try DB first (when enabled)
+  if (dbEnabled && SkillOffering && typeof SkillOffering.find === 'function') {
+    try {
+      const skip = (page - 1) * limit;
+      const [docs, totalCount] = await Promise.all([
+        SkillOffering.find({})
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .populate('skillId')
+          .populate('userId')
+          .lean(),
+        SkillOffering.countDocuments(),
+      ]);
+
+      const savedSet = await loadSavedSet(userId);
+
+      const items = docs.map((off) => {
+        const skill = off.skillId || {};
+        const user = off.userId || {};
+        const detail = Array.isArray(off.description) ? off.description.join('\n') : off.detail || off.description || '';
+        const brief = off.brief || (detail.length > 120 ? detail.slice(0, 117) + '...' : detail);
+        const image = (Array.isArray(off.images) && off.images[0]) || off.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || off.offeringSlug || 'Skill')}`;
+        const id = off._id ? String(off._id) : null;
+
+        return {
+          skillId: id,
+          id,
+          name: skill.name || off.offeringSlug || 'Unknown Skill',
+          brief,
+          detail,
+          image,
+          userId: user._id ? String(user._id) : null,
+          username: user.username || off.username || 'demoUser',
+          category: (skill.categories && skill.categories[0]) || skill.category || 'General',
+          width: Math.floor(Math.random() * 80) + 150,
+          height: Math.floor(Math.random() * 100) + 200,
+          hidden: false,
+          saved: savedSet.has(id),
+        };
+      });
+
+      // cache successful fetch
+      lastSuccessfulSkillsCache = { items, totalCount, ts: Date.now() };
+      res.set('X-Total-Count', String(totalCount));
+      return res.json(items);
+    } catch (err) {
+      console.error('DB fetch failed for skills:', err && err.message ? err.message : err);
+      // fallthrough to fallback below
+    }
+  }
+
+  // Fallback: return the last successful MongoDB fetch if available
+  if (lastSuccessfulSkillsCache && Array.isArray(lastSuccessfulSkillsCache.items) && lastSuccessfulSkillsCache.items.length) {
+    res.set('X-Total-Count', String(lastSuccessfulSkillsCache.totalCount || lastSuccessfulSkillsCache.items.length));
+    return res.json(lastSuccessfulSkillsCache.items.slice((page - 1) * limit, page * limit));
+  }
+
+  return res.status(503).json({ error: 'Skills not available at this time' });
 });
 
 /**

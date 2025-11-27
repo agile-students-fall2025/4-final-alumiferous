@@ -6,4 +6,4 @@ const SkillSchema = new mongoose.Schema({
   categories: [{type: String}]
 }, {timestamps: true});
 
-export default mongoose.model("Skills", SkillSchema);
+export default mongoose.model("Skill", SkillSchema);

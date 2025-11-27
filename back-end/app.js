@@ -12,6 +12,7 @@ import chatsRoutes from './routes/chats.js';
 import messagesRoutes from './routes/messages.js';
 import requestsRoutes from "./routes/requests.js";
 import onboardingRoutes from './routes/onboarding.js';
+import usersRoutes from './routes/users.js';
 import reportsRoutes from "./routes/reports.js";
 import authRoutes from './routes/auth.js';
 
@@ -61,6 +62,7 @@ app.use("/api/skills", skillsRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/onboarding', onboardingRoutes);
+app.use('/api/users', usersRoutes);
 // Profile API
 app.use("/api/profile", profileRoutes);          
 app.use("/api/requests", requestsRoutes);  
