@@ -22,37 +22,50 @@ const Chat = props => {
             try {
                 setLoading(true)
                 setError(null)
-                console.log('Fetching chat list from backend...')
-                const res = await fetch('http://localhost:3000/api/chats')
-                console.log('Response status:', res.status)
-                if (!res.ok) throw new Error(`Request failed: ${res.status}`)
-                const data = await res.json()
+                // Get logged-in userId from localStorage
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    throw new Error('No userId found in localStorage. Please log in.');
+                }
+                console.log('Fetching chat list from backend for user:', userId);
+                const res = await fetch(`http://localhost:3000/api/chats?userId=${userId}`);
+                console.log('Response status:', res.status);
+                if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+                const data = await res.json();
                 // Normalize records to the shape used by the UI
-                    const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
-                        // userId is populated with user info
-                        const name = item.userId?.username || item.userId?.email || 'Unknown'
-                        let time = ''
-                        if (item.timestamp) {
-                            const dateObj = new Date(item.timestamp)
-                            time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
+            
+                    let name = 'Unknown';
+       
+                    if (item.userId && item.friendId) {
+                        // If logged-in user is userId, show friendId's name
+                        if (item.userId._id === userId && typeof item.friendId === 'object') {
+                            name = item.friendId.username || item.friendId.email || 'Unknown';
+                        } else if (item.friendId._id === userId && typeof item.userId === 'object') {
+                            name = item.userId.username || item.userId.email || 'Unknown';
                         }
-                        return {
-                            id: item._id,
-                            name,
-                            photo: avatarUrl(name),
-                            last_message: item.lastMessage || '',
-                            timestamp: time,
-                            unread: item.unread || 0,
-                            online: item.online || false,
-                        }
-                    })
-                if (isMounted) setChatList(normalized)
-            } 
-            catch (err) {
-                console.error('Failed to load chats:', err)
-                const message = 'Failed to load conversations'
-                if (isMounted) setError(message)
-            } 
+                    }
+                    let time = '';
+                    if (item.lastMessageTime) {
+                        const dateObj = new Date(item.lastMessageTime);
+                        time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+                    return {
+                        id: item._id,
+                        name,
+                        photo: avatarUrl(name),
+                        last_message: item.lastMessage || '',
+                        timestamp: time,
+                        unread: item.unread || 0,
+                        online: item.online || false,
+                    };
+                });
+                if (isMounted) setChatList(normalized);
+            } catch (err) {
+                console.error('Failed to load chats:', err);
+                const message = 'Failed to load conversations';
+                if (isMounted) setError(message);
+            }
             finally {
                 if (isMounted) setLoading(false)
             }

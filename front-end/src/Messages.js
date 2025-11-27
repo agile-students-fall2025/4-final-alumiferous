@@ -16,6 +16,7 @@ const Messages = () => {
     const [draft, setDraft] = useState('')
     const [chatSenderName, setChatSenderName] = useState('')
     const [userId, setUserId] = useState('')
+      
 
     useEffect(() => {
         const storedUserId = localStorage.getItem('userId');
@@ -23,74 +24,89 @@ const Messages = () => {
     }, []);
 
     useEffect(() => {
-        let isMounted = true
-
-        const loadMessages = async () => {
+        let isMounted = true;
+        const fetchChatInfo = async () => {
             try {
                 if (!id) {
-                    navigate('/chat', { replace: true })
-                    return
+                    navigate('/chat', { replace: true });
+                    return;
                 }
-                setLoading(true)
-                setError(null)
-
-                console.log('Fetching messages from backend for chat:', id)
-                const url = `http://localhost:3000/api/messages?chat_id=${encodeURIComponent(id)}`
-                const res = await fetch(url)
-                console.log('Response status:', res.status)
-                if (!res.ok) throw new Error(`Request failed: ${res.status}`)
-                const data = await res.json()
-
-                const array = Array.isArray(data) ? data : [data]
-                const normalized = array.map((item) => {
-                    // item.userId is an object if populated, or string if not
-                    const sender = item.userId?.username || item.userId?.email 
-                    const content = item.content || ''
-                    let ts = item.sentAt || item.timestamp || ''
-                    if (ts) {
-                        const dateObj = new Date(ts)
-                        ts = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                setLoading(true);
+                setError(null);
+                const chatRes = await fetch(`http://localhost:3000/api/chats/${id}`);
+                let chatData = null;
+                let name = '';
+                if (chatRes.ok) {
+                    chatData = await chatRes.json();
+                    // console.log('Fetched chatData:', chatData); // Debug log
+                    if (chatData.userId && chatData.friendId) {
+                        if (chatData.userId._id === userId && typeof chatData.friendId === 'object') {
+                            name = chatData.friendId.username || chatData.friendId.email || 'Unknown';
+                        } else if (chatData.friendId._id === userId && typeof chatData.userId === 'object') {
+                            name = chatData.userId.username || chatData.userId.email || 'Unknown';
+                        }
                     }
-                    const me = item.isMe || false
+                }
+                setChatSenderName(name);
+                return name;
+            } catch (err) {
+                console.error('Failed to load chat info:', err);
+                if (isMounted) setError('Failed to load chat info');
+                return 'Unknown';
+            }
+        };
+
+        const fetchMessages = async (senderName) => {
+            try {
+                console.log('Fetching messages from backend for chat:', id);
+                const url = `http://localhost:3000/api/messages?chat_id=${encodeURIComponent(id)}`;
+                const res = await fetch(url);
+                console.log('Response status:', res.status);
+                if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+                const data = await res.json();
+                const array = Array.isArray(data) ? data : [data];
+                const normalized = array.map((item) => {
+                    const content = item.content || '';
+                    let ts = item.sentAt || item.timestamp || '';
+                    if (ts) {
+                        const dateObj = new Date(ts);
+                        ts = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+                    // let senderNameFinal = senderName;
+                    // if (!item.isMe && item.sender && (item.sender.username || item.sender.email)) {
+                    //     senderNameFinal = item.sender.username || item.sender.email;
+                    // }
+                    // if (!senderNameFinal) senderNameFinal = 'Unknown';
                     return {
                         id: item._id,
-                        chatId: item.chatId ?? id,
-                        sender_name: sender,
-                        sender_photo: avatarUrl(sender),
+                        chatId: String(item.chatId) || String(id),
+                        // sender_name: item.isMe ? 'You' : senderNameFinal,
+                        // sender_photo: avatarUrl(item.isMe ? 'You' : senderNameFinal),
                         content,
                         timestamp: ts,
-                        is_me: !!me,
-                    }
-                })
-
+                        is_me: !!item.isMe,
+                    };
+                });
                 if (isMounted) {
                     setMessages(normalized);
-                    // Always get the other user's userId (not me)
-                    let otherUserId = null;
-                    if (otherUserId) {
-                        fetch(`http://localhost:4000/api/users/${otherUserId}`)
-                            .then(res => res.json())
-                            .then(user => {
-                                setChatSenderName(user.username || user.email );
-                            })
-                            .catch(() => setChatSenderName('Unknown'));
-                    } else {
-                        setChatSenderName('Unknown');
-                    }
                 }
             } catch (err) {
-                console.error('Failed to load messages:', err)
-                if (isMounted) setError('Failed to load messages')
+                console.error('Failed to load messages:', err);
+                if (isMounted) setError('Failed to load messages');
             } finally {
-                if (isMounted) setLoading(false)
+                if (isMounted) setLoading(false);
             }
-        }
+        };
 
-        loadMessages()
+        (async () => {
+            const senderName = await fetchChatInfo();
+            await fetchMessages(senderName);
+        })();
+
         return () => {
-            isMounted = false
-        }
-    }, [id, navigate])
+            isMounted = false;
+        };
+    }, [id, navigate, userId]);
 
     const onSend = async (e) => {
         e.preventDefault()
@@ -99,12 +115,11 @@ const Messages = () => {
             const now = new Date()
             const payload = {
                 chatId: id,
-                userId: userId,
                 content: draft,
                 isMe: true,
                 sentAt: now.toISOString(),
             }
-            console.log({ chatId: id, userId: userId, content: draft });
+            console.log({ chatId: id, content: draft });
             const res = await fetch('http://localhost:3000/api/messages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -121,8 +136,8 @@ const Messages = () => {
             setMessages(prev => [...prev, {
                 id: newMsg._id,
                 chatId: newMsg.chatId,
-                sender_name: chatSenderName || 'You',
-                sender_photo: avatarUrl(chatSenderName || 'You'),
+                sender_name: 'You',
+                sender_photo: avatarUrl('You'),
                 content: newMsg.content,
                 timestamp: ts,
                 is_me: true,

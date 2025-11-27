@@ -74,7 +74,7 @@
 /* Search Container - positioned below fixed header */
 .chat-page .search-container {
   position: fixed;
-  top: calc(var(--app-header-offset, 64px) + 55px);
+  top: calc(var(--app-header-offset, 64px) + 62px);
   left: 0;
   right: 0;
   z-index: 9;
@@ -90,7 +90,7 @@
   flex: 1;
   overflow-y: auto;
   background: #ffffff;
-  padding-top: calc(var(--app-header-offset, 64px) + 120px); /* account for fixed header + search container */
+  padding-top: calc(var(--app-header-offset, 64px) + 135px); /* account for fixed header + search container */
   padding-bottom: calc(var(--app-footer-offset, 200px) + env(safe-area-inset-bottom));
   -webkit-overflow-scrolling: touch;
 }

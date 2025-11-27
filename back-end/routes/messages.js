@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     return res.status(400).json({ success: false, message: 'chat_id is required' });
   }
   try {
-    const messages = await Message.find({ chatId: chat_id }).populate('userId', 'username email');
+    const messages = await Message.find({ chatId: chat_id });
     res.json(messages);
   } catch (err) {
     console.error('Error fetching messages:', err);
@@ -24,14 +24,13 @@ router.get('/', async (req, res) => {
 
 // POST /api/messages
 router.post('/', async (req, res) => {
-  const { chatId, userId, content, isMe, sentAt } = req.body;
-  if (!chatId || !userId || !content) {
-    return res.status(400).json({ success: false, message: 'chatId, userId, and content are required' });
+  const { chatId, content, isMe, sentAt } = req.body;
+  if (!chatId || !content) {
+    return res.status(400).json({ success: false, message: 'chatId and content are required' });
   }
   try {
     const message = new Message({
       chatId,
-      userId,
       content,
       isMe: !!isMe,
       sentAt: sentAt || new Date(),
