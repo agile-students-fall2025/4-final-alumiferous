@@ -22,7 +22,7 @@ export const SkillsProvider = ({ children }) => {
   const isMounted = useRef(false);
 
   // helper: normalize a backend document (handles both old flat objects and new normalized ones)
-  const normalize = (item) => {
+  const normalize = (item, savedOverride) => {
     // If it already looks flattened, return as-is (but ensure fields exist)
     if (item && (item.name || item.brief || item.detail)) {
       const skillId = item.skillId || item.id || item._id || (item.skillId && item.skillId.toString && item.skillId.toString());
@@ -38,7 +38,7 @@ export const SkillsProvider = ({ children }) => {
         category: item.category || null,
         width: item.width || Math.floor(Math.random() * 80) + 150,
         height: item.height || Math.floor(Math.random() * 100) + 200,
-        saved: savedIds.includes(item.skillId || item.id || item._id || ""),
+        saved: (savedOverride || savedIds).includes(item.skillId || item.id || item._id || ""),
         hidden: item.hidden || false,
       };
     }
@@ -65,21 +65,20 @@ export const SkillsProvider = ({ children }) => {
       category: (skill.categories && skill.categories[0]) || (skill.category) || 'General',
       width: Math.floor(Math.random() * 80) + 150,
       height: Math.floor(Math.random() * 100) + 200,
-      saved: savedIds.includes(docId ? String(docId) : ""),
+      saved: (savedOverride || savedIds).includes(docId ? String(docId) : ""),
       hidden: false,
     };
   };
 
   // fetch a page of skills and append
-  const fetchSkillsPage = async (p = 1) => {
+  const fetchSkillsPage = async (p = 1, savedOverride) => {
     if (loading) return;
     setLoading(true);
     try {
       console.log(`Fetching skills page ${p}...`);
       const res = await axios.get(`/api/skills?page=${p}&limit=${limit}`);
       const data = Array.isArray(res.data) ? res.data : (res.data.items || []);
-
-      const normalized = data.map(normalize);
+      const normalized = data.map((it) => normalize(it, savedOverride));
 
       setSkills((prev) => {
         const merged = [...prev, ...normalized];
@@ -106,7 +105,23 @@ export const SkillsProvider = ({ children }) => {
 
     // initial fetch only on first mount
     if (!isMounted.current) {
-      fetchSkillsPage(1);
+      // If we have a logged-in user, fetch their saved ids first so initial page includes saved flags
+      const currentUserId = localStorage.getItem('currentUserId');
+      if (currentUserId) {
+        axios.get(`/api/users/${currentUserId}/saved/ids`)
+          .then(r => {
+            const ids = Array.isArray(r.data) ? r.data.map(String) : [];
+            setSavedIds(ids);
+            // fetch initial page and pass the freshly loaded saved ids so normalize can use them immediately
+            fetchSkillsPage(1, ids);
+          })
+          .catch(err => {
+            console.warn('Failed to load saved ids before initial fetch, proceeding without them', err);
+            fetchSkillsPage(1);
+          });
+      } else {
+        fetchSkillsPage(1);
+      }
       isMounted.current = true;
     }
 

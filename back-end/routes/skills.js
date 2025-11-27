@@ -65,17 +65,7 @@ router.get("/", async (req, res) => {
 
   const dbEnabled = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
 
-  // Helper to compute savedSet for a user (by savedSkills array)
-  async function loadSavedSet(uid) {
-    if (!uid) return new Set();
-    try {
-      const u = await User.findById(uid).lean();
-      if (u && Array.isArray(u.savedSkills)) return new Set(u.savedSkills.map((s) => String(s)));
-    } catch (e) {
-      console.warn('Could not load user saved list:', e && e.message ? e.message : e);
-    }
-    return new Set();
-  }
+  // saved state is handled by the front-end via /api/users/:id/saved or /api/users/:id/saved/ids
 
   // Try DB first (when enabled)
   if (dbEnabled && SkillOffering && typeof SkillOffering.find === 'function') {
@@ -91,8 +81,6 @@ router.get("/", async (req, res) => {
           .lean(),
         SkillOffering.countDocuments(),
       ]);
-
-      const savedSet = await loadSavedSet(userId);
 
       const items = docs.map((off) => {
         const skill = off.skillId || {};
@@ -115,7 +103,6 @@ router.get("/", async (req, res) => {
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
           hidden: false,
-          saved: savedSet.has(id),
         };
       });
 

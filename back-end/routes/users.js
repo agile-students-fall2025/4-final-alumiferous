@@ -52,6 +52,29 @@ router.get('/:id/saved', async (req, res) => {
   }
 });
 
+// GET /api/users/:id/saved/ids - return array of saved offering ids (compact)
+router.get('/:id/saved/ids', async (req, res) => {
+  const useDb = process.env.USE_DB === 'true';
+  const userId = req.params.id;
+
+  if (!useDb) {
+    return res.json([]);
+  }
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ error: 'invalid user id' });
+
+    const user = await User.findById(userId).lean();
+    if (!user) return res.status(404).json({ error: 'user not found' });
+
+    const ids = (user.savedSkills || []).map(s => String(s));
+    return res.json(ids);
+  } catch (err) {
+    console.error('Error fetching saved ids:', err);
+    return res.status(500).json({ error: 'failed to load saved ids' });
+  }
+});
+
 // POST /api/users/:id/saved - add a saved skill offering id to user
 router.post('/:id/saved', async (req, res) => {
   const useDb = process.env.USE_DB === 'true';
