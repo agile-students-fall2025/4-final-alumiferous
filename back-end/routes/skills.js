@@ -189,7 +189,9 @@ router.post("/", videoUpload.single("video"), (req, res) => {
     return res.status(400).json({ error: "name and category are required" });
   }
 
-  const newSkillId = skills.length ? skills[skills.length - 1].skillId + 1 : 1;
+  // Generate a unique ID using timestamp + random number to avoid conflicts
+  // This ensures user-created skills never conflict with mock data IDs
+  const newSkillId = Date.now() + Math.floor(Math.random() * 1000);
 
   const finalDetail = detail || description || brief || "";
   const finalBrief =
@@ -222,6 +224,23 @@ router.post("/", videoUpload.single("video"), (req, res) => {
   skills.push(newSkill);
 
   return res.status(201).json(newSkill);
+});
+
+/**
+ * DELETE /api/skills/:id
+ * Delete a skill by ID
+ */
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  
+  const index = skills.findIndex(s => String(s.skillId) === String(id) || String(s.id) === String(id));
+  
+  if (index === -1) {
+    return res.status(404).json({ error: "Skill not found" });
+  }
+  
+  skills.splice(index, 1);
+  return res.status(200).json({ message: "Skill deleted successfully" });
 });
 
 

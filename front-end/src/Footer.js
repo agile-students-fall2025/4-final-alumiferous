@@ -14,9 +14,9 @@ import { Link } from "react-router-dom";
 const navItems = [
   { icon: HomeIcon, route: "/home" },
   { icon: UserIcon, route: "/profile" },
-  { icon: ArrowUpTrayIcon, route: "/upload" },
+  { icon: Cog6ToothIcon, route: "/settings" },
   { icon: ChatBubbleOvalLeftEllipsisIcon, route: "/chat" },
-  // { icon: Cog6ToothIcon, route: "/settings" },
+  // { icon: ArrowUpTrayIcon, route: "/upload" },
   // {icon:  FolderIcon, route: "/saved"}
 ];
 
