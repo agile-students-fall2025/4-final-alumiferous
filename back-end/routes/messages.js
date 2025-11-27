@@ -1,6 +1,6 @@
-
 import express from 'express';
-import fetch from 'node-fetch'; //for mockaroo
+import Message from '../models/Message.js';
+
 const router = express.Router();
 
 
@@ -13,11 +13,8 @@ router.get('/', async (req, res) => {
     return res.status(400).json({ success: false, message: 'chat_id is required' });
   }
   try {
-    const url = `${process.env.API_BASE_URL}/messages.json?chat_id=${encodeURIComponent(chat_id)}&key=${process.env.API_SECRET_KEY}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Mockaroo request failed: ${response.status}`);
-    const data = await response.json();
-    res.json(Array.isArray(data) ? data : [data]);
+    const messages = await Message.find({ chatId: chat_id }).populate('userId', 'username email');
+    res.json(messages);
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ success: false, message: err.message });
@@ -25,23 +22,26 @@ router.get('/', async (req, res) => {
 });
 
 
-// POST can remain as local echo or you can mock it similarly
-router.post('/', (req, res) => {
-  const { chat_id, sender_name, content } = req.body;
-  if (!chat_id || !sender_name || !content) {
-    console.log('POST /api/messages missing required fields');
-    return res.status(400).json({ success: false, message: 'chat_id, sender_name, and content are required' });
+// POST /api/messages
+router.post('/', async (req, res) => {
+  const { chatId, userId, content, isMe, sentAt } = req.body;
+  if (!chatId || !userId || !content) {
+    return res.status(400).json({ success: false, message: 'chatId, userId, and content are required' });
   }
-  const newMsg = {
-    id: Date.now().toString(),
-    chat_id,
-    sender_name,
-    sender_photo: `https://picsum.photos/seed/${encodeURIComponent(sender_name)}/40/40`,
-    content,
-    timestamp: new Date().toISOString(),
-    is_me: false
-  };
-  res.status(201).json(newMsg);
+  try {
+    const message = new Message({
+      chatId,
+      userId,
+      content,
+      isMe: !!isMe,
+      sentAt: sentAt || new Date(),
+    });
+    await message.save();
+    res.status(201).json(message);
+  } catch (err) {
+    console.error('Error creating message:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 export default router;

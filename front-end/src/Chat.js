@@ -28,18 +28,24 @@ const Chat = props => {
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`)
                 const data = await res.json()
                 // Normalize records to the shape used by the UI
-                const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
-                    const name = item.name || item.chat_name || 'Unknown'
-                    return {
-                        id: item.id,
-                        name,
-                        photo: avatarUrl(name),
-                        last_message: item.last_message || '',
-                        timestamp: item.timestamp || item.created_at || '',
-                        unread: item.unread || 0,
-                        online: item.online || false,
-                    }
-                })
+                    const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
+                        // userId is populated with user info
+                        const name = item.userId?.username || item.userId?.email || 'Unknown'
+                        let time = ''
+                        if (item.timestamp) {
+                            const dateObj = new Date(item.timestamp)
+                            time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        }
+                        return {
+                            id: item._id,
+                            name,
+                            photo: avatarUrl(name),
+                            last_message: item.lastMessage || '',
+                            timestamp: time,
+                            unread: item.unread || 0,
+                            online: item.online || false,
+                        }
+                    })
                 if (isMounted) setChatList(normalized)
             } 
             catch (err) {

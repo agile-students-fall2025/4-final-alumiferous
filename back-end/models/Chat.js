@@ -7,3 +7,5 @@ const chatSchema = new mongoose.Schema({
     online: { type: Boolean, default: false },
     lastMessage: { type: String }
 });
+
+export default mongoose.model('Chats',chatSchema)

@@ -74,7 +74,7 @@
 /* Search Container - positioned below fixed header */
 .chat-page .search-container {
   position: fixed;
-  top: calc(var(--app-header-offset, 64px) + 60px); /* below chat-header */
+  top: calc(var(--app-header-offset, 64px) + 55px);
   left: 0;
   right: 0;
   z-index: 9;

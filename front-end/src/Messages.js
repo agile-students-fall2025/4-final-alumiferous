@@ -14,6 +14,13 @@ const Messages = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [draft, setDraft] = useState('')
+    const [chatSenderName, setChatSenderName] = useState('')
+    const [userId, setUserId] = useState('')
+
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) setUserId(storedUserId);
+    }, []);
 
     useEffect(() => {
         let isMounted = true
@@ -35,14 +42,19 @@ const Messages = () => {
                 const data = await res.json()
 
                 const array = Array.isArray(data) ? data : [data]
-                const normalized = array.map((item, idx) => {
-                    const sender = item.sender_name || 'Unknown'
+                const normalized = array.map((item) => {
+                    // item.userId is an object if populated, or string if not
+                    const sender = item.userId?.username || item.userId?.email 
                     const content = item.content || ''
-                    const ts = item.timestamp || ''
-                    const me = item.is_me || false
+                    let ts = item.sentAt || item.timestamp || ''
+                    if (ts) {
+                        const dateObj = new Date(ts)
+                        ts = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                    const me = item.isMe || false
                     return {
-                        id: item.id,
-                        chat_id: item.chat_id ?? id,
+                        id: item._id,
+                        chatId: item.chatId ?? id,
                         sender_name: sender,
                         sender_photo: avatarUrl(sender),
                         content,
@@ -51,13 +63,24 @@ const Messages = () => {
                     }
                 })
 
-                if (isMounted) setMessages(normalized)
+                if (isMounted) {
+                    setMessages(normalized);
+                    // Always get the other user's userId (not me)
+                    let otherUserId = null;
+                    if (otherUserId) {
+                        fetch(`http://localhost:4000/api/users/${otherUserId}`)
+                            .then(res => res.json())
+                            .then(user => {
+                                setChatSenderName(user.username || user.email );
+                            })
+                            .catch(() => setChatSenderName('Unknown'));
+                    } else {
+                        setChatSenderName('Unknown');
+                    }
+                }
             } catch (err) {
                 console.error('Failed to load messages:', err)
-                const message = String(err).includes('REACT_APP_MOCKAROO_KEY')
-                    ? 'Missing API key. Create a .env with REACT_APP_MOCKAROO_KEY=your_key and restart the dev server.'
-                    : 'Failed to load messages'
-                if (isMounted) setError(message)
+                if (isMounted) setError('Failed to load messages')
             } finally {
                 if (isMounted) setLoading(false)
             }
@@ -69,25 +92,45 @@ const Messages = () => {
         }
     }, [id, navigate])
 
-    const onSend = (e) => {
+    const onSend = async (e) => {
         e.preventDefault()
         if (!draft.trim()) return
-        // Local echo only (no backend)
-        const now = new Date()
-        const hh = String(now.getHours()).padStart(2, '0')
-        const mm = String(now.getMinutes()).padStart(2, '0')
-        const displayNow = `${hh}:${mm}`
-        const newMsg = {
-            id: `local-${Date.now()}`,
-            chat_id: id,
-            sender_name: 'You',
-            sender_photo: avatarUrl('You'),
-            content: draft,
-            timestamp: displayNow,
-            is_me: true,
+        try {
+            const now = new Date()
+            const payload = {
+                chatId: id,
+                userId: userId,
+                content: draft,
+                isMe: true,
+                sentAt: now.toISOString(),
+            }
+            console.log({ chatId: id, userId: userId, content: draft });
+            const res = await fetch('http://localhost:3000/api/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            if (!res.ok) throw new Error('Failed to send message')
+            const newMsg = await res.json()
+            // Format timestamp to show only time (HH:MM)
+            let ts = newMsg.sentAt || newMsg.timestamp || '';
+            if (ts) {
+                const dateObj = new Date(ts);
+                ts = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            setMessages(prev => [...prev, {
+                id: newMsg._id,
+                chatId: newMsg.chatId,
+                sender_name: chatSenderName || 'You',
+                sender_photo: avatarUrl(chatSenderName || 'You'),
+                content: newMsg.content,
+                timestamp: ts,
+                is_me: true,
+            }])
+            setDraft('')
+        } catch (err) {
+            setError('Failed to send message')
         }
-        setMessages(prev => [...prev, newMsg])
-        setDraft('')
     }
 
 
@@ -95,7 +138,7 @@ const Messages = () => {
         <div className="messages-page">
             <div className="messages-header">
                 <button className="back-btn" onClick={() => navigate('/chat')}>←</button>
-                <h1 className="title">{}</h1>
+                <h1 className="title">{chatSenderName}</h1>
                 <div style={{ width: 32 }} />
             </div>
 

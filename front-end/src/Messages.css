@@ -14,7 +14,7 @@
 	min-height: 48px; 
 	background: #fff;
 	border-bottom: 1px solid #ececec;
-	position: sticky; /* keep header visible */
+	position: static; /* keep header visible */
 	/* Peek slightly under the global app header */
 	top: calc(var(--app-header-offset, 10px) - var(--messages-header-peek, 8px));
 	z-index: 5;
@@ -128,6 +128,7 @@
 	width: 36px;
 	height: 36px;
 	font-size: 16px;
+	margin-top: 5px;
 }
 
 /* --- Dark mode: keep styles local to Messages to avoid cross-page bleed --- */

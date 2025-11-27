@@ -8,3 +8,5 @@ const messageSchema = new mongoose.Schema({
     sentAt: { type: Date },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
+
+export default mongoose.model('Message', messageSchema)
