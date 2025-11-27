@@ -152,15 +152,42 @@ body {
   text-align: center;     /* <--- ensures about text is centered */
 }
 
+/* My Skills Section */
+.SkillsSection {
+  width: 100%;
+  max-width: 430px;
+  margin: 18px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 /* Skills grid: Pinterest style bubbles */
 .skill-grid {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 14px;
   margin-bottom: 18px;
 }
+
+.skill-grid p {
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+  grid-column: 1 / -1;
+}
+
+.skill-item-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  width: auto !important;
+}
+
 .SkillCard {
   padding: 11px 17px;
   border-radius: 18px;
@@ -171,11 +198,112 @@ body {
   cursor: pointer;
   font-size: 15px;
   letter-spacing: .01em;
-  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.delete-skill-btn {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  border-radius: 50%;
+  background: #dc3545;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0 !important;
+  vertical-align: middle;
+}
+
+.delete-skill-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.delete-skill-btn:active {
+  transform: scale(0.95);
+}
+
+/* Delete Confirmation Modal */
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-width: 90px;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.delete-modal-title {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.delete-modal-text {
+  margin: 0 0 24px 0;
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.delete-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.delete-modal-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-modal-btn.cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.delete-modal-btn.cancel:hover {
+  background: #d0d0d0;
+}
+
+.delete-modal-btn.confirm {
+  background: #dc3545;
+  color: white;
+}
+
+.delete-modal-btn.confirm:hover {
+  background: #c82333;
 }
 
 /* Action Buttons (if used) */
@@ -304,6 +432,134 @@ body {
   background: #fff;
 }
 
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212 !important;
+}
 
+body.dark-mode .ProfileContent {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .ProfileTitle {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .EditButton {
+  background: #4dabf7 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .EditButton:active,
+body.dark-mode .EditButton:hover {
+  background: #339af0 !important;
+}
+
+body.dark-mode .Avatar {
+  border-color: #2b2b2b !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .UserInfo h2,
+body.dark-mode .ProfileFullName {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .ProfileUsername {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode .AboutLabel {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .BioBox {
+  background: #1e1e1e !important;
+  border-color: #444 !important;
+  color: #f1f1f1 !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .ProfileBioInput {
+  background: #2b2b2b !important;
+  border-color: #444 !important;
+  color: #f1f1f1 !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .ProfileBioInput:focus {
+  background: #2b2b2b !important;
+  border-color: #4dabf7 !important;
+  box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.25) !important;
+}
+
+body.dark-mode .ProfileUsernameInput {
+  background: #2b2b2b !important;
+  border-color: #444 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .ProfileUsernameInput:focus {
+  background: #2b2b2b !important;
+  border-color: #4dabf7 !important;
+}
+
+body.dark-mode .SkillCard {
+  background: #4dabf7 !important;
+  box-shadow: 0 2.5px 13px rgba(77, 171, 247, 0.2) !important;
+}
+
+body.dark-mode .EditProfileButton,
+body.dark-mode .AccountSettingsButton {
+  background: #4dabf7 !important;
+  box-shadow: 0 2px 8px rgba(77, 171, 247, 0.3) !important;
+}
+
+body.dark-mode .EditProfileButton:hover,
+body.dark-mode .AccountSettingsButton:hover {
+  background: #339af0 !important;
+}
+
+body.dark-mode .SavedSkillsButton {
+  background: #1e1e1e !important;
+  color: #4dabf7 !important;
+  border-color: #4dabf7 !important;
+}
+
+body.dark-mode .SavedSkillsButton:hover {
+  background: #4dabf7 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .BottomNavigation {
+  background: #1e1e1e !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .skill-grid p {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode .delete-modal {
+  background: #1e1e1e !important;
+}
+
+body.dark-mode .delete-modal-title {
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .delete-modal-text {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode .delete-modal-btn.cancel {
+  background: #2b2b2b !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .delete-modal-btn.cancel:hover {
+  background: #3a3a3a !important;
+}
 
 
