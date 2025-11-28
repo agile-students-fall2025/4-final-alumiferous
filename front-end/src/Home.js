@@ -89,8 +89,8 @@ const Home = () => {
               skillId={skill.skillId}
               name={skill.name}
               brief={skill.brief}
-              //inject random place holder image form the Lorem Picsum API
-              skillImg={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
+              // Use the image provided by the backend only
+              image={skill.image}
               category={skill.category}
               username={skill.username}
               ImgHeight={skill.height}

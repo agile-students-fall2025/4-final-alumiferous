@@ -7,8 +7,21 @@ import cloudinary from '../config/cloudinary.js';
 import SkillOffering from "../models/SkillOffering.js";
 import Skill from "../models/Skill.js";
 import User from "../models/User.js";
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
+
+// Helper: create a URL-friendly slug from a name
+function makeSlug(name) {
+  if (!name) return `skill-${Date.now()}`;
+  return name
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
 
 // ===== MULTER CONFIG FOR MULTIPLE IMAGES & VIDEOS =====
 // We use a single diskStorage but choose destination based on the incoming fieldname
@@ -237,24 +250,39 @@ router.post(
         // Find or create the Skill master document by name. We store the category in `categories`.
         let skillDoc = await Skill.findOne({ name: name }).exec();
         if (!skillDoc) {
-          skillDoc = await Skill.create({ name: name, categories: [category] });
+          // generate a slug and ensure it's unique
+          let baseSlug = makeSlug(name);
+          let slug = baseSlug;
+          // if slug already exists, append a timestamp suffix to keep it unique
+          const exists = await Skill.findOne({ slug }).exec();
+          if (exists) {
+            slug = `${baseSlug}-${Date.now()}`;
+          }
+          skillDoc = await Skill.create({ name: name, slug, categories: [category] });
         }
 
-        // Resolve the userId. If none provided or user not found, fall back to a demo user.
+        // Resolve the user from the JWT in Authorization header. Do not create demo users.
+        // The front-end must include a valid JWT in `Authorization: jwt <token>` or `Authorization: Bearer <token>`.
         let userObj = null;
-        if (userId) {
-          try {
-            userObj = await User.findById(userId).exec();
-          } catch (err) {
-            userObj = null;
+        try {
+          const auth = (req.headers && req.headers.authorization) ? req.headers.authorization : null;
+          if (!auth) {
+            return res.status(401).json({ error: 'Authentication required to create a skill offering' });
           }
-        }
-        if (!userObj) {
-          userObj = await User.findOne({ username: username || 'demoUser' }).exec();
+
+          // support schemes like "jwt <token>" or "Bearer <token>"
+          const token = auth.split(' ')[1] || auth;
+          const payload = jwt.verify(token, process.env.JWT_SECRET);
+          if (!payload || !payload.id) {
+            return res.status(401).json({ error: 'Invalid authentication token' });
+          }
+          userObj = await User.findById(payload.id).exec();
           if (!userObj) {
-            // minimal demo user creation so SkillOffering.userId can be satisfied
-            userObj = await User.create({ username: username || 'demoUser' });
+            return res.status(401).json({ error: 'Authenticated user not found' });
           }
+        } catch (authErr) {
+          console.error('Auth error when resolving user for POST /api/skills:', authErr && authErr.message ? authErr.message : authErr);
+          return res.status(401).json({ error: 'Authentication failed' });
         }
 
         // Create the SkillOffering that references the Skill and User
@@ -268,6 +296,15 @@ router.post(
         });
 
         await offering.save();
+
+        // Add offering id to user's offeredSkills and persist
+        try {
+          userObj.offeredSkills = userObj.offeredSkills || [];
+          userObj.offeredSkills.push(offering._id);
+          await userObj.save();
+        } catch (userSaveErr) {
+          console.warn('Failed to append offering to user.offeredSkills:', userSaveErr && userSaveErr.message ? userSaveErr.message : userSaveErr);
+        }
 
         // Map to the flat front-end payload shape (same as GET mapping). Keep `image` as first thumbnail
         const responseItem = addComputedFields({

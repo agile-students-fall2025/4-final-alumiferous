@@ -8,7 +8,9 @@ export default function UploadSkill() {
   const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
   const [description, setDescription] = useState("");
-  const [video, setVideo] = useState(null);
+  // allow multiple images and multiple videos
+  const [images, setImages] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -43,16 +45,21 @@ export default function UploadSkill() {
       formData.append("detail", description);
       formData.append("userId", 1);          // temp values
       formData.append("username", "demo");   // temp values
-      // optional image URL (empty for now)
-      formData.append("image", "");
-
-      // Attach video file if user selected one
-      if (video) {
-        formData.append("video", video);     // field name MUST match multer.single("video")
+      // Attach images and videos (if any) under `images`/`videos` keys
+      if (images && images.length) {
+        images.forEach((f) => formData.append('images', f));
+      }
+      if (videos && videos.length) {
+        videos.forEach((f) => formData.append('videos', f));
       }
 
-      const response = await fetch("http://localhost:4000/api/skills", {
+      // Use relative path to allow CRA dev proxy to route to backend
+      // Attach Authorization header with JWT token if present
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `jwt ${token}` } : {};
+      const response = await fetch(`/api/skills`, {
         method: "POST",
+        headers,
         body: formData, // ❗ no Content-Type header, browser sets it
       });
 
@@ -68,15 +75,20 @@ export default function UploadSkill() {
       setCategory("");
       setSkillName("");
       setDescription("");
-      setVideo(null);
+      setImages([]);
+      setVideos([]);
     } catch (err) {
       console.error("Error uploading skill:", err);
       setMessage(`Error: ${err.message}`);
     }
   };
 
-  const handleVideoChange = (e) => {
-    setVideo(e.target.files[0]);
+  const handleImagesChange = (e) => {
+    setImages(Array.from(e.target.files || []));
+  };
+
+  const handleVideosChange = (e) => {
+    setVideos(Array.from(e.target.files || []));
   };
 
   return (
@@ -125,21 +137,40 @@ export default function UploadSkill() {
               onChange={(e) => setDescription(e.target.value)}
             />
 
-            {/* Video input */}
-            <label htmlFor="video">Attach Demo Video</label>
+            {/* Images input */}
+            <label htmlFor="images">Attach Images</label>
             <input
-              id="video"
+              id="images"
               type="file"
-              accept="video/*"
-              onChange={handleVideoChange}
+              accept="image/*"
+              multiple
+              onChange={handleImagesChange}
             />
 
-            {video && (
-              <video
-                controls
-                className="preview-video"
-                src={URL.createObjectURL(video)}
-              />
+            {images && images.length > 0 && (
+              <div className="preview-images">
+                {images.map((f, idx) => (
+                  <img key={idx} src={URL.createObjectURL(f)} alt={`preview-${idx}`} className="preview-thumb" />
+                ))}
+              </div>
+            )}
+
+            {/* Video input (multiple) */}
+            <label htmlFor="videos">Attach Demo Videos</label>
+            <input
+              id="videos"
+              type="file"
+              accept="video/*"
+              multiple
+              onChange={handleVideosChange}
+            />
+
+            {videos && videos.length > 0 && (
+              <div className="preview-videos">
+                {videos.map((f, idx) => (
+                  <video key={idx} controls className="preview-video" src={URL.createObjectURL(f)} />
+                ))}
+              </div>
             )}
 
             <button type="submit" className="submit-btn">

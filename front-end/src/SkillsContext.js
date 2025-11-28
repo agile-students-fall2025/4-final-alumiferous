@@ -32,13 +32,17 @@ export const SkillsProvider = ({ children }) => {
         name: item.name || "Unknown",
         brief: item.brief || "",
         detail: item.detail || "",
-        image: item.image || item.skillImg || null,
+        // keep legacy single `image` plus expose full `images` and `videos` arrays
+        images: Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []),
+        // Authoritative thumbnail: use `item.image` only (no external placeholders)
+        image: item.image || null,
+        videos: Array.isArray(item.videos) ? item.videos : (item.video ? [item.video] : []),
         userId: item.userId || item.userId || null,
         username: item.username || null,
         category: item.category || null,
         width: item.width || Math.floor(Math.random() * 80) + 150,
         height: item.height || Math.floor(Math.random() * 100) + 200,
-        saved: (savedOverride || savedIds).includes(item.skillId || item.id || item._id || ""),
+        saved: (savedOverride || savedIds).includes(String(skillId || item.id || item._id || "")),
         hidden: item.hidden || false,
       };
     }
@@ -50,7 +54,10 @@ export const SkillsProvider = ({ children }) => {
       ? item.description.join('\n')
       : item.detail || item.description || "";
     const brief = item.brief || (detail.length > 120 ? detail.slice(0, 117) + "..." : detail);
-    const image = (Array.isArray(item.images) && item.images[0]) || item.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || item.offeringSlug || 'Skill')}`;
+    const imagesArr = Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []);
+    const videosArr = Array.isArray(item.videos) ? item.videos : (item.video ? [item.video] : []);
+    // Authoritative thumbnail: use `item.image` only (do not fall back to user photo or placeholders)
+    const image = item.image || null;
     const docId = item._id || (item.skillId && item.skillId._id) || item.id || null;
 
     return {
@@ -59,6 +66,9 @@ export const SkillsProvider = ({ children }) => {
       name: skill.name || item.offeringSlug || 'Unknown Skill',
       brief,
       detail,
+      // include arrays for the UI to use
+      images: imagesArr,
+      videos: videosArr,
       image,
       userId: user._id ? String(user._id) : user._id || null,
       username: user.username || item.username || 'demoUser',
