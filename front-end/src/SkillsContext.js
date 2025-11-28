@@ -259,6 +259,12 @@ export const SkillsProvider = ({ children }) => {
     try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
   };
 
+  const addNewSkill = (newSkill) => {
+    const updatedSkills = [...skills, newSkill];
+    setSkills(updatedSkills);
+    try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
+  };
+
   return (
     <SkillsContext.Provider
       value={{

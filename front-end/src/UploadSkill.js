@@ -116,8 +116,19 @@ export default function UploadSkill() {
       const savedSkill = await response.json();
       console.log("Saved skill:", savedSkill);
 
-      // savedSkill.name is the offering title; savedSkill.generalSkill is the canonical skill
-      setMessage(`"${savedSkill.name}" added under "${savedSkill.generalSkill || savedSkill.category}"!`);
+      // Save to localStorage
+      const existingSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');
+      existingSkills.push(savedSkill);
+      localStorage.setItem('userSkills', JSON.stringify(existingSkills));
+      console.log('Saved to localStorage:', existingSkills);
+
+      setMessage(`"${savedSkill.name}" added under "${savedSkill.category}"!`);
+      
+      // Redirect to profile after 1 second
+      setTimeout(() => {
+        window.location.href = '/profile';
+      }, 1000);
+      
       setCategory("");
       setSkillName("");
       setDescription("");

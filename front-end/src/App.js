@@ -16,6 +16,7 @@ import EditProfile from "./EditProfile";
 // Feature pages
 import SkillDescription from "./SkillDescription";
 import DraftRequest from "./DraftRequest";
+import MySkillDetail from "./MySkillDetail";
 
 // Settings / account
 import Settings from "./Settings";
@@ -96,6 +97,17 @@ export default function App() {
                 <>
                   <Header />
                   <SkillDescription />
+                  <Footer />
+                </>
+              }
+            />
+
+            <Route
+              path="/my-skills/:id"
+              element={
+                <>
+                  <Header />
+                  <MySkillDetail />
                   <Footer />
                 </>
               }

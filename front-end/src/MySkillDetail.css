@@ -1,0 +1,137 @@
+.skill-detail-container {
+  max-width: 390px;
+  margin: 36px auto 100px;
+  padding: 20px;
+}
+
+.back-button {
+  background: transparent;
+  color: #222;
+  border: none;
+  padding: 5px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #666;
+}
+
+.skill-detail-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.skill-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 15px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.field-tag {
+  background: #1976d2;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.skill-info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.info-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1976d2;
+  margin: 0 0 8px 0;
+}
+
+.info-section p {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.video-container {
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.video-container video {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.skill-not-found {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.skill-not-found h2 {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.skill-not-found button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.skill-not-found button:hover {
+  background: #1565c0;
+}
+
+/* Dark mode support */
+body.dark-mode .skill-detail-container {
+  background: #1e1e1e;
+}
+
+body.dark-mode .skill-detail-card {
+  background: #2b2b2b;
+}
+
+body.dark-mode .skill-title {
+  color: #f1f1f1;
+  border-bottom-color: #4dabf7;
+}
+
+body.dark-mode .info-section h3 {
+  color: #4dabf7;
+}
+
+body.dark-mode .info-section p {
+  color: #e0e0e0;
+}
+
+body.dark-mode .skill-not-found h2 {
+  color: #b0b0b0;
+}
