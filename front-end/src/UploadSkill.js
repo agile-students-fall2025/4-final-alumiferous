@@ -11,6 +11,8 @@ export default function UploadSkill() {
   const [skillName, setSkillName] = useState("");
   const [generalSkill, setGeneralSkill] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [catsOpen, setCatsOpen] = useState(false);
+  const catsRef = React.useRef(null);
   const [description, setDescription] = useState("");
   // allow multiple images and multiple videos
   const [images, setImages] = useState([]);
@@ -48,7 +50,14 @@ export default function UploadSkill() {
         if (possibleGeneral.length) setGeneralOptions(possibleGeneral);
       }
     })();
-    return () => { mounted = false; };
+    // click-away: close categories dropdown when clicking outside
+    function onDocClick(e){
+      if (catsRef.current && !catsRef.current.contains(e.target)) {
+        setCatsOpen(false);
+      }
+    }
+    document.addEventListener('click', onDocClick);
+    return () => { mounted = false; document.removeEventListener('click', onDocClick); };
   }, [skills]);
 
   const handleSubmit = async (e) => {
@@ -151,16 +160,41 @@ export default function UploadSkill() {
               ))}
             </select>
 
-            {/* Categories multi-select for the offering */}
+            {/* Categories multi-select dropdown (checkboxes) */}
             <label htmlFor="categories">Categories (select one or more)</label>
-            <select id="categories" multiple value={selectedCategories} onChange={(e) => {
-              const opts = Array.from(e.target.selectedOptions || []).map(o => o.value);
-              setSelectedCategories(opts);
-            }} className="form-input">
-              {categories.map((cat, index) => (
-                <option key={index} value={cat}>{cat}</option>
-              ))}
-            </select>
+            <div className="multi-select" ref={catsRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="form-input"
+                onClick={() => setCatsOpen((s) => !s)}
+                aria-haspopup="listbox"
+                aria-expanded={catsOpen}
+              >
+                {selectedCategories.length === 0 ? 'Select categories...' : selectedCategories.join(', ')}
+              </button>
+
+              {catsOpen && (
+                <div className="multi-select-list" style={{ position: 'absolute', zIndex: 40, background: 'white', border: '1px solid #ddd', maxHeight: 220, overflowY: 'auto', width: '100%', marginTop: 6, padding: 8 }}>
+                  {categories && categories.length ? categories.map((cat, index) => (
+                    <label key={index} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 4px' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(cat)}
+                        onChange={() => {
+                          setSelectedCategories(prev => {
+                            if (prev.includes(cat)) return prev.filter(x => x !== cat);
+                            return [...prev, cat];
+                          });
+                        }}
+                      />
+                      <span>{cat}</span>
+                    </label>
+                  )) : (
+                    <div style={{ padding: 8, color: '#666' }}>No categories available</div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Skill name */}
             <label htmlFor="skillName">Skill Name</label>
