@@ -15,6 +15,7 @@ import onboardingRoutes from './routes/onboarding.js';
 import usersRoutes from './routes/users.js';
 import reportsRoutes from "./routes/reports.js";
 import authRoutes from './routes/auth.js';
+import fixedDataRoutes from './routes/fixeddata.js';
 
 
 // Load environment variables from .env file
@@ -59,6 +60,7 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/skills", skillsRoutes);
+app.use('/api/fixeddata', fixedDataRoutes);
 app.use('/api/chats', chatsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/onboarding', onboardingRoutes);

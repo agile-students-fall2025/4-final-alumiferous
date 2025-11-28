@@ -20,6 +20,9 @@ export const SkillsProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const isMounted = useRef(false);
+  const pageRef = useRef(page);
+  const totalCountRef = useRef(null);
+  const hasMoreRef = useRef(hasMore);
 
   // helper: normalize a backend document (handles both old flat objects and new normalized ones)
   const normalize = (item, savedOverride) => {
@@ -30,6 +33,8 @@ export const SkillsProvider = ({ children }) => {
         skillId: skillId ? String(skillId) : String(item._id || item.id || Math.random()),
         id: item.id || item.skillId || item._id || null,
         name: item.name || "Unknown",
+          // canonical/general skill if provided by the backend
+          generalSkill: item.generalSkill || null,
         brief: item.brief || "",
         detail: item.detail || "",
         // keep legacy single `image` plus expose full `images` and `videos` arrays
@@ -63,7 +68,10 @@ export const SkillsProvider = ({ children }) => {
     return {
       skillId: docId ? String(docId) : String(Math.random()),
       id: docId,
-      name: skill.name || item.offeringSlug || 'Unknown Skill',
+      // Prefer offering title (item.name) if present, otherwise use the canonical skill name
+      name: item.name || skill.name || item.offeringSlug || 'Unknown Skill',
+      // canonical/general skill for grouping
+      generalSkill: (skill && skill.name) || null,
       brief,
       detail,
       // include arrays for the UI to use
@@ -72,7 +80,7 @@ export const SkillsProvider = ({ children }) => {
       image,
       userId: user._id ? String(user._id) : user._id || null,
       username: user.username || item.username || 'demoUser',
-      category: (skill.categories && skill.categories[0]) || (skill.category) || 'General',
+      category: (item.categories && item.categories[0]) || (skill.categories && skill.categories[0]) || (skill.category) || 'General',
       width: Math.floor(Math.random() * 80) + 150,
       height: Math.floor(Math.random() * 100) + 200,
       saved: (savedOverride || savedIds).includes(docId ? String(docId) : ""),
@@ -81,24 +89,49 @@ export const SkillsProvider = ({ children }) => {
   };
 
   // fetch a page of skills and append
-  const fetchSkillsPage = async (p = 1, savedOverride) => {
+  const fetchSkillsPage = async (p = null, savedOverride) => {
     if (loading) return;
     setLoading(true);
     try {
-      console.log(`Fetching skills page ${p}...`);
-      const res = await axios.get(`/api/skills?page=${p}&limit=${limit}`);
+      const pageToFetch = p || pageRef.current || 1;
+      console.log(`Fetching skills page ${pageToFetch}...`);
+      const res = await axios.get(`/api/skills?page=${pageToFetch}&limit=${limit}`);
       const data = Array.isArray(res.data) ? res.data : (res.data.items || []);
+      // Read X-Total-Count header if present
+      const totalHeader = res.headers && (res.headers['x-total-count'] || res.headers['X-Total-Count']);
+      const totalCount = totalHeader ? parseInt(totalHeader, 10) : null;
+      if (totalCount) {
+        totalCountRef.current = totalCount;
+      }
       const normalized = data.map((it) => normalize(it, savedOverride));
-
+      // Append while avoiding duplicates (by id)
       setSkills((prev) => {
-        const merged = [...prev, ...normalized];
+        const existingIds = new Set(prev.map(s => s.skillId));
+        const toAdd = normalized.filter(n => !existingIds.has(n.skillId));
+        const merged = [...prev, ...toAdd];
         try { localStorage.setItem("skills", JSON.stringify(merged)); } catch (e) {}
         return merged;
       });
 
-      if (data.length < limit) setHasMore(false);
-      else setHasMore(true);
-      setPage(p + 1);
+      // Update pagination refs/state
+      const fetchedCount = (pageToFetch - 1) * limit + data.length;
+      if (totalCountRef.current != null) {
+        const more = fetchedCount < totalCountRef.current;
+        setHasMore(more);
+        hasMoreRef.current = more;
+      } else {
+        // fall back to length-based heuristic
+        const more = data.length === limit;
+        setHasMore(more);
+        hasMoreRef.current = more;
+      }
+
+      // advance page
+      setPage(prev => {
+        const next = (p != null) ? (p + 1) : (prev + 1);
+        pageRef.current = next;
+        return next;
+      });
     } catch (err) {
       console.error("Error fetching skills page:", err);
     } finally {
@@ -123,13 +156,20 @@ export const SkillsProvider = ({ children }) => {
             const ids = Array.isArray(r.data) ? r.data.map(String) : [];
             setSavedIds(ids);
             // fetch initial page and pass the freshly loaded saved ids so normalize can use them immediately
+            // ensure refs are initialized
+            pageRef.current = 1;
+            totalCountRef.current = null;
             fetchSkillsPage(1, ids);
           })
           .catch(err => {
             console.warn('Failed to load saved ids before initial fetch, proceeding without them', err);
+            pageRef.current = 1;
+            totalCountRef.current = null;
             fetchSkillsPage(1);
           });
       } else {
+        pageRef.current = 1;
+        totalCountRef.current = null;
         fetchSkillsPage(1);
       }
       isMounted.current = true;
@@ -137,10 +177,10 @@ export const SkillsProvider = ({ children }) => {
 
     // infinite scroll handler
     const onScroll = () => {
-      if (!hasMore || loading) return;
+      if (!hasMoreRef.current || loading) return;
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 600;
       if (nearBottom) {
-        fetchSkillsPage(page);
+        fetchSkillsPage(pageRef.current);
       }
     };
 

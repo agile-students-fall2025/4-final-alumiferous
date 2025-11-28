@@ -5,8 +5,12 @@ import { SkillsContext } from "./SkillsContext";
 export default function UploadSkill() {
   const { skills } = useContext(SkillsContext);
   const [categories, setCategories] = useState([]);
+  const [generalOptions, setGeneralOptions] = useState([]);
+  // `category` kept for legacy single-category field; `selectedCategories` is the new multi-select
   const [category, setCategory] = useState("");
   const [skillName, setSkillName] = useState("");
+  const [generalSkill, setGeneralSkill] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [description, setDescription] = useState("");
   // allow multiple images and multiple videos
   const [images, setImages] = useState([]);
@@ -14,19 +18,44 @@ export default function UploadSkill() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (skills && skills.length > 0) {
-      const unique = [
-        ...new Set(skills.map((skill) => skill.category).filter(Boolean)),
-      ];
-      setCategories(unique.sort());
-    }
+    let mounted = true;
+    // Fetch fixed data (canonical generalNames and categories) from the backend
+    (async function fetchFixed(){
+      try {
+        const res = await fetch('/api/fixeddata');
+        if (!mounted) return;
+        if (res.ok) {
+          const body = await res.json();
+          const g = Array.isArray(body.generalNames) ? body.generalNames : [];
+          const c = Array.isArray(body.categories) ? body.categories : [];
+          if (g.length) {
+            setGeneralOptions(g);
+            if (!generalSkill) setGeneralSkill(g[0]);
+          }
+          if (c.length) setCategories(c.sort());
+          return;
+        }
+      } catch (e) {
+        // swallow and fall back to deriving from existing skills
+      }
+
+      // Fallback: derive lists from existing skills context
+      if (skills && skills.length > 0) {
+        const unique = [...new Set(skills.map((skill) => skill.category).filter(Boolean))];
+        setCategories(unique.sort());
+        const possibleGeneral = [...new Set(skills.map(s => s.generalSkill || s.category || s.name).filter(Boolean))];
+        if (possibleGeneral.length && !generalSkill) setGeneralSkill(possibleGeneral[0]);
+        if (possibleGeneral.length) setGeneralOptions(possibleGeneral);
+      }
+    })();
+    return () => { mounted = false; };
   }, [skills]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    if (!category || !skillName || !description) {
+    if (!generalSkill || !skillName || !description) {
       setMessage("Please fill in all fields.");
       return;
     }
@@ -39,8 +68,15 @@ export default function UploadSkill() {
     try {
       // Use FormData instead of JSON so we can send the video file
       const formData = new FormData();
+      // Send both new fields and legacy ones for compatibility
+      formData.append("skillName", skillName);
       formData.append("name", skillName);
+      formData.append("generalSkill", generalSkill);
       formData.append("category", category);
+      // append categories as comma-separated string (backend will accept array or CSV)
+      if (selectedCategories && selectedCategories.length) {
+        formData.append('categories', selectedCategories.join(','));
+      }
       formData.append("brief", briefText);
       formData.append("detail", description);
       formData.append("userId", 1);          // temp values
@@ -71,7 +107,8 @@ export default function UploadSkill() {
       const savedSkill = await response.json();
       console.log("Saved skill:", savedSkill);
 
-      setMessage(`"${savedSkill.name}" added under "${savedSkill.category}"!`);
+      // savedSkill.name is the offering title; savedSkill.generalSkill is the canonical skill
+      setMessage(`"${savedSkill.name}" added under "${savedSkill.generalSkill || savedSkill.category}"!`);
       setCategory("");
       setSkillName("");
       setDescription("");
@@ -100,19 +137,28 @@ export default function UploadSkill() {
       <div className="upload-skill-body">
         <div className="upload-skill-container">
           <form className="upload-skill-form" onSubmit={handleSubmit}>
-            {/* Category dropdown */}
-            <label htmlFor="category">Select Category</label>
+            {/* General skill selection (canonical grouping) */}
+            <label htmlFor="generalSkill">Select Skill (general)</label>
             <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              id="generalSkill"
+              value={generalSkill}
+              onChange={(e) => setGeneralSkill(e.target.value)}
               className="form-input"
             >
-              <option value="">-- Choose a category --</option>
+              <option value="">-- Choose a skill --</option>
+              {(generalOptions.length ? generalOptions : (skills && skills.length ? [...new Set(skills.map(s => s.generalSkill || s.category || s.name).filter(Boolean))] : [])).map((g, i) => (
+                <option key={i} value={g}>{g}</option>
+              ))}
+            </select>
+
+            {/* Categories multi-select for the offering */}
+            <label htmlFor="categories">Categories (select one or more)</label>
+            <select id="categories" multiple value={selectedCategories} onChange={(e) => {
+              const opts = Array.from(e.target.selectedOptions || []).map(o => o.value);
+              setSelectedCategories(opts);
+            }} className="form-input">
               {categories.map((cat, index) => (
-                <option key={index} value={cat}>
-                  {cat}
-                </option>
+                <option key={index} value={cat}>{cat}</option>
               ))}
             </select>
 

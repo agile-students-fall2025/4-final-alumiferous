@@ -126,7 +126,10 @@ router.get("/", async (req, res) => {
         return {
           skillId: id,
           id,
-          name: skill.name || off.offeringSlug || 'Unknown Skill',
+          // Prefer offering title if available, otherwise fall back to canonical skill name
+          name: off.name || skill.name || off.offeringSlug || 'Unknown Skill',
+          // include canonical/general skill for grouping if needed
+          generalSkill: skill.name || null,
           brief,
           detail,
           image,
@@ -134,7 +137,7 @@ router.get("/", async (req, res) => {
           videos,
           userId: user._id ? String(user._id) : null,
           username: user.username || off.username || 'demoUser',
-          category: (skill.categories && skill.categories[0]) || skill.category || 'General',
+          category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
           hidden: false,
@@ -180,9 +183,15 @@ router.post(
   ]),
   async (req, res) => {
     // Extract posted fields
+    // Support both the new contract and older fields for backward-compatibility.
+    // `generalSkill` -> the canonical skill name used to find/create a `Skill` document
+    // `skillName` -> the offering title typed by the user (stored on SkillOffering.name)
     const {
-      name,
-      category,
+      generalSkill,
+      skillName,
+      categories,
+      name, // legacy: previously `name` was used as the general skill
+      category, // legacy single category
       brief,
       detail,
       description,
@@ -192,8 +201,11 @@ router.post(
     } = req.body;
 
     // Basic validation
-    if (!name || !category) {
-      return res.status(400).json({ error: 'name and category are required' });
+    // Validate incoming payload: require a general skill (selected option) and an offering title
+    const general = (generalSkill || name || '').trim();
+    const offeringTitle = (skillName || name || '').trim();
+    if (!general || !offeringTitle) {
+      return res.status(400).json({ error: 'generalSkill (selected) and skillName (title) are required' });
     }
 
     // Normalize textual fields
@@ -247,18 +259,17 @@ router.post(
     // If DB is enabled, persist normalized documents: Skill (master) and SkillOffering (offer)
     if (dbEnabled && Skill && SkillOffering) {
       try {
-        // Find or create the Skill master document by name. We store the category in `categories`.
-        let skillDoc = await Skill.findOne({ name: name }).exec();
+        // Resolve (find or create) the canonical Skill document using the selected `generalSkill`.
+        const generalSlug = makeSlug(general);
+        let skillDoc = await Skill.findOne({ slug: generalSlug }).exec();
         if (!skillDoc) {
-          // generate a slug and ensure it's unique
-          let baseSlug = makeSlug(name);
-          let slug = baseSlug;
-          // if slug already exists, append a timestamp suffix to keep it unique
+          // ensure slug uniqueness
+          let slug = generalSlug;
           const exists = await Skill.findOne({ slug }).exec();
-          if (exists) {
-            slug = `${baseSlug}-${Date.now()}`;
-          }
-          skillDoc = await Skill.create({ name: name, slug, categories: [category] });
+          if (exists) slug = `${generalSlug}-${Date.now()}`;
+          // Create the Skill using the general skill name. We won't try to infer categories here;
+          // the offering will carry its `categories` array.
+          skillDoc = await Skill.create({ name: general, slug, categories: Array.isArray(categories) ? categories : (categories ? String(categories).split(',').map(s => s.trim()).filter(Boolean) : []) });
         }
 
         // Resolve the user from the JWT in Authorization header. Do not create demo users.
@@ -285,14 +296,23 @@ router.post(
           return res.status(401).json({ error: 'Authentication failed' });
         }
 
-        // Create the SkillOffering that references the Skill and User
+        // Parse categories for the offering (may be an array or a comma-separated string)
+        let offeringCategories = [];
+        if (Array.isArray(categories) && categories.length) offeringCategories = categories;
+        else if (typeof categories === 'string' && categories.length) offeringCategories = categories.split(',').map(s => s.trim()).filter(Boolean);
+        else if (category) offeringCategories = [category];
+
+        // Create the SkillOffering that references the Skill and User. Use the front-end typed title
+        // as `name` (offering title). Keep offeringSlug derived from the offering title if not provided.
         const offering = new SkillOffering({
+          name: offeringTitle,
           skillId: skillDoc._id,
           userId: userObj._id,
-          offeringSlug: offeringSlug || (name.toLowerCase().replace(/\s+/g, '-')),
+          offeringSlug: offeringSlug || offeringTitle.toLowerCase().replace(/\s+/g, '-'),
           description: finalDetail,
           images: imageUrls,
           videos: videoUrls,
+          categories: offeringCategories,
         });
 
         await offering.save();
@@ -310,7 +330,10 @@ router.post(
         const responseItem = addComputedFields({
           skillId: String(offering._id),
           id: String(offering._id),
-          name: skillDoc.name,
+          // show the offering title as primary name for the UI
+          name: offering.name,
+          // include the canonical/general skill name for grouping
+          generalSkill: skillDoc.name,
           brief: finalBrief,
           detail: finalDetail,
           image: imageUrls.length ? imageUrls[0] : (userObj.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skillDoc.name)}`),
@@ -318,7 +341,7 @@ router.post(
           videos: videoUrls,
           userId: String(userObj._id),
           username: userObj.username || username || 'demoUser',
-          category: (skillDoc.categories && skillDoc.categories[0]) || category,
+          category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
         // Update lastSuccessfulSkillsCache to include this new item at the front (so fallback is more useful)
