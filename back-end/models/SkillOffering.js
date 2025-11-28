@@ -5,8 +5,8 @@ const SkillOfferingSchema = new mongoose.Schema({
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     offeringSlug: {type: String, required: true},
     description: {type: String},
-    images: {type: String},
-    videos: {type: String}
+    images: [{type: String}],
+    videos: [{type: String}]
 }, {timestamps: true});
 
 export default mongoose.model("SkillOffering", SkillOfferingSchema);
