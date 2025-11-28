@@ -1,21 +1,20 @@
 import React, { useContext, useState, useEffect } from "react";
+import axios from 'axios';
 import { SkillsContext } from "./SkillsContext";
 import SavedSkillCard from "./SavedSkillCard";
 import "./Savedskills.css";
 
 const Savedskills = () => {
-  const { skills, handleUnsaveSkill } = useContext(SkillsContext);
+  const { handleUnsaveSkill, skills, savedIds } = useContext(SkillsContext);
 
   // Search and filtered states
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSaved, setFilteredSaved] = useState([]);
+  const [savedSkills, setSavedSkills] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
-  // Only saved skills - memoize to prevent recalculation
-  const savedSkills = React.useMemo(() => {
-    return skills.filter(skill => skill.saved);
-  }, [skills]);
+  const currentUserId = localStorage.getItem('currentUserId');
 
   const showNotification = (message, type = 'success') => {
     setNotification({ show: true, message, type });
@@ -26,12 +25,50 @@ const Savedskills = () => {
 
   const handleUnsave = (skillId) => {
     handleUnsaveSkill(skillId);
+    // Also update local saved list
+    setSavedSkills((prev) => prev.filter(s => s.skillId !== skillId));
     showNotification('Skill Unsaved', 'success');
   };
 
   const handleReport = () => {
     showNotification('Issue Reported', 'info');
   };
+
+  // Fetch current user's saved skills from server; fallback to empty
+  const fetchSaved = async () => {
+    if (!currentUserId) {
+      // No logged-in user: build saved list locally from savedIds + skills
+      const localSaved = savedIds && savedIds.length > 0
+        ? skills.filter(s => savedIds.includes(s.skillId))
+        : [];
+      setSavedSkills(localSaved);
+      return;
+    }
+    try {
+      const res = await axios.get(`/api/users/${currentUserId}/saved`);
+      const data = res.data || [];
+      if (Array.isArray(data) && data.length > 0) {
+        setSavedSkills(data);
+      } else {
+        // If server returned empty, fall back to local savedIds
+        const localSaved = savedIds && savedIds.length > 0
+          ? skills.filter(s => savedIds.includes(s.skillId))
+          : [];
+        setSavedSkills(localSaved);
+      }
+    } catch (err) {
+      console.error('Failed to load saved skills:', err);
+      const localSaved = savedIds && savedIds.length > 0
+        ? skills.filter(s => savedIds.includes(s.skillId))
+        : [];
+      setSavedSkills(localSaved);
+    }
+  };
+
+  useEffect(() => {
+    fetchSaved();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId]);
 
   // Update filtered list when savedSkills or search term changes
   useEffect(() => {
@@ -44,10 +81,10 @@ const Savedskills = () => {
     const lower = searchTerm.toLowerCase();
     const filtered = savedSkills.filter(
       skill =>
-        skill.name.toLowerCase().includes(lower) ||
-        skill.brief.toLowerCase().includes(lower) ||
-        skill.category.toLowerCase().includes(lower) ||
-        skill.username.toLowerCase().includes(lower)
+        (skill.name || '').toLowerCase().includes(lower) ||
+        (skill.brief || '').toLowerCase().includes(lower) ||
+        (skill.category || '').toLowerCase().includes(lower) ||
+        (skill.username || '').toLowerCase().includes(lower)
     );
 
     setFilteredSaved(filtered);

@@ -1,51 +1,246 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 export const SkillsContext = createContext();
 
 export const SkillsProvider = ({ children }) => {
   const [skills, setSkills] = useState([]);
+  const [savedIds, setSavedIds] = useState(() => {
+    try {
+      const s = localStorage.getItem("savedSkillIds");
+      return s ? JSON.parse(s) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
-  useEffect(() => {
-    const cached = localStorage.getItem("skills");
+  // pagination / infinite scroll state
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const isMounted = useRef(false);
+  const pageRef = useRef(page);
+  const totalCountRef = useRef(null);
+  const hasMoreRef = useRef(hasMore);
 
-    if (cached) {
-      setSkills(JSON.parse(cached));
-      return; // Skip API call if cached
+  // helper: normalize a backend document (handles both old flat objects and new normalized ones)
+  const normalize = (item, savedOverride) => {
+    // If it already looks flattened, return as-is (but ensure fields exist)
+    if (item && (item.name || item.brief || item.detail)) {
+      const skillId = item.skillId || item.id || item._id || (item.skillId && item.skillId.toString && item.skillId.toString());
+      return {
+        skillId: skillId ? String(skillId) : String(item._id || item.id || Math.random()),
+        id: item.id || item.skillId || item._id || null,
+        name: item.name || "Unknown",
+          // canonical/general skill if provided by the backend
+          generalSkill: item.generalSkill || null,
+        brief: item.brief || "",
+        detail: item.detail || "",
+        // keep legacy single `image` plus expose full `images` and `videos` arrays
+        images: Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []),
+        // Authoritative thumbnail: use `item.image` only (no external placeholders)
+        image: item.image || null,
+        videos: Array.isArray(item.videos) ? item.videos : (item.video ? [item.video] : []),
+        userId: item.userId || item.userId || null,
+        username: item.username || null,
+        category: item.category || null,
+        width: item.width || Math.floor(Math.random() * 80) + 150,
+        height: item.height || Math.floor(Math.random() * 100) + 200,
+        saved: (savedOverride || savedIds).includes(String(skillId || item.id || item._id || "")),
+        hidden: item.hidden || false,
+      };
     }
 
-    // Fetch data from Mockaroo API
-    const fetchSkills = async () => {
-      try {
-        console.log("Fetching skill details from backend...");
-        const res = await axios.get('http://localhost:4000/api/skills');
+    // Normalized shape: SkillOffering with populated skillId and userId
+    const skill = item.skillId || item.skill || {};
+    const user = item.userId || item.user || {};
+    const detail = Array.isArray(item.description)
+      ? item.description.join('\n')
+      : item.detail || item.description || "";
+    const brief = item.brief || (detail.length > 120 ? detail.slice(0, 117) + "..." : detail);
+    const imagesArr = Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []);
+    const videosArr = Array.isArray(item.videos) ? item.videos : (item.video ? [item.video] : []);
+    // Authoritative thumbnail: use `item.image` only (do not fall back to user photo or placeholders)
+    const image = item.image || null;
+    const docId = item._id || (item.skillId && item.skillId._id) || item.id || null;
 
+    return {
+      skillId: docId ? String(docId) : String(Math.random()),
+      id: docId,
+      // Prefer offering title (item.name) if present, otherwise use the canonical skill name
+      name: item.name || skill.name || item.offeringSlug || 'Unknown Skill',
+      // canonical/general skill for grouping
+      generalSkill: (skill && skill.name) || null,
+      brief,
+      detail,
+      // include arrays for the UI to use
+      images: imagesArr,
+      videos: videosArr,
+      image,
+      userId: user._id ? String(user._id) : user._id || null,
+      username: user.username || item.username || 'demoUser',
+      category: (item.categories && item.categories[0]) || (skill.categories && skill.categories[0]) || (skill.category) || 'General',
+      width: Math.floor(Math.random() * 80) + 150,
+      height: Math.floor(Math.random() * 100) + 200,
+      saved: (savedOverride || savedIds).includes(docId ? String(docId) : ""),
+      hidden: false,
+    };
+  };
 
-        setSkills(res.data);
-        localStorage.setItem("skills", JSON.stringify(res.data));
-      } catch (err) {
-        console.error("Backend fetch failed:", err);
+  // fetch a page of skills and append
+  const fetchSkillsPage = async (p = null, savedOverride) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const pageToFetch = p || pageRef.current || 1;
+      console.log(`Fetching skills page ${pageToFetch}...`);
+      const res = await axios.get(`/api/skills?page=${pageToFetch}&limit=${limit}`);
+      const data = Array.isArray(res.data) ? res.data : (res.data.items || []);
+      // Read X-Total-Count header if present
+      const totalHeader = res.headers && (res.headers['x-total-count'] || res.headers['X-Total-Count']);
+      const totalCount = totalHeader ? parseInt(totalHeader, 10) : null;
+      if (totalCount) {
+        totalCountRef.current = totalCount;
+      }
+      const normalized = data.map((it) => normalize(it, savedOverride));
+      // Append while avoiding duplicates (by id)
+      setSkills((prev) => {
+        const existingIds = new Set(prev.map(s => s.skillId));
+        const toAdd = normalized.filter(n => !existingIds.has(n.skillId));
+        const merged = [...prev, ...toAdd];
+        try { localStorage.setItem("skills", JSON.stringify(merged)); } catch (e) {}
+        return merged;
+      });
+
+      // Update pagination refs/state
+      const fetchedCount = (pageToFetch - 1) * limit + data.length;
+      if (totalCountRef.current != null) {
+        const more = fetchedCount < totalCountRef.current;
+        setHasMore(more);
+        hasMoreRef.current = more;
+      } else {
+        // fall back to length-based heuristic
+        const more = data.length === limit;
+        setHasMore(more);
+        hasMoreRef.current = more;
+      }
+
+      // advance page
+      setPage(prev => {
+        const next = (p != null) ? (p + 1) : (prev + 1);
+        pageRef.current = next;
+        return next;
+      });
+    } catch (err) {
+      console.error("Error fetching skills page:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Load cached page 1 if present
+    const cached = localStorage.getItem("skills");
+    if (cached) {
+      setSkills(JSON.parse(cached));
+    }
+
+    // initial fetch only on first mount
+    if (!isMounted.current) {
+      // If we have a logged-in user, fetch their saved ids first so initial page includes saved flags
+      const currentUserId = localStorage.getItem('currentUserId');
+      if (currentUserId) {
+        axios.get(`/api/users/${currentUserId}/saved/ids`)
+          .then(r => {
+            const ids = Array.isArray(r.data) ? r.data.map(String) : [];
+            setSavedIds(ids);
+            // fetch initial page and pass the freshly loaded saved ids so normalize can use them immediately
+            // ensure refs are initialized
+            pageRef.current = 1;
+            totalCountRef.current = null;
+            fetchSkillsPage(1, ids);
+          })
+          .catch(err => {
+            console.warn('Failed to load saved ids before initial fetch, proceeding without them', err);
+            pageRef.current = 1;
+            totalCountRef.current = null;
+            fetchSkillsPage(1);
+          });
+      } else {
+        pageRef.current = 1;
+        totalCountRef.current = null;
+        fetchSkillsPage(1);
+      }
+      isMounted.current = true;
+    }
+
+    // infinite scroll handler
+    const onScroll = () => {
+      if (!hasMoreRef.current || loading) return;
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 600;
+      if (nearBottom) {
+        fetchSkillsPage(pageRef.current);
       }
     };
 
-    fetchSkills();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Persist saved ids
+  useEffect(() => {
+    try { localStorage.setItem('savedSkillIds', JSON.stringify(savedIds)); } catch (e) {}
+  }, [savedIds]);
+
   /*** Action handlers ***/
+  // Saved is per-user; we store an array of saved skill ids instead of mutating the skill object
   const handleSaveSkill = (id) => {
-    const updatedSkills = skills.map((s) =>
-      s.skillId === id ? { ...s, saved: true } : s
-    );
-    setSkills(updatedSkills);
-    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+    const currentUserId = localStorage.getItem('currentUserId');
+    if (currentUserId) {
+      // Persist saved on the backend (user.savedSkills)
+      axios.post(`/api/users/${currentUserId}/saved`, { skillId: id })
+        .then(res => {
+          const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
+          setSavedIds(saved);
+          setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: true} : item));
+        })
+        .catch(err => {
+          console.error('Failed to save skill on server:', err);
+        });
+      return;
+    }
+
+    // fallback: local-only saved list
+    setSavedIds((prev) => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: true} : item));
+      return next;
+    });
   };
 
   const handleUnsaveSkill = (id) => {
-    const updatedSkills = skills.map((s) =>
-      s.skillId === id ? { ...s, saved: false } : s
-    );
-    setSkills(updatedSkills);
-    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+    const currentUserId = localStorage.getItem('currentUserId');
+    if (currentUserId) {
+      axios.delete(`/api/users/${currentUserId}/saved/${id}`)
+        .then(res => {
+          const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
+          setSavedIds(saved);
+          setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: false} : item));
+        })
+        .catch(err => {
+          console.error('Failed to unsave skill on server:', err);
+        });
+      return;
+    }
+
+    setSavedIds((prev) => {
+      const next = prev.filter(x => x !== id);
+      setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: false} : item));
+      return next;
+    });
   };
 
   const handleHideSkill = (id) => {
@@ -53,7 +248,7 @@ export const SkillsProvider = ({ children }) => {
       s.skillId === id ? { ...s, hidden: true } : s
     );
     setSkills(updatedSkills);
-    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+    try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
   };
 
   const handleUnhideSkill = (id) => {
@@ -61,36 +256,27 @@ export const SkillsProvider = ({ children }) => {
       s.skillId === id ? { ...s, hidden: false } : s
     );
     setSkills(updatedSkills);
-    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+    try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
   };
 
   const addNewSkill = (newSkill) => {
     const updatedSkills = [...skills, newSkill];
     setSkills(updatedSkills);
-    localStorage.setItem("skills", JSON.stringify(updatedSkills));
-  };
-
-  const refreshSkills = async () => {
-    try {
-      console.log("Refreshing skills from backend...");
-      const res = await axios.get('http://localhost:4000/api/skills');
-      setSkills(res.data);
-      localStorage.setItem("skills", JSON.stringify(res.data));
-    } catch (err) {
-      console.error("Backend refresh failed:", err);
-    }
+    try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
   };
 
   return (
     <SkillsContext.Provider
       value={{
         skills,
+        loading,
+        hasMore,
+        fetchNextPage: () => fetchSkillsPage(page),
         handleSaveSkill,
         handleUnsaveSkill,
         handleHideSkill,
         handleUnhideSkill,
-        addNewSkill,
-        refreshSkills,
+        savedIds,
       }}
     >
       {children}

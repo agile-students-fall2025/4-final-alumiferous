@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
 
 const SkillSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // use 'name' instead of 'title'
-  description: String,
-  category: String,
-  videoUrl: String,
-  imageUrl: String, 
-});
+  name: {type: String, required: true, trim: true, unique: true},
+  slug: {type: String, required: true, unique: true},
+  // optional categories that describe the general skill (e.g. ['technology','finance'])
+  categories: [{ type: String }],
+}, {timestamps: true});
 
-const Skill = mongoose.model("Skill", SkillSchema);
-export default Skill;
+export default mongoose.model("Skill", SkillSchema);

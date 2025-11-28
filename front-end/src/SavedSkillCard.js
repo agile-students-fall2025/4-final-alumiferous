@@ -20,12 +20,17 @@ const SavedSkillCard = ({ skill, onUnsave, onReport }) => {
     <div className="savedcard-wrapper">
       <div className="savedcard" data-height={skill.height}>
         <Link to={`/skills/${encodeURIComponent(skill.skillId)}`}>
-          <img
-            src={`//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`}
-            alt={skill.name}
-            className="savedcard-image"
-            style={{ height: `${skill.height}px` }}
-          />
+          {skill.image ? (
+            <img
+              src={skill.image}
+              alt={skill.name}
+              className="savedcard-image"
+              style={{ height: `${skill.height}px` }}
+            />
+          ) : (
+            // No external placeholder; render an empty image container when no image provided
+            <div className="savedcard-image missing" style={{ height: `${skill.height}px` }} />
+          )}
         </Link>
 
         <button

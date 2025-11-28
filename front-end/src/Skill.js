@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { SkillsContext } from "./SkillsContext";
 
-const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
+const Skill = ({ skillId, name, brief, image, ImgHeight }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const { handleSaveSkill, handleHideSkill } = useContext(SkillsContext);
@@ -42,7 +42,12 @@ const Skill = ({ skillId, name, brief, skillImg, ImgHeight }) => {
     <div className="skill-wrapper">
       <div className="skill-card" data-height ={ImgHeight}>
         <Link to={`/skills/${encodeURIComponent(skillId)}`}>
-          <img src={skillImg} alt={name} className="skill-image" />
+          {image ? (
+            <img src={image} alt={name} className="skill-image" />
+          ) : (
+            // If no image is provided by the backend, render nothing (per product decision)
+            <div className="skill-image missing" />
+          )}
         </Link>
 
         {/* Floating more-options button */}

@@ -38,9 +38,9 @@ export default function SkillDescription() {
     );
   }
 
-  // Use the same image logic as Home.js: use skill.image if present, otherwise use picsum fallback
-  // Always use the same image logic as Home.js for consistency
-  const finalImageSrc = `//picsum.photos/${skill.width}/${skill.height}?random=${skill.skillId}`;
+  // Use the image provided by the backend when available. Per product decision,
+  // do NOT use external placeholder images; if `skill.image` is missing, omit the hero image.
+  const finalImageSrc = skill.image || null;
 
   return (
     <div className="page">
@@ -48,12 +48,14 @@ export default function SkillDescription() {
         {/* Skill name */}
         <h1 className="title">{skill.name}</h1>
 
-        {/* Hero image */}
-        <img
-          src={finalImageSrc}
-          alt={skill.name}
-          className="image"
-        />
+        {/* Hero image (render only when backend provided an image) */}
+        {finalImageSrc && (
+          <img
+            src={finalImageSrc}
+            alt={skill.name}
+            className="image"
+          />
+        )}
 
         {/* Long description (detail from Mockaroo).
             If detail is empty for that row, fall back to brief. */}
