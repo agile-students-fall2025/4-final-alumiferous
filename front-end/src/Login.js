@@ -22,14 +22,7 @@ const Login = props => {
     if (qsError === 'protected')
       setErrorMessage('Please log in to use app.')
   }, [])
-
-  // if the user's logged-in status changes, call the setuser function that was passed to this component from the PrimaryNav component.
-  useEffect(() => {
-    if (status.success) {
-      console.log(`User successfully logged in: ${status.username}`)
-      // props.setuser && props.setuser(status)
-    }
-  }, [status])
+  
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -51,9 +44,10 @@ const Login = props => {
       
       const response = await axios.post(`http://localhost:4000${endpoint}`, payload)
       const data = response.data
+      console.log('Login response data:', data)
 
       if (data.success) {
-        console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, data.username)
+        console.log(`User successfully ${isLogin ? 'logged in' : 'signed up'}:`, data.userId)
 
         if (data.userId) {
           localStorage.setItem('userId', data.userId)
@@ -64,11 +58,13 @@ const Login = props => {
         if (data.token) {
           localStorage.setItem('token', data.token)
         }
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
 
         // Update local state
         setStatus({
           success: true,
-          username: data.username,
           userId: data.userId,
           token: data.token,
         })

@@ -1,71 +1,116 @@
-
 import express from 'express';
-import fetch from 'node-fetch';
+import Chats from '../models/Chat.js';
 
 const router = express.Router();
 
-// In-memory chats array for local testing and changes
-let chats = [
-  {
-    id: '1',
-    user_id: 'testuser',
-    chat_name: 'Test Chat',
-    created_at: new Date().toISOString(),
-  }
-];
-
-// GET /api/chats
+// GET /api/chats - get all chats
 router.get('/', async (req, res) => {
   try {
-    const url = `${process.env.API_BASE_URL}/chats.json?key=${process.env.API_SECRET_KEY}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Mockaroo request failed: ${response.status}`);
-    const data = await response.json();
-    res.json(Array.isArray(data) ? data : [data]);
+    // Get logged-in userId from query string
+    const { userId } = req.query;
+    let query = {};
+    if (userId) {
+      query = { $or: [ { userId }, { friendId: userId } ] };
+    }
+    const chats = await Chats.find(query).populate('userId', 'username email').populate('friendId', 'username email');
+    // For each chat, calculate lastMessage and unread from messages
+    const Message = (await import('../models/Message.js')).default;
+    const chatData = await Promise.all(chats.map(async chat => {
+      // Find last message
+      const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
+      // Count unread messages
+      const unreadCount = await Message.countDocuments({ chatId: chat._id, isMe: false });
+      return {
+        ...chat.toObject(),
+        lastMessage: lastMsg ? lastMsg.content : '',
+        lastMessageTime: lastMsg ? lastMsg.sentAt || lastMsg.timestamp : null,
+        unread: unreadCount,
+      };
+    }));
+    res.json(chatData);
   } catch (err) {
     console.error('Error fetching chats:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-
-// POST can remain as local echo or you can mock it similarly
-router.post('/', (req, res) => {
-  const { user_id, chat_name } = req.body;
-  if (!user_id || !chat_name) {
-    return res.status(400).json({ success: false, message: 'user_id and chat_name are required' });
+// POST /api/chats - create a new chat
+router.post('/', async (req, res) => {
+  const { userId, friendId, online } = req.body;
+  if (!userId || !friendId) {
+    return res.status(400).json({ success: false, message: 'userId and friendId are required' });
   }
-  const newChat = {
-    id: Date.now().toString(),
-    user_id,
-    chat_name,
-    created_at: new Date().toISOString(),
-  };
-  chats.push(newChat);
-  res.status(201).json(newChat);
+  try {
+    const chat = new Chats({
+      userId,
+      friendId,
+      online: online || false,
+    });
+    await chat.save();
+    res.status(201).json(chat);
+  } catch (err) {
+    console.error('Error creating chat:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // DELETE /api/chats/:id - delete a chat
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  const index = chats.findIndex(c => c.id === id);
-  if (index === -1) {
-    return res.status(404).json({ success: false, message: 'Chat not found' });
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await Chats.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ success: false, message: 'Chat not found' });
+    }
+    res.json({ success: true, message: 'Chat deleted' });
+  } catch (err) {
+    console.error('Error deleting chat:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
-  chats.splice(index, 1);
-  res.json({ success: true, message: 'Chat deleted' });
 });
 
 // PUT /api/chats/:id - update a chat
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const { chat_name } = req.body;
-  const chat = chats.find(c => c.id === id);
-  if (!chat) {
-    return res.status(404).json({ success: false, message: 'Chat not found' });
+router.put('/:id', async (req, res) => {
+  const { lastMessage, unread, online } = req.body;
+  try {
+    const chat = await Chats.findById(req.params.id);
+    if (!chat) {
+      return res.status(404).json({ success: false, message: 'Chat not found' });
+    }
+    if (lastMessage !== undefined) chat.lastMessage = lastMessage;
+    if (unread !== undefined) chat.unread = unread;
+    if (online !== undefined) chat.online = online;
+    await chat.save();
+    res.json(chat);
+  } catch (err) {
+    console.error('Error updating chat:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
-  if (chat_name) chat.chat_name = chat_name;
-  res.json(chat);
+});
+
+// GET /api/chats/:id - get a single chat by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const chat = await Chats.findById(req.params.id)
+      .populate('userId', 'username email')
+      .populate('friendId', 'username email');
+    if (!chat) {
+      return res.status(404).json({ success: false, message: 'Chat not found' });
+    }
+    // Find last message and unread count for this chat
+    const Message = (await import('../models/Message.js')).default;
+    const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
+    const unreadCount = await Message.countDocuments({ chatId: chat._id, isMe: false });
+    const chatObj = {
+      ...chat.toObject(),
+      lastMessage: lastMsg ? lastMsg.content : '',
+      lastMessageTime: lastMsg ? lastMsg.sentAt || lastMsg.timestamp : null,
+      unread: unreadCount,
+    };
+    res.json(chatObj);
+  } catch (err) {
+    console.error('Error fetching chat:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 export default router;
