@@ -3,6 +3,7 @@ import express from "express";
 // no external mock services — rely on MongoDB and in-memory cache
 import multer from "multer";
 import path from "path"; 
+import cloudinary from '../config/cloudinary.js';
 import SkillOffering from "../models/SkillOffering.js";
 import Skill from "../models/Skill.js";
 import User from "../models/User.js";
@@ -12,29 +13,16 @@ const router = express.Router();
 // ===== MULTER CONFIG FOR MULTIPLE IMAGES & VIDEOS =====
 // We use a single diskStorage but choose destination based on the incoming fieldname
 // so `images` will go to `public/uploads/images` and `videos` to `public/uploads/videos`.
-const mediaStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // route uploads to specific folders based on field name
-    if (file.fieldname && file.fieldname.toLowerCase().includes('video')) {
-      return cb(null, 'public/uploads/videos');
-    }
-    if (file.fieldname && file.fieldname.toLowerCase().includes('image')) {
-      return cb(null, 'public/uploads/images');
-    }
-    // fallback
-    return cb(null, 'public/uploads');
-  },
-  filename: function (req, file, cb) {
-    // keep original name but prefix with timestamp to avoid collisions
-    const uniqueName = Date.now() + '-' + file.originalname;
-    cb(null, uniqueName);
-  },
-});
+// Cloudinary is configured centrally in `back-end/config/cloudinary.js` which
+// reads env vars (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).
+// Import that configured instance instead of calling `cloudinary.config()` here.
+// Use memory storage so we can upload incoming files directly to Cloudinary
+const memoryStorage = multer.memoryStorage();
 
 // Basic file filter that accepts common image/video types. We allow both images and videos
 // because the front-end may upload either under the `images` or `videos` field.
 const mediaUpload = multer({
-  storage: mediaStorage,
+  storage: memoryStorage,
   fileFilter: (req, file, cb) => {
     const mime = file.mimetype || '';
     const ext = path.extname(file.originalname).toLowerCase();
@@ -51,6 +39,23 @@ const mediaUpload = multer({
     return cb(new Error('Only image and video files are allowed'));
   },
 });
+
+// Helper to upload a buffer to Cloudinary. We convert the buffer to a data URI
+// and call cloudinary.uploader.upload which supports both images and videos.
+async function uploadBufferToCloudinary(file, resourceType = 'image') {
+  // Convert buffer to data URI: data:<mimetype>;base64,<base64data>
+  const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+  const options = {
+    folder: 'instaskill/users',
+    resource_type: resourceType,
+    use_filename: true,
+    unique_filename: false,
+  };
+
+  // cloudinary.uploader.upload returns a promise
+  const result = await cloudinary.uploader.upload(dataUri, options);
+  return result.secure_url;
+}
 
 let skills = []; // in-memory fallback for POST when DB isn't enabled
 
@@ -96,7 +101,13 @@ router.get("/", async (req, res) => {
         const user = off.userId || {};
         const detail = Array.isArray(off.description) ? off.description.join('\n') : off.detail || off.description || '';
         const brief = off.brief || (detail.length > 120 ? detail.slice(0, 117) + '...' : detail);
-        const image = (Array.isArray(off.images) && off.images[0]) || off.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || off.offeringSlug || 'Skill')}`;
+
+        // normalize arrays: ensure `images` and `videos` are arrays (for older docs with single `image`)
+        const images = Array.isArray(off.images) ? off.images : (off.images ? [off.images] : []);
+        const videos = Array.isArray(off.videos) ? off.videos : (off.videos ? [off.videos] : []);
+
+        // keep legacy `image` as the first thumbnail for compatibility
+        const image = (images.length && images[0]) || off.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || off.offeringSlug || 'Skill')}`;
         const id = off._id ? String(off._id) : null;
 
         return {
@@ -106,6 +117,8 @@ router.get("/", async (req, res) => {
           brief,
           detail,
           image,
+          images,
+          videos,
           userId: user._id ? String(user._id) : null,
           username: user.username || off.username || 'demoUser',
           category: (skill.categories && skill.categories[0]) || skill.category || 'General',
@@ -178,13 +191,26 @@ router.post(
     let imageUrls = [];
     let videoUrls = [];
 
-    // Files uploaded via multipart/form-data will be in req.files
+    // Files uploaded via multipart/form-data will be in req.files (memory buffers).
+    // Upload them to Cloudinary and collect the returned secure URLs. If Cloudinary
+    // uploads fail for any file, we continue and let fallback body-provided URLs be used.
     if (req.files) {
-      if (Array.isArray(req.files.images)) {
-        imageUrls = req.files.images.map((f) => `/static/uploads/images/${f.filename}`);
-      }
-      if (Array.isArray(req.files.videos)) {
-        videoUrls = req.files.videos.map((f) => `/static/uploads/videos/${f.filename}`);
+      try {
+        if (Array.isArray(req.files.images) && req.files.images.length) {
+          // upload each image buffer to Cloudinary as `image` resource
+          imageUrls = await Promise.all(
+            req.files.images.map(async (f) => await uploadBufferToCloudinary(f, 'image'))
+          );
+        }
+        if (Array.isArray(req.files.videos) && req.files.videos.length) {
+          // upload each video buffer to Cloudinary as `video` resource
+          videoUrls = await Promise.all(
+            req.files.videos.map(async (f) => await uploadBufferToCloudinary(f, 'video'))
+          );
+        }
+      } catch (uploadErr) {
+        console.warn('Cloudinary upload failed:', uploadErr && uploadErr.message ? uploadErr.message : uploadErr);
+        // allow fallback to body-provided URLs below
       }
     }
 
