@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo, useEffect } from "react";
 import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
 import { useNavigate } from "react-router-dom";
@@ -12,14 +12,21 @@ const OnBoarding = () => {
 
   const [formData, setFormData] = useState({
     username: "",
-    skillsOffered: [],
+    // will use skillsWanted as the 'needed skills' selection
     skillsWanted: [],
-    motivation: [],
-    appUsage: "",
-    weeklyCommitment: "",
+    bio: "",
   });
 
-  const [errorMsg, setErrorMsg] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [errors, setErrors] = useState({ username: '', skillsWanted: '', photo: '', bio: '' });
+  const [networkError, setNetworkError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const [fixedNames, setFixedNames] = useState(null);
+  const [usernameAvailable, setUsernameAvailable] = useState(null); // null=unchecked, true/false
+  const [usernameChecking, setUsernameChecking] = useState(false);
 
   // FORM INPUT HANDLER
   const handleChange = (e) => {
@@ -27,25 +34,47 @@ const OnBoarding = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear transient error messages when the user changes inputs
+    setNetworkError('');
+    setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) {
+      setPhotoFile(f);
+      try {
+        const url = URL.createObjectURL(f);
+        setPhotoPreview(url);
+      } catch (e) {
+        setPhotoPreview(null);
+      }
+    } else {
+      setPhotoFile(null);
+      setPhotoPreview(null);
+    }
+    setNetworkError('');
+    setErrors(prev => ({ ...prev, photo: '' }));
   };
 
   // VALIDATION LOGIC
   const validateStep = () => {
     switch (step) {
       case 1:
-        return formData.username.trim() !== "";
+        // require minimum length and availability
+        if (!formData.username || String(formData.username).trim().length < 4) return false;
+        return usernameAvailable === true;
 
       case 2:
-        return formData.skillsOffered.length > 0;
+        return Array.isArray(formData.skillsWanted) && formData.skillsWanted.length > 0;
 
       case 3:
-        return formData.skillsWanted.length > 0;
+        // photo is optional, allow proceeding without it
+        return true;
 
       case 4:
-        return formData.appUsage !== "";
-
-      case 5:
-        return formData.weeklyCommitment !== "";
+        // bio may be optional but allow simple validation (non-empty)
+        return formData.bio.trim() !== "";
 
       default:
         return true;
@@ -56,42 +85,169 @@ const OnBoarding = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateStep()) {
+      // set a generic field-level message for the current step
+      switch (step) {
+        case 1:
+          setErrors(prev => ({ ...prev, username: 'Please enter a valid and available username.' }));
+          break;
+        case 2:
+          setErrors(prev => ({ ...prev, skillsWanted: 'Please select at least one skill.' }));
+          break;
+        case 4:
+          setErrors(prev => ({ ...prev, bio: 'Please provide a short bio.' }));
+          break;
+        default:
+          break;
+      }
+      return;
+    }
+
+    setNetworkError('');
+    setIsSubmitting(true);
+    setUploadProgress(0);
+
     try {
-      console.log("Sending onboarding data:", formData);
+      const fd = new FormData();
+      fd.append('username', formData.username.trim());
+      fd.append('bio', formData.bio || '');
+      // send needed skills as JSON string (backend accepts JSON or array)
+      fd.append('neededSkills', JSON.stringify(formData.skillsWanted || []));
+      if (photoFile) fd.append('photo', photoFile);
 
-      await axios.post("http://localhost:4000/api/onboarding", formData);
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `jwt ${token}` } : {};
 
-      console.log("Onboarding data sent successfully!");
-      navigate("/home");
+      const res = await axios.post(`/api/onboarding`, fd, {
+        headers,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent && progressEvent.total) {
+            const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(pct);
+          }
+        }
+      });
+
+      const user = res.data && res.data.user ? res.data.user : null;
+      if (user) {
+        try {
+          localStorage.setItem('currentUserId', String(user._id || user.id || ''));
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (e) {}
+      }
+
+      setIsSubmitting(false);
+      navigate('/home');
     } catch (err) {
-      console.error("Error submitting onboarding:", err);
-      setErrorMsg("Failed to complete onboarding. Please try again.");
+      setIsSubmitting(false);
+      const status = err && err.response && err.response.status;
+      if (status === 401) setNetworkError('Authentication required. Please sign in and try again.');
+      else if (status === 409) setNetworkError('Username already taken. Choose a different username.');
+      else if (status === 503) setNetworkError('Service unavailable. Please try again later.');
+      else setNetworkError('Failed to complete onboarding. Please try again.');
+      console.error('Error submitting onboarding:', err && err.message ? err.message : err);
     }
   };
 
   // STEP NAVIGATION
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
+  const nextStep = () => {
+    setNetworkError('');
+    setStep((prev) => Math.min(prev + 1, 4));
+  };
+  const prevStep = () => {
+    setNetworkError('');
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
-  // Unique skills list
+  useEffect(() => {
+    let mounted = true;
+    axios.get('/api/fixeddata')
+      .then((res) => {
+        if (!mounted) return;
+        const data = res && res.data ? res.data : {};
+        if (Array.isArray(data.generalNames) && data.generalNames.length) {
+          setFixedNames(data.generalNames);
+        } else {
+          setFixedNames(null);
+        }
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setFixedNames(null);
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  // Real-time username availability check (debounced)
+  useEffect(() => {
+    const name = (formData.username || '').toString().trim();
+    setUsernameAvailable(null);
+    if (!name || name.length < 1) {
+      setUsernameChecking(false);
+      return;
+    }
+
+    // Enforce minimum locally
+    if (name.length < 4) {
+      setUsernameChecking(false);
+      setUsernameAvailable(false);
+      return;
+    }
+
+    let cancelled = false;
+    const source = axios.CancelToken.source();
+    setUsernameChecking(true);
+
+    const t = setTimeout(() => {
+      const currentUserId = localStorage.getItem('currentUserId');
+      const params = { username: name };
+      if (currentUserId) params.excludeId = currentUserId;
+      axios.get(`/api/users/check-username`, { params, cancelToken: source.token })
+        .then(r => {
+          if (cancelled) return;
+          const ok = r && r.data && r.data.available === true;
+          setUsernameAvailable(!!ok);
+          setUsernameChecking(false);
+        })
+        .catch(err => {
+          if (axios.isCancel(err)) return;
+          console.warn('Username check failed:', err && err.message ? err.message : err);
+          if (!cancelled) {
+            setUsernameAvailable(false);
+            setUsernameChecking(false);
+          }
+        });
+    }, 600);
+
+    return () => {
+      cancelled = true;
+      source.cancel('username check cancelled');
+      clearTimeout(t);
+    };
+  }, [formData.username]);
+
+  // Unique skills list: prefer canonical fixedNames when available
   const allSkills = useMemo(() => {
+    if (Array.isArray(fixedNames) && fixedNames.length) {
+      return fixedNames.slice().sort();
+    }
     const unique = [...new Set(skills.map((s) => s.name))];
     return unique.sort();
-  }, [skills]);
+  }, [skills, fixedNames]);
 
   return (
     <div className="onboarding-container">
       <form onSubmit={handleSubmit} className="onboarding-form">
 
-        {errorMsg && (
-          <p style={{ color: "red", fontSize: "0.9rem" }}>{errorMsg}</p>
+        {networkError && (
+          <p className="form-network-error">{networkError}</p>
         )}
 
-        {/* STEP 1 */}
+        {/* STEP 1: Username */}
         {step === 1 && (
           <div className="onboarding-step">
             <h1>Welcome to InstaSkill</h1>
-            <h2>Let's get to know you!</h2>
+            <h2>Choose a username</h2>
 
             <input
               type="text"
@@ -100,126 +256,119 @@ const OnBoarding = () => {
               placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
+              disabled={isSubmitting}
             />
 
-            <button
-              type="button"
-              onClick={() =>
-                validateStep() ? nextStep() : alert("Please enter a username.")
-              }
-            >
-              Next
-            </button>
+            <div className="status-row">
+              {usernameChecking && <span className="status-muted">Checking username…</span>}
+              {!usernameChecking && usernameAvailable === false && formData.username && String(formData.username).trim().length < 4 && (
+                <span className="status-danger">Username must be at least 4 characters</span>
+              )}
+              {!usernameChecking && usernameAvailable === false && formData.username && String(formData.username).trim().length >= 4 && (
+                <span className="status-danger">Username already taken</span>
+              )}
+              {!usernameChecking && usernameAvailable === true && (
+                <span className="status-success">Username available</span>
+              )}
+            </div>
+
+            {errors.username && (
+              <div className="field-error">{errors.username}</div>
+            )}
+
+            <div className="button-row">
+              <button
+                type="button"
+                onClick={() => validateStep() ? nextStep() : setErrors(prev => ({ ...prev, username: 'Please enter a valid and available username.' }))}
+                disabled={isSubmitting || usernameChecking || usernameAvailable !== true}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
 
-        {/* STEP 2 */}
+        {/* STEP 2: Needed skills */}
         {step === 2 && (
-          <div className="onboarding-step">
-            <h1>What skills can you offer?</h1>
-
-            <SkillSelector
-              label="Select the skill you can offer"
-              allSkills={allSkills}
-              selectedskills={formData.skillsOffered}
-              setSelectedSkills={(skills) =>
-                setFormData({ ...formData, skillsOffered: skills })
-              }
-            />
-
-            <button type="button" onClick={prevStep}>Back</button>
-            <button type="button" onClick={nextStep}>Next</button>
-          </div>
-        )}
-
-        {/* STEP 3 */}
-        {step === 3 && (
           <div className="onboarding-step">
             <h1>What do you want to learn?</h1>
 
             <SkillSelector
-              label="Select the skill you want to learn"
+              label="Select the skill(s) you need"
               allSkills={allSkills}
               selectedskills={formData.skillsWanted}
-              setSelectedSkills={(skills) =>
-                setFormData({ ...formData, skillsWanted: skills })
-              }
+              setSelectedSkills={(skillsArr) => {
+                setFormData({ ...formData, skillsWanted: skillsArr });
+                setNetworkError('');
+                setErrors(prev => ({ ...prev, skillsWanted: '' }));
+              }}
             />
 
-            <button type="button" onClick={prevStep}>Back</button>
-            <button
-              type="button"
-              onClick={() =>
-                validateStep() ? nextStep() : alert("Please select a skill.")
-              }
-            >
-              Next
-            </button>
+            {errors.skillsWanted && (
+              <div className="field-error">{errors.skillsWanted}</div>
+            )}
+
+            <div className="button-row">
+              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
+              <button type="button" onClick={() => validateStep() ? nextStep() : setErrors(prev => ({ ...prev, skillsWanted: 'Please select at least one skill.' }))} disabled={isSubmitting}>Next</button>
+            </div>
           </div>
         )}
 
-        {/* STEP 4 */}
+        {/* STEP 3: Profile photo upload */}
+        {step === 3 && (
+          <div className="onboarding-step">
+            <h1>Upload a profile photo</h1>
+
+            <input type="file" accept="image/*" onChange={handlePhotoChange} disabled={isSubmitting} />
+            {photoPreview && (
+              <img src={photoPreview} alt="preview" className="photo-preview" />
+            )}
+
+            <div className="button-row">
+              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
+              <button type="button" onClick={() => nextStep()} disabled={isSubmitting}>Next</button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Bio and final submit */}
         {step === 4 && (
           <div className="onboarding-step">
-            <h1>How will you use InstaSkill?</h1>
+            <h1>Tell us about yourself</h1>
 
-            <select
-              name="appUsage"
+            <textarea
+              name="bio"
               className="form-input"
-              value={formData.appUsage}
+              placeholder="A short bio (what you're looking for, background, etc.)"
+              value={formData.bio}
               onChange={handleChange}
-            >
-              <option value="">Select...</option>
-              <option value="Learning">Learn new skills</option>
-              <option value="Teaching">Share my expertise</option>
-              <option value="Networking">Connect with people</option>
-              <option value="Business">Grow my business</option>
-            </select>
+              rows={5}
+              disabled={isSubmitting}
+            />
 
-            <button type="button" onClick={prevStep}>Back</button>
+            {isSubmitting && (
+              <div className="upload-progress">
+                <div>Uploading: {uploadProgress}%</div>
+              </div>
+            )}
 
-            <button
-              type="button"
-              onClick={() =>
-                validateStep() ? nextStep() : alert("Select how you’ll use the app.")
-              }
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/* STEP 5 (FINAL) */}
-        {step === 5 && (
-          <div className="onboarding-step">
-            <h1>How much time can you commit weekly?</h1>
-
-            <select
-              name="weeklyCommitment"
-              className="form-input"
-              value={formData.weeklyCommitment}
-              onChange={handleChange}
-            >
-              <option value="">Select...</option>
-              <option value="1-2 hrs">1–2 hrs</option>
-              <option value="3-5 hrs">3–5 hrs</option>
-              <option value="6+ hrs">6+ hrs</option>
-            </select>
-
-            <button type="button" onClick={prevStep}>Back</button>
-
-            <button
-              type="submit"
-              onClick={(e) => {
-                if (!validateStep()) {
-                  alert("Please choose your weekly commitment.");
-                  e.preventDefault();
-                  return;
-                }
-              }}
-            >
-              Finish
-            </button>
+            <div className="button-row">
+              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
+              <button
+                type="submit"
+                onClick={(e) => {
+                  if (!validateStep()) {
+                    setErrors(prev => ({ ...prev, bio: 'Please provide a short bio.' }));
+                    e.preventDefault();
+                    return;
+                  }
+                }}
+                disabled={isSubmitting}
+              >
+                Finish
+              </button>
+            </div>
           </div>
         )}
 
