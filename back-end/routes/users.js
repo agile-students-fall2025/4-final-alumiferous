@@ -5,6 +5,33 @@ import SkillOffering from '../models/SkillOffering.js';
 
 const router = express.Router();
 
+// GET /api/users/check-username?username=foo
+// Returns { available: true } when the username is not present in the DB.
+router.get('/check-username', async (req, res) => {
+  const useDb = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
+  const username = (req.query.username || '').toString().trim();
+  if (!username) return res.status(400).json({ error: 'username query parameter is required' });
+
+  if (!useDb) {
+    // When DB is disabled for development, optimistically return available=true
+    return res.json({ available: true });
+  }
+
+  try {
+    // case-insensitive exact match
+    const esc = username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`^${esc}$`, 'i');
+    const excludeId = req.query.excludeId;
+    const q = { username: re };
+    if (excludeId) q._id = { $ne: excludeId };
+    const existing = await User.findOne(q).lean().exec();
+    return res.json({ available: !existing });
+  } catch (err) {
+    console.error('Error checking username availability:', err && err.message ? err.message : err);
+    return res.status(500).json({ error: 'failed to check username' });
+  }
+});
+
 // GET /api/users/:id/saved - return populated saved skills for a user
 router.get('/:id/saved', async (req, res) => {
   const useDb = process.env.USE_DB === 'true';
