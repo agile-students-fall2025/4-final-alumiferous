@@ -145,6 +145,38 @@
   font-weight: 500;
 }
 
+/* Button blue color consistency */
+.EditProfileButton, .AccountSettingsButton, .SavedSkillsButton, .SkillCard, .UploadButton, .SaveButton {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+}
+.EditProfileButton:hover, .AccountSettingsButton:hover, .SavedSkillsButton:hover, .SkillCard:hover, .UploadButton:hover, .SaveButton:hover {
+  background: #1565c0;
+  color: #fff;
+}
+
+/* Dark mode: same blue for buttons */
+body.dark-mode .EditProfileButton,
+body.dark-mode .AccountSettingsButton,
+body.dark-mode .SavedSkillsButton,
+body.dark-mode .SkillCard,
+body.dark-mode .UploadButton,
+body.dark-mode .SaveButton {
+  background: #1976d2 !important;
+  color: #fff !important;
+  border: none !important;
+}
+body.dark-mode .EditProfileButton:hover,
+body.dark-mode .AccountSettingsButton:hover,
+body.dark-mode .SavedSkillsButton:hover,
+body.dark-mode .SkillCard:hover,
+body.dark-mode .UploadButton:hover,
+body.dark-mode .SaveButton:hover {
+  background: #1565c0 !important;
+  color: #fff !important;
+}
+
 @media (max-width: 480px) {
   .upload-skill-container { padding: 16px; }
   .upload-skill-form {
