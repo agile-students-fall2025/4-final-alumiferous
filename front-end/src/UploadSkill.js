@@ -151,6 +151,7 @@ export default function UploadSkill() {
   return (
     <div className="upload-skill-page">
       <header className="upload-skill-header">
+        <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
         <h1 className="upload-skill-title">Upload</h1>
       </header>
 

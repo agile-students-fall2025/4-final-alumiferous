@@ -4,16 +4,17 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: #f8f8f8;
+  background: #ffffff;
   box-sizing: border-box;
   overflow: hidden; /* inner content scrolls */
   transition: background-color 0.3s, color 0.3s;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 0;
 }
 
 .settings-header {
   position: fixed;
-  top: calc(var(--app-header-offset, 64px) - 8px); /* peek slightly under main header */
+  top: calc(var(--app-header-offset, 64px) - 8px); 
   left: 0;
   right: 0;
   z-index: 10;
@@ -29,17 +30,15 @@
 }
 
 .settings-title {
-   font-size: 24px;
+  font-size: 24px;
   font-weight: 600;
-  margin: 0;
   color: #333;
+  margin: 0;
   flex: 1 1 auto;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: relative;
-  top: 1px;
 }
 
 .logo {

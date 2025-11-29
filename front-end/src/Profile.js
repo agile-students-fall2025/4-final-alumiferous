@@ -140,7 +140,7 @@ const Profile = () => {
     <main>
       <div className="ProfileContent">
         <div className="ProfileHeader">
-          <h1 className="ProfileTitle">My Profile</h1>
+          <h1 className="ProfileTitle">Profile</h1>
           <button
             className="EditButton"
             onClick={isEditing ? handleSave : handleEditToggle}
@@ -150,7 +150,6 @@ const Profile = () => {
             {isEditing ? "Save" : <PencilSquareIcon style={{ width: 22, height: 22 }} />}
           </button>
         </div>
-        <div className="ProfilePhotoSection">
           <img
             className="Avatar"
             src={
@@ -179,7 +178,6 @@ const Profile = () => {
               </label>
             </>
           )}
-        </div>
         <div className="UserInfo">
           {isEditing ? (
             <>

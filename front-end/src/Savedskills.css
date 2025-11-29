@@ -4,6 +4,7 @@
   height: 100vh;
   background: #f8f9fb;
   overflow: hidden;
+  padding-top: 10px;
 }
 
 .savedskills-header {
@@ -17,15 +18,39 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  position: fixed;
   z-index: 10;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+.savedskills-header .back-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #333;
+  border-radius: 50%;
+  padding: 6px;
+  min-width: 36px;
+  min-height: 36px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 8px;
+}
+
+.savedskills-header .back-btn:hover,
+.savedskills-header .back-btn:focus {
+  background: #f0f0f0;
+}
+
 
 .savedskills-title {
   font-size: 24px;
   font-weight: 600;
   color: #333;
   margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 .savedskills-content {
