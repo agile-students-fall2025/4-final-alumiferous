@@ -93,6 +93,7 @@ const Savedskills = () => {
   return (
     <div className="savedskills-page">
       <header className="savedskills-header">
+        <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
         <h2 className="savedskills-title">Saved</h2>
       </header>
 

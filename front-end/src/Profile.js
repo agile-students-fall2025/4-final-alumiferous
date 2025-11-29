@@ -140,17 +140,16 @@ const Profile = () => {
     <main>
       <div className="ProfileContent">
         <div className="ProfileHeader">
-          <h1 className="ProfileTitle">My Profile</h1>
+          <h1 className="ProfileTitle" onClick={() => navigate("/Profile")}>Profile</h1>
           <button
             className="EditButton"
             onClick={isEditing ? handleSave : handleEditToggle}
             title={isEditing ? "Save Profile" : "Edit Profile"}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+            // style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
           >
             {isEditing ? "Save" : <PencilSquareIcon style={{ width: 22, height: 22 }} />}
           </button>
         </div>
-        <div className="ProfilePhotoSection">
           <img
             className="Avatar"
             src={
@@ -179,25 +178,24 @@ const Profile = () => {
               </label>
             </>
           )}
-        </div>
         <div className="UserInfo">
           {isEditing ? (
             <>
             <input
-              className="ProfileUsernameInput"
+              className="ProfileUsernameInput form-input"
               value={formState.firstName || ""}
               onChange={e => handleChange("firstName", e.target.value)}
               placeholder="First Name"
             />
             <input
-              className="ProfileUsernameInput"
+              className="ProfileUsernameInput form-input"
               value={formState.lastName || ""}
               onChange={e => handleChange("lastName", e.target.value)}
               placeholder="Last Name"
               style={{ marginTop: 8 }}
             />
             <input
-              className="ProfileUsernameInput"
+              className="ProfileUsernameInput form-input"
               value={formState.username || ""}
               onChange={e => handleChange("username", e.target.value)}
               placeholder="Username"
@@ -222,7 +220,7 @@ const Profile = () => {
             <textarea
               value={formState.bio || ""}
               onChange={e => handleChange("bio", e.target.value)}
-              className="ProfileBioInput"
+              className="ProfileBioInput form-input"
             />
           ) : (
             <div className="BioBox">

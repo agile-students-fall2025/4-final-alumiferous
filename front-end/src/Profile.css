@@ -6,55 +6,95 @@ body {
 
 /* Card container for profile content */
 .ProfileContent {
-  max-width: 390px;
-  margin: 36px auto 100px;
-  /*padding: 28px 16px 34px;*/
-  /*background: #fff;*/
-  /*border-radius: 24px;*/
-  /*box-shadow: 0 6px 28px rgba(34,90,160,0.12);*/
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  max-width: 600px;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Responsive fix for mobile */
-@media (max-width: 500px) {
+@media (max-width: 768px) {
   .ProfileContent {
-    max-width: 99vw;
-    padding: 16px 2vw 90px;
+    padding-top: calc(var(--app-header-offset, 64px) + 62px);
+    padding-bottom: calc(var(--app-footer-offset, 120px));
+    scroll-behavior: smooth;
+  }
+  .ProfileHeader {
+    padding: 12px 12px;
+  }
+  .ProfileTitle {
+    font-size: 20px;
+  }
+  .Avatar {
+    width: 72px;
+    height: 72px;
+  }
+  .AboutSection {
+    max-width: 92vw; 
+    padding: 11px 11px;
   }
 }
 
 /* Header */
 .ProfileHeader {
-  top: calc(var(--app-header-offset, 64px) - 8px); /* peek slightly under main header */
+  position: fixed;
+  top: calc(var(--app-header-offset, 64px) - 8px); 
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin-bottom: 0;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100vw;
+  flex-shrink: 0;
 }
 .ProfileTitle {
   font-size: 24px;
-  font-weight: 700;
-  color: #222;
+  font-weight: 600;
+  color: #333;
   margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .EditButton {
-  background: #1976d2;
-  color: #fff;
+  background: transparent;
   border: none;
-  padding: 7px 16px;
-  border-radius: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(33,89,135,0.09);
-  margin-left: 10px;
-  transition: background 0.15s;
+  font-size: 20px;
+  color: #333;
+  border-radius: 50%;
+  padding: 5px;
+  margin-right: 5px;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: none;
+  outline: none;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.EditButton:active, .EditButton:hover {
+/* .EditButton:active, .EditButton:hover {
   background: #1565c0;
-}
+} */
 
 .Avatar {
   width: 104px;
@@ -63,15 +103,20 @@ body {
   object-fit: cover;
   box-shadow: 0 2px 12px rgba(33,89,135,0.11);
   border: 4px solid #e6f0ff;
-  margin-top: 18px;
-  margin-bottom: 10px;
+  margin-top: 8px;
+  margin-bottom: 4px;
   display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Username and Info */
 .UserInfo {
   text-align: center;
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .UserInfo h2 {
   font-size: 22px;
@@ -81,9 +126,9 @@ body {
 }
 
 .AboutSection {
-  width: 100%;
-  max-width: 430px;
-  margin: 18px auto 0 auto;
+  width: 50%;
+  max-width: 540px;
+  margin: 8px auto 8px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -93,29 +138,31 @@ body {
   font-size: 1.16rem;
   font-weight: 700;
   color: #000000;
-  margin-bottom: 7px;
+  margin-bottom: 2px;
   text-align: center;
 }
 
 .BioBox {
-  width: 96%;
-  max-width: 430px;
-  min-height: 36px;
-  padding: 16px 15px;
+  width: 90%;
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 50px;
+  padding: 15px 15px;
   border-radius: 13px;
   background: #ffffff;
   border: 1.5px solid #e0e0e0;
   color: #313741;
   font-size: 1.13rem;
   box-shadow: 0 1px 5px rgba(37,100,230,0.06);
-  margin: 0 auto;
+  margin: auto;
   text-align: left;
   word-break: break-word;
 }
 
 .ProfileBioInput {
   width: 96%;
-  max-width: 430px;
+  max-width: 520px;
   min-height: 80px;
   padding: 16px 15px;
   border-radius: 13px;
@@ -147,7 +194,7 @@ body {
 }
 .AboutSection p {
   font-size: 15px;
-  margin: 0;
+  margin: auto;
   color: #444;
   text-align: center;     /* <--- ensures about text is centered */
 }
@@ -155,7 +202,7 @@ body {
 /* My Skills Section */
 .SkillsSection {
   width: 100%;
-  max-width: 430px;
+  max-width: 540px;
   margin: 18px auto 0 auto;
   display: flex;
   flex-direction: column;
@@ -263,8 +310,9 @@ body {
   font-size: 20px;
   font-weight: 600;
   color: #333;
+  margin-left: 0;
+  margin-right: 0;
 }
-
 .delete-modal-text {
   margin: 0 0 24px 0;
   font-size: 15px;
@@ -309,9 +357,11 @@ body {
 /* Action Buttons (if used) */
 .ActionButtons {
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  align-items: center;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 .EditProfileButton, .AccountSettingsButton {
   padding: 12px 22px;
@@ -350,45 +400,29 @@ body {
 /* Media queries for iPhone, small screens */
 @media (max-width: 375px) {
   .ProfileContent { max-width: 99vw; padding: 11px 1vw 80px; }
-  .Avatar { width: 72px; height: 72px; }
-  .AboutSection { max-width: 92vw; padding: 11px 3vw 6px; }
+  .Avatar { width: 56px; height: 56px; }
+  .AboutSection { max-width: 98vw; padding: 8px 2vw 8px; }
 }
 
-.ProfileContent {
-  /* existing styles */
-  margin-top: 64px; /* Add this to push below header */
-}
 
 .SavedSkillsButton {
-  background: #fff;
-  color: #1976d2;
-  border: 2px solid #1976d2;
   padding: 12px 22px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
-  transition: background .17s, color .17s;
-  margin-right: 8px;
-}
-.SavedSkillsButton:hover {
   background: #1976d2;
   color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+  cursor: pointer;
+  transition: background .17s;
+  margin: 0;
+}
+.SavedSkillsButton:hover {
+  background: #1565c0;
 }
 
-.ProfileUsernameInput {
-  font-size: 20px;
-  font-weight: 400;
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: 1.5px solid #bcd0ee;
-  width: 80%;
-  max-width: 320px;
-  display: block;
-  margin: 16px auto 8px auto;
-  text-align: center;
-  box-shadow: 0 1px 4px rgba(80,120,180,0.07);
-  background: #f7faff;
-}
+
 /*didnt change*/
 .ProfileUsernameInput:focus {
   border-color: #1976d2;
@@ -414,8 +448,8 @@ body {
 }
 /*works*/
 .ProfileUsernameInput {
-  width: 90%;
-  max-width: 320px;
+  width: 100%;
+  max-width: 520px;
   font-size: 1.25rem;
   font-weight: 400;
   padding: 10px 15px;
@@ -440,6 +474,7 @@ body.dark-mode {
 body.dark-mode .ProfileContent {
   background-color: #121212 !important;
   color: #f1f1f1 !important;
+  max-width: 600px;
 }
 
 body.dark-mode .ProfileTitle {
@@ -447,14 +482,9 @@ body.dark-mode .ProfileTitle {
 }
 
 body.dark-mode .EditButton {
-  background: #4dabf7 !important;
   color: #fff !important;
 }
 
-body.dark-mode .EditButton:active,
-body.dark-mode .EditButton:hover {
-  background: #339af0 !important;
-}
 
 body.dark-mode .Avatar {
   border-color: #2b2b2b !important;
@@ -510,25 +540,25 @@ body.dark-mode .SkillCard {
   box-shadow: 0 2.5px 13px rgba(77, 171, 247, 0.2) !important;
 }
 
-body.dark-mode .EditProfileButton,
+
 body.dark-mode .AccountSettingsButton {
   background: #4dabf7 !important;
   box-shadow: 0 2px 8px rgba(77, 171, 247, 0.3) !important;
 }
 
-body.dark-mode .EditProfileButton:hover,
+
 body.dark-mode .AccountSettingsButton:hover {
   background: #339af0 !important;
 }
-
+body.dark-mode .EditProfileButton,
 body.dark-mode .SavedSkillsButton {
   background: #1e1e1e !important;
   color: #4dabf7 !important;
   border-color: #4dabf7 !important;
 }
-
+body.dark-mode .EditProfileButton:hover,
 body.dark-mode .SavedSkillsButton:hover {
-  background: #4dabf7 !important;
+  /* background: #4dabf7 !important; */
   color: #fff !important;
 }
 
@@ -558,8 +588,35 @@ body.dark-mode .delete-modal-btn.cancel {
   color: #f1f1f1 !important;
 }
 
-body.dark-mode .delete-modal-btn.cancel:hover {
-  background: #3a3a3a !important;
+/* Button blue color consistency */
+.EditProfileButton, .AccountSettingsButton, .SavedSkillsButton, .SkillCard, .UploadButton, .SaveButton {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+}
+.EditProfileButton:hover, .AccountSettingsButton:hover, .SavedSkillsButton:hover, .SkillCard:hover, .UploadButton:hover, .SaveButton:hover {
+  background: #1565c0;
+  color: #fff;
+}
+/* Dark mode: same blue for buttons */
+body.dark-mode .EditProfileButton,
+body.dark-mode .AccountSettingsButton,
+body.dark-mode .SavedSkillsButton,
+body.dark-mode .SkillCard,
+body.dark-mode .UploadButton,
+body.dark-mode .SaveButton {
+  background: #1976d2 !important;
+  color: #fff !important;
+  border: none !important;
+}
+body.dark-mode .EditProfileButton:hover,
+body.dark-mode .AccountSettingsButton:hover,
+body.dark-mode .SavedSkillsButton:hover,
+body.dark-mode .SkillCard:hover,
+body.dark-mode .UploadButton:hover,
+body.dark-mode .SaveButton:hover {
+  background: #1565c0 !important;
+  color: #fff !important;
 }
 
 

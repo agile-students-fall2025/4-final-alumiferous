@@ -109,12 +109,19 @@ export default function Requests() {
   return (
     <div className="requests-page">
       <header className="requests-header">
+        <button
+          className="back-btn"
+          onClick={() => window.history.back()}
+          aria-label="Go back"
+        >
+          &larr;
+        </button>
         <h2>Incoming Requests</h2>
       </header>
 
       <div className="requests-content">
         {requests.length === 0 ? (
-          <p className="no-requests">No new requests 📭</p>
+          <p className="no-requests">No new requests </p>
         ) : (
           requests.map((req) => (
             <div key={req.id} className="request-card">

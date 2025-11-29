@@ -2,26 +2,29 @@
 .edit-profile-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   width: 100vw;
   background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 /* Edit Profile scrollable content area */
 .edit-profile-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  max-width: 100vw;
-  padding-top: calc(var(--app-header-offset, 64px) + 80px); /* account for fixed header + breathing room */
-  padding-bottom: calc(var(--app-footer-offset, 60px) + 20px + env(safe-area-inset-bottom)); /* footer clearance + extra space */
   display: flex;
   flex-direction: column;
-  align-items: center; /* center all sections horizontally */
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0;
 }
 
 /* Remove Profile.css narrow max-widths for this page so content can span full width */
@@ -159,6 +162,17 @@
 
 .SaveButton:active {
   transform: translateY(0);
+}
+
+/* Button blue color consistency */
+.EditProfileButton, .AccountSettingsButton, .SavedSkillsButton, .SkillCard, .UploadButton, .SaveButton {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+}
+.EditProfileButton:hover, .AccountSettingsButton:hover, .SavedSkillsButton:hover, .SkillCard:hover, .UploadButton:hover, .SaveButton:hover {
+  background: #1565c0;
+  color: #fff;
 }
 
 /* Responsive tweaks */

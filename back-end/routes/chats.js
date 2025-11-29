@@ -18,8 +18,11 @@ router.get('/', async (req, res) => {
     const chatData = await Promise.all(chats.map(async chat => {
       // Find last message
       const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
-      // Count unread messages
-      const unreadCount = await Message.countDocuments({ chatId: chat._id, isMe: false });
+      // Count unread messages (example: all messages not sent by userId)
+      let unreadCount = 0;
+      if (req.query.userId) {
+        unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId } });
+      }
       return {
         ...chat.toObject(),
         lastMessage: lastMsg ? lastMsg.content : '',
@@ -99,7 +102,10 @@ router.get('/:id', async (req, res) => {
     // Find last message and unread count for this chat
     const Message = (await import('../models/Message.js')).default;
     const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
-    const unreadCount = await Message.countDocuments({ chatId: chat._id, isMe: false });
+    let unreadCount = 0;
+    if (req.query.userId) {
+      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId } });
+    }
     const chatObj = {
       ...chat.toObject(),
       lastMessage: lastMsg ? lastMsg.content : '',

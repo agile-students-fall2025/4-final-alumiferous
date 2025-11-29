@@ -4,16 +4,17 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: #f8f8f8;
+  background: #ffffff;
   box-sizing: border-box;
   overflow: hidden; /* inner content scrolls */
   transition: background-color 0.3s, color 0.3s;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 0;
 }
 
 .settings-header {
   position: fixed;
-  top: calc(var(--app-header-offset, 64px) - 8px); /* peek slightly under main header */
+  top: calc(var(--app-header-offset, 64px) - 8px); 
   left: 0;
   right: 0;
   z-index: 10;
@@ -29,17 +30,15 @@
 }
 
 .settings-title {
-   font-size: 24px;
+  font-size: 24px;
   font-weight: 600;
-  margin: 0;
   color: #333;
+  margin: 0;
   flex: 1 1 auto;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: relative;
-  top: 1px;
 }
 
 .logo {
@@ -136,6 +135,38 @@
 
 .settings-btn.delete:hover {
   background-color: #ffecec;
+}
+
+/* Button blue color consistency */
+.EditProfileButton, .AccountSettingsButton, .SavedSkillsButton, .SkillCard, .UploadButton, .SaveButton {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+}
+.EditProfileButton:hover, .AccountSettingsButton:hover, .SavedSkillsButton:hover, .SkillCard:hover, .UploadButton:hover, .SaveButton:hover {
+  background: #1565c0;
+  color: #fff;
+}
+
+/* Dark mode: same blue for buttons */
+body.dark-mode .EditProfileButton,
+body.dark-mode .AccountSettingsButton,
+body.dark-mode .SavedSkillsButton,
+body.dark-mode .SkillCard,
+body.dark-mode .UploadButton,
+body.dark-mode .SaveButton {
+  background: #1976d2 !important;
+  color: #fff !important;
+  border: none !important;
+}
+body.dark-mode .EditProfileButton:hover,
+body.dark-mode .AccountSettingsButton:hover,
+body.dark-mode .SavedSkillsButton:hover,
+body.dark-mode .SkillCard:hover,
+body.dark-mode .UploadButton:hover,
+body.dark-mode .SaveButton:hover {
+  background: #1565c0 !important;
+  color: #fff !important;
 }
 
 body.dark-mode .settings-page {
