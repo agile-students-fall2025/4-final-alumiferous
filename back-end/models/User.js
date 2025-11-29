@@ -1,6 +1,7 @@
 // Mongoose User model with password hashing and JWT support
 import mongoose from 'mongoose';
 import { createRequire } from 'module';
+import { type } from 'os';
 const require = createRequire(import.meta.url);
 
 // Try to load optional dependencies; if they are missing (e.g., in test env),
@@ -29,6 +30,7 @@ const userSchema = new mongoose.Schema({
   photo: { type: String },      // optional
   username: { type: String },   // optional
   offeredSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
+  neededSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "Skill"}],
   savedSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
   bio: {type: String}
 });

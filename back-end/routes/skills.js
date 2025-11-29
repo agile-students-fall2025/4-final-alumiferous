@@ -70,7 +70,7 @@ async function uploadBufferToCloudinary(file, resourceType = 'image') {
   return result.secure_url;
 }
 
-let skills = []; // in-memory fallback for POST when DB isn't enabled
+// In-memory Mockaroo/fallback removed. This route requires a database connection.
 
 // Helper to attach computed fields, saved and hidden options
 function addComputedFields(skill) {
@@ -84,7 +84,8 @@ function addComputedFields(skill) {
 
 /**
  * GET /api/skills
- * Fetches skills from Mockaroo once, stores it in memory for caching
+ * DB-first: fetches SkillOfferings from MongoDB with pagination.
+ * No external Mockaroo dependency — uses an in-memory last-successful cache only.
  */
 let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts: Date }
 
@@ -136,7 +137,7 @@ router.get("/", async (req, res) => {
           images,
           videos,
           userId: user._id ? String(user._id) : null,
-          username: user.username || off.username || 'demoUser',
+          username: user.username || off.username || null,
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
@@ -340,7 +341,7 @@ router.post(
           images: imageUrls,
           videos: videoUrls,
           userId: String(userObj._id),
-          username: userObj.username || username || 'demoUser',
+          username: userObj.username || username || null,
           category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
@@ -361,25 +362,8 @@ router.post(
       }
     }
 
-    // Fallback (DB disabled or failed): keep previous in-memory behavior but include images/videos arrays
-    const newSkillId = skills.length ? (skills[skills.length - 1].skillId + 1) : 1;
-    const newSkill = addComputedFields({
-      skillId: newSkillId,
-      id: newSkillId,
-      name,
-      brief: finalBrief,
-      detail: finalDetail,
-      description: finalDetail,
-      image: imageUrls.length ? imageUrls[0] : (`https://via.placeholder.com/300x200?text=${encodeURIComponent(name)}`),
-      images: imageUrls,
-      videos: videoUrls,
-      userId: userId ?? 1,
-      username: username || 'demoUser',
-      category,
-    });
-
-    skills.push(newSkill);
-    return res.status(201).json(newSkill);
+    // Database unavailable: do not fall back to in-memory Mockaroo data.
+    return res.status(503).json({ error: 'Database unavailable: cannot create skill offering' });
   }
 );
 

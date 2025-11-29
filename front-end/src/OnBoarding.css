@@ -180,3 +180,35 @@ body.dark-mode .skill-option.selected {
 body.dark-mode .skill-option:hover {
   background: #333 !important;
 }
+
+/* === OnBoarding specific utilities === */
+.form-network-error {
+  color: #d9534f;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.status-row {
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+.status-muted { color: #666; }
+.status-danger { color: #d9534f; }
+.status-success { color: #28a745; }
+
+.field-error {
+  color: #d9534f;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.button-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+.button-row button { flex: 1; width: auto; }
+
+.photo-preview { margin-top: 12px; width: 120px; height: 120px; object-fit: cover; border-radius: 8px; }
+.upload-progress { margin-top: 8px; }
