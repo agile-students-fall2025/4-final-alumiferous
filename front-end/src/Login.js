@@ -51,6 +51,7 @@ const Login = props => {
 
         if (data.userId) {
           localStorage.setItem('userId', data.userId)
+          localStorage.setItem('currentUserId', data.userId)
         }
         if (data.username) {
           localStorage.setItem('username', data.username)
@@ -60,6 +61,7 @@ const Login = props => {
         }
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
         }
 
         // Update local state

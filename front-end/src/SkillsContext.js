@@ -79,7 +79,7 @@ export const SkillsProvider = ({ children }) => {
       videos: videosArr,
       image,
       userId: user._id ? String(user._id) : user._id || null,
-      username: user.username || item.username || null,
+      username: user.username || item.username || 'demoUser',
       category: (item.categories && item.categories[0]) || (skill.categories && skill.categories[0]) || (skill.category) || 'General',
       width: Math.floor(Math.random() * 80) + 150,
       height: Math.floor(Math.random() * 100) + 200,
@@ -198,49 +198,45 @@ export const SkillsProvider = ({ children }) => {
   // Saved is per-user; we store an array of saved skill ids instead of mutating the skill object
   const handleSaveSkill = (id) => {
     const currentUserId = localStorage.getItem('currentUserId');
-    if (currentUserId) {
-      // Persist saved on the backend (user.savedSkills)
-      axios.post(`/api/users/${currentUserId}/saved`, { skillId: id })
-        .then(res => {
-          const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
-          setSavedIds(saved);
-          setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: true} : item));
-        })
-        .catch(err => {
-          console.error('Failed to save skill on server:', err);
-        });
-      return;
+    const token = localStorage.getItem('token');
+    if (!currentUserId || !token) {
+      return Promise.reject(new Error('Authentication required'));
     }
 
-    // fallback: local-only saved list
-    setSavedIds((prev) => {
-      if (prev.includes(id)) return prev;
-      const next = [...prev, id];
-      setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: true} : item));
-      return next;
-    });
+    const headers = { Authorization: `jwt ${token}` };
+    // Persist saved on the backend (user.savedSkills)
+    return axios.post(`/api/users/${currentUserId}/saved`, { skillId: id }, { headers })
+      .then(res => {
+        const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
+        setSavedIds(saved);
+        setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: true} : item));
+        return { success: true, saved };
+      })
+      .catch(err => {
+        console.error('Failed to save skill on server:', err);
+        throw err;
+      });
   };
 
   const handleUnsaveSkill = (id) => {
     const currentUserId = localStorage.getItem('currentUserId');
-    if (currentUserId) {
-      axios.delete(`/api/users/${currentUserId}/saved/${id}`)
-        .then(res => {
-          const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
-          setSavedIds(saved);
-          setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: false} : item));
-        })
-        .catch(err => {
-          console.error('Failed to unsave skill on server:', err);
-        });
-      return;
+    const token = localStorage.getItem('token');
+    if (!currentUserId || !token) {
+      return Promise.reject(new Error('Authentication required'));
     }
 
-    setSavedIds((prev) => {
-      const next = prev.filter(x => x !== id);
-      setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: false} : item));
-      return next;
-    });
+    const headers = { Authorization: `jwt ${token}` };
+    return axios.delete(`/api/users/${currentUserId}/saved/${id}`, { headers })
+      .then(res => {
+        const saved = (res.data && res.data.savedSkills) ? res.data.savedSkills.map(s => String(s)) : [];
+        setSavedIds(saved);
+        setSkills((s) => s.map(item => item.skillId === id ? {...item, saved: false} : item));
+        return { success: true, saved };
+      })
+      .catch(err => {
+        console.error('Failed to unsave skill on server:', err);
+        throw err;
+      });
   };
 
   const handleHideSkill = (id) => {

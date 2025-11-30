@@ -24,10 +24,16 @@ const Savedskills = () => {
   };
 
   const handleUnsave = (skillId) => {
-    handleUnsaveSkill(skillId);
-    // Also update local saved list
-    setSavedSkills((prev) => prev.filter(s => s.skillId !== skillId));
-    showNotification('Skill Unsaved', 'success');
+    handleUnsaveSkill(skillId)
+      .then(() => {
+        // Update local saved list to reflect server response
+        setSavedSkills((prev) => prev.filter(s => s.skillId !== skillId));
+        showNotification('Skill Unsaved', 'success');
+      })
+      .catch((err) => {
+        console.error('Failed to unsave skill:', err);
+        showNotification('Failed to unsave skill', 'error');
+      });
   };
 
   const handleReport = () => {

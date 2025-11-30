@@ -70,7 +70,7 @@ async function uploadBufferToCloudinary(file, resourceType = 'image') {
   return result.secure_url;
 }
 
-// In-memory Mockaroo/fallback removed. This route requires a database connection.
+let skills = []; // in-memory fallback for POST when DB isn't enabled
 
 // Helper to attach computed fields, saved and hidden options
 function addComputedFields(skill) {
@@ -84,8 +84,7 @@ function addComputedFields(skill) {
 
 /**
  * GET /api/skills
- * DB-first: fetches SkillOfferings from MongoDB with pagination.
- * No external Mockaroo dependency — uses an in-memory last-successful cache only.
+ * Fetches skills from Mockaroo once, stores it in memory for caching
  */
 let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts: Date }
 
@@ -93,10 +92,8 @@ router.get("/", async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
 
-  const dbEnabled = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
-
-  // Try DB first (when enabled)
-  if (dbEnabled && SkillOffering && typeof SkillOffering.find === 'function') {
+  // Try DB first
+  if (SkillOffering && typeof SkillOffering.find === 'function') {
     try {
       const skip = (page - 1) * limit;
       const [docs, totalCount] = await Promise.all([
@@ -137,7 +134,7 @@ router.get("/", async (req, res) => {
           images,
           videos,
           userId: user._id ? String(user._id) : null,
-          username: user.username || off.username || null,
+          username: user.username || off.username || 'demoUser',
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
@@ -255,10 +252,8 @@ router.post(
     imageUrls = imageUrls || [];
     videoUrls = videoUrls || [];
 
-    const dbEnabled = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
-
-    // If DB is enabled, persist normalized documents: Skill (master) and SkillOffering (offer)
-    if (dbEnabled && Skill && SkillOffering) {
+    // If DB is available, persist normalized documents: Skill (master) and SkillOffering (offer)
+    if (Skill && SkillOffering) {
       try {
         // Resolve (find or create) the canonical Skill document using the selected `generalSkill`.
         const generalSlug = makeSlug(general);
@@ -341,7 +336,7 @@ router.post(
           images: imageUrls,
           videos: videoUrls,
           userId: String(userObj._id),
-          username: userObj.username || username || null,
+          username: userObj.username || username || 'demoUser',
           category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
@@ -362,8 +357,25 @@ router.post(
       }
     }
 
-    // Database unavailable: do not fall back to in-memory Mockaroo data.
-    return res.status(503).json({ error: 'Database unavailable: cannot create skill offering' });
+    // Fallback (DB disabled or failed): keep previous in-memory behavior but include images/videos arrays
+    const newSkillId = skills.length ? (skills[skills.length - 1].skillId + 1) : 1;
+    const newSkill = addComputedFields({
+      skillId: newSkillId,
+      id: newSkillId,
+      name,
+      brief: finalBrief,
+      detail: finalDetail,
+      description: finalDetail,
+      image: imageUrls.length ? imageUrls[0] : (`https://via.placeholder.com/300x200?text=${encodeURIComponent(name)}`),
+      images: imageUrls,
+      videos: videoUrls,
+      userId: userId ?? 1,
+      username: username || 'demoUser',
+      category,
+    });
+
+    skills.push(newSkill);
+    return res.status(201).json(newSkill);
   }
 );
 
