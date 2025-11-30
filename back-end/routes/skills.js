@@ -90,20 +90,39 @@ let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts:
 router.get("/", async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
+  const { search, category } = req.query;
 
   // Try DB first
   if (SkillOffering && typeof SkillOffering.find === 'function') {
     try {
       const skip = (page - 1) * limit;
+      
+      // Build MongoDB query based on search and category filters
+      let query = {};
+      
+      if (search && search.trim()) {
+        // Search in offering name, description, or general skill name
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { offeringSlug: { $regex: search, $options: 'i' } }
+        ];
+      }
+      
+      if (category && category.trim()) {
+        // Filter by category (case-insensitive)
+        query.categories = { $regex: `^${category}$`, $options: 'i' };
+      }
+      
       const [docs, totalCount] = await Promise.all([
-        SkillOffering.find({})
+        SkillOffering.find(query)
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
           .populate('skillId')
           .populate('userId')
           .lean(),
-        SkillOffering.countDocuments(),
+        SkillOffering.countDocuments(query),
       ]);
 
       const items = docs.map((off) => {
