@@ -341,7 +341,12 @@ router.post(
           images: imageUrls,
           videos: videoUrls,
           userId: String(userObj._id),
-          username: userObj.username || username || 'demoUser',
+          username: userObj.username || 
+                    (userObj.firstName && userObj.lastName ? `${userObj.firstName} ${userObj.lastName}` : null) ||
+                    userObj.firstName || 
+                    userObj.email || 
+                    username || 
+                    'Unknown User',
           category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
