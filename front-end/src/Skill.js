@@ -50,9 +50,12 @@ const Skill = ({ skillId, name, brief, image, ImgHeight }) => {
             <div className="skill-image missing" />
           )}
         </Link>
+      </div>
 
-        {/* Floating more-options button */}
-        <button className="skill-menu-button" onClick={toggleMenu}>
+      {/* Title and menu placed underneath the image */}
+      <div className="skill-meta">
+        <div className="skill-title">{name}</div>
+        <button className="skill-menu-button" onClick={(e) => { e.stopPropagation(); toggleMenu(e); }} aria-label="Options">
           <EllipsisHorizontalIcon className="skill-menu-icon" />
         </button>
       </div>
@@ -65,7 +68,6 @@ const Skill = ({ skillId, name, brief, image, ImgHeight }) => {
             <p>{brief}</p>
             <ul>
               <li onClick={handleSave}>Save Skill</li>
-              <li onClick={handleReport}>Report Abuse</li>
               <li onClick={handleHide}>Hide</li>
             </ul>
           </div>

@@ -84,7 +84,6 @@ function addComputedFields(skill) {
 
 /**
  * GET /api/skills
- * Fetches skills from Mockaroo once, stores it in memory for caching
  */
 let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts: Date }
 
