@@ -1,19 +1,9 @@
 // back-end/routes/requests.js
 import express from "express";
 import axios from "axios";
+import Request from "../models/Request.js";
 
 const router = express.Router();
-
-// In-memory "database" for requests
-// Structure: {
-//   requestId, skillId, skillName,
-//   ownerId, ownerName,
-//   requesterId, requesterName,
-//   message, status, createdAt, updatedAt?,
-//   skillsAcquired?, skillsWanted?
-// }
-let requests = [];
-let mockRequestsCache = [];
 
 /**
  * POST /api/requests
@@ -21,7 +11,7 @@ let mockRequestsCache = [];
  * Body expects:
  * { skillId, skillName, ownerId, ownerName, requesterId, requesterName, message }
  */
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const {
     skillId,
     skillName,
@@ -39,34 +29,31 @@ router.post("/", (req, res) => {
     });
   }
 
-  const newRequestId = requests.length
-    ? requests[requests.length - 1].requestId + 1
-    : 1;
+  try {
+    const newRequest = new Request({
+      skillId,
+      skillName: skillName || "Unknown Skill",
+      ownerId,
+      ownerName: ownerName || "Unknown Owner",
+      requesterId,
+      requesterName: requesterName || "Unknown User",
+      message: message.trim(),
+      status: "pending",
+    });
 
-  const newRequest = {
-    requestId: newRequestId,
-    skillId: Number(skillId),
-    skillName: skillName || "Unknown Skill",
-    ownerId: Number(ownerId), // the user who owns the skill
-    ownerName: ownerName || "Unknown Owner",
-    requesterId: Number(requesterId), // the user making the request
-    requesterName: requesterName || "Unknown User",
-    message: message.trim(),
-    status: "pending", // pending, accepted, declined
-    createdAt: new Date().toISOString(),
-  };
-
-  requests.push(newRequest);
-  console.log("Saved new request (manual POST):", newRequest);
-
-  return res.status(201).json(newRequest);
+    await newRequest.save();
+    return res.status(201).json(newRequest);
+  } catch (error) {
+    console.error("Error creating request:", error);
+    return res.status(500).json({ error: "Failed to create request" });
+  }
 });
 
 /**
  * GET /api/requests/incoming?userId=123
- * Fetches incoming requests for a skill owner from the in-memory array.
+ * Fetches incoming requests for a skill owner from MongoDB.
  */
-router.get("/incoming", (req, res) => {
+router.get("/incoming", async (req, res) => {
   const userId = req.query.userId;
 
   if (!userId) {
@@ -75,28 +62,34 @@ router.get("/incoming", (req, res) => {
     });
   }
 
-  const userIdNum = Number(userId);
+  try {
+    const incoming = await Request.find({
+      ownerId: userId,
+      status: "pending"
+    }).sort({ createdAt: -1 });
 
-  const incoming = requests.filter(
-    (request) => request.ownerId === userIdNum && request.status === "pending",
-  );
-
-  console.log(
-    `/api/requests/incoming userId=${userIdNum} -> ${incoming.length} requests`
-  );
-
-  return res.json(incoming);
+    return res.json(incoming);
+  } catch (error) {
+    console.error("Error fetching incoming requests:", error);
+    return res.status(500).json({ error: "Failed to fetch requests" });
+  }
 });
 
 /**
  * GET /api/requests/all
- * Debug endpoint: returns all requests (for testing).
+ * Debug endpoint: returns all requests from MongoDB (for testing).
  */
-router.get("/all", (req, res) => {
-  return res.json({
-    total: requests.length,
-    requests,
-  });
+router.get("/all", async (req, res) => {
+  try {
+    const allRequests = await Request.find({}).sort({ createdAt: -1 });
+    return res.json({
+      total: allRequests.length,
+      requests: allRequests,
+    });
+  } catch (error) {
+    console.error("Error fetching all requests:", error);
+    return res.status(500).json({ error: "Failed to fetch requests" });
+  }
 });
 
 /**
@@ -104,8 +97,8 @@ router.get("/all", (req, res) => {
  * Updates a request's status (accept / decline).
  * Body expects: { status: "accepted" | "declined" }
  */
-router.patch("/:requestId", (req, res) => {
-  const requestId = Number(req.params.requestId);
+router.patch("/:requestId", async (req, res) => {
+  const requestId = req.params.requestId;
   const { status } = req.body;
 
   if (!status || !["accepted", "declined"].includes(status)) {
@@ -114,30 +107,30 @@ router.patch("/:requestId", (req, res) => {
     });
   }
 
-  const request = requests.find((r) => r.requestId === requestId);
+  try {
+    const request = await Request.findByIdAndUpdate(
+      requestId,
+      { status },
+      { new: true }
+    );
 
-  if (!request) {
-    return res.status(404).json({
-      error: "Request not found",
-    });
+    if (!request) {
+      return res.status(404).json({
+        error: "Request not found",
+      });
+    }
+
+    return res.json(request);
+  } catch (error) {
+    console.error("Error updating request:", error);
+    return res.status(500).json({ error: "Failed to update request" });
   }
-
-  request.status = status;
-  request.updatedAt = new Date().toISOString();
-
-  console.log(
-    `Updated requestId=${requestId} to status='${status}'`
-  );
-
-  return res.json(request);
 });
 
 /**
  * GET /api/requests/mock-incoming?userId=123
- *
- * Uses Mockaroo to seed the in-memory "requests" array once,
- * then returns only pending incoming requests for that ownerId.
- * This is what your Requests page is using.
+ * DEPRECATED: Use /api/requests/incoming instead.
+ * Legacy endpoint kept for backwards compatibility.
  */
 router.get("/mock-incoming", async (req, res) => {
   const userId = req.query.userId;
@@ -145,67 +138,16 @@ router.get("/mock-incoming", async (req, res) => {
     return res.status(400).json({ error: "userId query parameter is required" });
   }
 
-  const apiKey = process.env.API_SECRET_KEY;
-
   try {
-    // 1) Fetch from Mockaroo once and cache the raw data
-    if (mockRequestsCache.length === 0) {
-      console.log("Fetching mock requests from Mockaroo…");
-
-      const response = await axios.get(
-        "https://api.mockaroo.com/api/27165660?count=200",
-        { headers: { "X-API-Key": apiKey } }
-      );
-
-      mockRequestsCache = Array.isArray(response.data)
-        ? response.data
-        : [response.data];
-      console.log("Mock requests loaded:", mockRequestsCache.length);
-    }
-
-    // 2) Seed the in-memory "requests" array ONCE from Mockaroo
-    if (requests.length === 0) {
-      requests = mockRequestsCache.map((r, i) => {
-        const skillName =
-          r.skillName ||
-          r.desiredSkill ||
-          (Array.isArray(r.skillsWanted) ? r.skillsWanted[0] : "Unknown Skill");
-
-        return {
-          requestId: r.requestId || i + 1,
-          skillId: r.skillId ? Number(r.skillId) : null,
-          skillName,
-          ownerId: Number(r.ownerId || r.tutorId || r.skillOwnerId || 1),
-          ownerName: r.ownerName || r.tutorName || "Unknown Owner",
-          requesterId: Number(r.requesterId || r.userId || r.id || 0),
-          requesterName:
-            r.requesterName ||
-            r.username ||
-            `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim(),
-          skillsAcquired: r.skillsAcquired || r._allSkills || [],
-          skillsWanted: r.skillsWanted || [],
-          message: r.message || `Wants to learn ${skillName}`,
-          status: "pending",
-          createdAt: new Date().toISOString(),
-        };
-      });
-    }
-
-    const userIdNum = Number(userId);
-
-    // 3) Now just filter the in-memory "requests" array by ownerId + pending
-    const incoming = requests.filter(
-      (req) => req.ownerId === userIdNum && req.status === "pending"
-    );
-
-    console.log(
-      ` /api/requests/mock-incoming userId=${userIdNum} -> ${incoming.length} requests`
-    );
+    const incoming = await Request.find({
+      ownerId: userId,
+      status: "pending"
+    }).sort({ createdAt: -1 });
 
     return res.json(incoming);
   } catch (error) {
-    console.error("Mockaroo fetch failed:", error.message);
-    return res.status(500).json({ error: "Failed to fetch mock requests" });
+    console.error("Error fetching requests:", error);
+    return res.status(500).json({ error: "Failed to fetch requests" });
   }
 });
 
