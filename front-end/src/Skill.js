@@ -22,9 +22,10 @@ const Skill = ({ skillId, name, brief, image, ImgHeight }) => {
   };
 
   const handleSave = () => {
-    handleSaveSkill(skillId);
     setIsMenuOpen(false);
-    showNotification('Skill Saved', 'success');
+    handleSaveSkill(skillId)
+      .then(() => showNotification('Skill Saved', 'success'))
+      .catch(() => showNotification('Failed to save skill', 'error'));
   };
 
   const handleHide = () => {

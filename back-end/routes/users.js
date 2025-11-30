@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
 import SkillOffering from '../models/SkillOffering.js';
 
 const router = express.Router();
@@ -8,14 +9,8 @@ const router = express.Router();
 // GET /api/users/check-username?username=foo
 // Returns { available: true } when the username is not present in the DB.
 router.get('/check-username', async (req, res) => {
-  const useDb = (process.env.USE_DB === 'true') || !!process.env.MONGODB_URI;
   const username = (req.query.username || '').toString().trim();
   if (!username) return res.status(400).json({ error: 'username query parameter is required' });
-
-  if (!useDb) {
-    // When DB is disabled for development, optimistically return available=true
-    return res.json({ available: true });
-  }
 
   try {
     // case-insensitive exact match
@@ -34,13 +29,7 @@ router.get('/check-username', async (req, res) => {
 
 // GET /api/users/:id/saved - return populated saved skills for a user
 router.get('/:id/saved', async (req, res) => {
-  const useDb = process.env.USE_DB === 'true';
   const userId = req.params.id;
-
-  if (!useDb) {
-    // DB disabled — return empty list so tests/dev without DB don't fail
-    return res.json([]);
-  }
 
   try {
     if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ error: 'invalid user id' });
@@ -81,12 +70,7 @@ router.get('/:id/saved', async (req, res) => {
 
 // GET /api/users/:id/saved/ids - return array of saved offering ids (compact)
 router.get('/:id/saved/ids', async (req, res) => {
-  const useDb = process.env.USE_DB === 'true';
   const userId = req.params.id;
-
-  if (!useDb) {
-    return res.json([]);
-  }
 
   try {
     if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ error: 'invalid user id' });
@@ -104,10 +88,17 @@ router.get('/:id/saved/ids', async (req, res) => {
 
 // POST /api/users/:id/saved - add a saved skill offering id to user
 router.post('/:id/saved', async (req, res) => {
-  const useDb = process.env.USE_DB === 'true';
-  if (!useDb) {
-    // DB disabled — respond with safe fallback
-    return res.status(200).json({ success: false, savedSkills: [] });
+  // Require authentication: only the signed-in user may modify their savedSkills
+  const auth = (req.headers && req.headers.authorization) ? req.headers.authorization : null;
+  if (!auth) return res.status(401).json({ error: 'Authentication required' });
+  const token = auth.split(' ')[1] || auth;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload || !payload.id || String(payload.id) !== String(req.params.id)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
 
   try {
@@ -134,10 +125,17 @@ router.post('/:id/saved', async (req, res) => {
 
 // DELETE /api/users/:id/saved/:skillId - remove saved skill
 router.delete('/:id/saved/:skillId', async (req, res) => {
-  const useDb = process.env.USE_DB === 'true';
-  if (!useDb) {
-    // DB disabled — safe fallback
-    return res.status(200).json({ success: false, savedSkills: [] });
+  // Require authentication: only the signed-in user may modify their savedSkills
+  const auth = (req.headers && req.headers.authorization) ? req.headers.authorization : null;
+  if (!auth) return res.status(401).json({ error: 'Authentication required' });
+  const token = auth.split(' ')[1] || auth;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload || !payload.id || String(payload.id) !== String(req.params.id)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
 
   try {
