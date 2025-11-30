@@ -4,6 +4,7 @@ import { SkillsContext } from "./SkillsContext";
 
 export default function UploadSkill() {
   const { skills } = useContext(SkillsContext);
+  const { refreshFeed, prependSkill } = useContext(SkillsContext);
   const [categories, setCategories] = useState([]);
   const [generalOptions, setGeneralOptions] = useState([]);
   // `category` kept for legacy single-category field; `selectedCategories` is the new multi-select
@@ -124,6 +125,14 @@ export default function UploadSkill() {
 
       setMessage(`"${savedSkill.name}" added under "${savedSkill.category}"!`);
       
+      // Update the home feed: prepend the new skill and refresh page 1 to revalidate counts
+      try {
+        if (prependSkill) prependSkill(savedSkill);
+        if (refreshFeed) refreshFeed();
+      } catch (e) {
+        console.warn('Failed to refresh feed after upload', e);
+      }
+
       // Redirect to profile after 1 second
       setTimeout(() => {
         window.location.href = '/profile';
