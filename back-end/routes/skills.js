@@ -140,6 +140,7 @@ router.get("/", async (req, res) => {
                     off.username || 
                     'Unknown User',
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
+          categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
           hidden: false,
