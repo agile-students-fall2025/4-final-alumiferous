@@ -78,7 +78,18 @@ export default function SkillDescription() {
         {/* Extra metadata */}
         <div className="meta">
           <p>
-            <strong>Category:</strong> {skill.category || "—"}
+            <strong>Categories:</strong>{" "}
+            {skill.categories && skill.categories.length > 0 ? (
+              <span className="categories-list">
+                {skill.categories.map((cat, idx) => (
+                  <span key={idx} className="category-tag">
+                    {cat}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              "—"
+            )}
           </p>
           <p>
             <strong>Posted by:</strong> {skill.username || "anonymous"}
