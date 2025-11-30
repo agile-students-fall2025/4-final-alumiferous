@@ -266,6 +266,36 @@ export const SkillsProvider = ({ children }) => {
     try { localStorage.setItem("skills", JSON.stringify(updatedSkills)); } catch (e) {}
   };
 
+  // Prepend a new skill to the current feed (used after successful upload)
+  const prependSkill = (rawSkill) => {
+    try {
+      const n = normalize(rawSkill);
+      setSkills((prev) => {
+        const existingIds = new Set(prev.map(s => s.skillId));
+        if (existingIds.has(n.skillId)) return prev;
+        const updated = [n, ...prev];
+        try { localStorage.setItem('skills', JSON.stringify(updated)); } catch (e) {}
+        return updated;
+      });
+    } catch (e) {
+      console.warn('Failed to prepend skill to feed', e);
+    }
+  };
+
+  // Refresh the feed by clearing and fetching page 1 (used for refresh-on-mutation)
+  const refreshFeed = () => {
+    try {
+      // reset pagination and state then fetch first page
+      pageRef.current = 1;
+      totalCountRef.current = null;
+      setSkills([]);
+      setHasMore(true);
+      fetchSkillsPage(1);
+    } catch (e) {
+      console.warn('Failed to refresh feed', e);
+    }
+  };
+
   return (
     <SkillsContext.Provider
       value={{
@@ -273,6 +303,8 @@ export const SkillsProvider = ({ children }) => {
         loading,
         hasMore,
         fetchNextPage: () => fetchSkillsPage(page),
+        refreshFeed,
+        prependSkill,
         handleSaveSkill,
         handleUnsaveSkill,
         handleHideSkill,
