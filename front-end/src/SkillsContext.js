@@ -79,7 +79,12 @@ export const SkillsProvider = ({ children }) => {
       videos: videosArr,
       image,
       userId: user._id ? String(user._id) : user._id || null,
-      username: user.username || item.username || 'demoUser',
+      username: user.username || 
+                (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) ||
+                user.firstName || 
+                user.email || 
+                item.username || 
+                'Unknown User',
       category: (item.categories && item.categories[0]) || (skill.categories && skill.categories[0]) || (skill.category) || 'General',
       width: Math.floor(Math.random() * 80) + 150,
       height: Math.floor(Math.random() * 100) + 200,
