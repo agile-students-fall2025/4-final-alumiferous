@@ -25,9 +25,9 @@ export default function DraftRequest() {
 
     try {
       const requestData = {
-        skillId: parseInt(skillId),
+        skillId: skillId,
         skillName: skillName,
-        ownerId: ownerIdParam ? parseInt(ownerIdParam) : 1,
+        ownerId: ownerIdParam,
         ownerName: ownerParam,
         requesterId: 1, // TODO: get from auth
         requesterName: "Guest User",
