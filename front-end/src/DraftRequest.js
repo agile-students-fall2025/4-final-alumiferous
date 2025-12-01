@@ -44,8 +44,8 @@ export default function DraftRequest() {
         skillName: skillName,
         ownerId: ownerIdParam,
         ownerName: ownerParam,
-        requesterId: currentUser._id,
-        requesterName: currentUser.username || "User",
+        requesterId: currentUser,
+        requesterName: "User",
         message: aboutYou,
       };
 
