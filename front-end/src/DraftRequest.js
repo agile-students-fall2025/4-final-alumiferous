@@ -29,7 +29,7 @@ export default function DraftRequest() {
         skillName: skillName,
         ownerId: ownerIdParam,
         ownerName: ownerParam,
-        requesterId: 1, // TODO: get from auth
+        requesterId: "6927f6727bb2d530146c7fc3", // TODO: get from auth - using temp valid ObjectId
         requesterName: "Guest User",
         message: aboutYou,
       };
@@ -48,7 +48,6 @@ export default function DraftRequest() {
 
       await response.json();
       
-      alert(`Request sent to ${ownerParam}!`);
       nav(`/skills/${encodeURIComponent(skillId)}`);
     } catch (err) {
       setError(err.message);
