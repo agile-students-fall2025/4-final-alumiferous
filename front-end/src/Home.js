@@ -37,10 +37,10 @@ const Home = () => {
     const filtered = visibleSkills.filter((skill) => {
       const lowerSearch = searchTerm.toLowerCase();
       return (
-        skill.name.toLowerCase().includes(lowerSearch) ||
-        skill.brief.toLowerCase().includes(lowerSearch) ||
-        skill.category.toLowerCase().includes(lowerSearch) ||
-        skill.username.toLowerCase().includes(lowerSearch)
+        (skill.name && skill.name.toLowerCase().includes(lowerSearch)) ||
+        (skill.brief && skill.brief.toLowerCase().includes(lowerSearch)) ||
+        (skill.category && skill.category.toLowerCase().includes(lowerSearch)) ||
+        (skill.username && skill.username.toLowerCase().includes(lowerSearch))
       );
     });
     setFilteredSkills(filtered);
