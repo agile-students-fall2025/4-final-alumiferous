@@ -64,7 +64,7 @@ export default function SkillDescription() {
   return (
     <div className="page">
       <div className="card">
-        {/* Skill name */}
+        {/* Skill name (from offering) */}
         <h1 className="title">{skill.name}</h1>
 
         {/* Slideshow for images and videos */}
@@ -114,7 +114,7 @@ export default function SkillDescription() {
           </div>
         )}
 
-        {/* Long description (detail from Mockaroo).
+        {/* Long description (detail from offering).
             If detail is empty for that row, fall back to brief. */}
         <p className="description">
           {skill.detail || skill.brief || "No description provided yet."}
@@ -123,7 +123,18 @@ export default function SkillDescription() {
         {/* Extra metadata */}
         <div className="meta">
           <p>
-            <strong>Category:</strong> {skill.category || "—"}
+            <strong>Categories:</strong>{" "}
+            {skill.categories && skill.categories.length > 0 ? (
+              <span className="categories-list">
+                {skill.categories.map((cat, idx) => (
+                  <span key={idx} className="category-tag">
+                    {cat}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              "—"
+            )}
           </p>
           <p>
             <strong>Posted by:</strong> {skill.username || "anonymous"}
