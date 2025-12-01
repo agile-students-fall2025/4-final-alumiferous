@@ -19,14 +19,8 @@ export default function DraftRequest() {
 
   // Get logged-in user from localStorage
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        setCurrentUser(JSON.parse(userStr));
-      } catch (err) {
-        console.error('Error parsing user from localStorage:', err);
-      }
-    }
+    const userId = localStorage.getItem('userId');
+    setCurrentUser(userId);
   }, []);
 
   const skill = { id: skillId, name: skillName };
@@ -37,7 +31,7 @@ export default function DraftRequest() {
     setError(null);
 
     // Check if user is logged in
-    if (!currentUser || !currentUser._id) {
+    if (!currentUser) {
       setError("Please log in to send a request");
       setIsSubmitting(false);
       setTimeout(() => nav('/login'), 2000);
