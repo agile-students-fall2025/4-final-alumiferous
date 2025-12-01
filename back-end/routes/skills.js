@@ -101,11 +101,10 @@ router.get("/", async (req, res) => {
       let query = {};
       
       if (search && search.trim()) {
-        // Search in offering name, description, or general skill name
+        // Search in offering name AND categories
         query.$or = [
           { name: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { offeringSlug: { $regex: search, $options: 'i' } }
+          { categories: { $regex: search, $options: 'i' } }
         ];
       }
       
