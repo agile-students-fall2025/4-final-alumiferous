@@ -15,6 +15,19 @@ export default function DraftRequest() {
   const [aboutYou, setAboutYou] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Get logged-in user from localStorage
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        setCurrentUser(JSON.parse(userStr));
+      } catch (err) {
+        console.error('Error parsing user from localStorage:', err);
+      }
+    }
+  }, []);
 
   const skill = { id: skillId, name: skillName };
 
@@ -23,14 +36,22 @@ export default function DraftRequest() {
     setIsSubmitting(true);
     setError(null);
 
+    // Check if user is logged in
+    if (!currentUser || !currentUser._id) {
+      setError("Please log in to send a request");
+      setIsSubmitting(false);
+      setTimeout(() => nav('/login'), 2000);
+      return;
+    }
+
     try {
       const requestData = {
         skillId: skillId,
         skillName: skillName,
         ownerId: ownerIdParam,
         ownerName: ownerParam,
-        requesterId: "6927f6727bb2d530146c7fc3", // TODO: get from auth - using temp valid ObjectId
-        requesterName: "Guest User",
+        requesterId: currentUser._id,
+        requesterName: currentUser.username || "User",
         message: aboutYou,
       };
 
