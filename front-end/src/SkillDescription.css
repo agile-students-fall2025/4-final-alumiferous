@@ -264,3 +264,38 @@ body.dark-mode .button:hover {
 body.dark-mode .back {
   color: var(--primary-color, #1976d2);
 }
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .slide-btn {
+    padding: 8px 10px;
+    font-size: 18px;
+  }
+
+  .slide-btn.prev {
+    left: 5px;
+  }
+
+  .slide-btn.next {
+    right: 5px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .thumbnail-gallery {
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .thumbnail {
+    width: 60px;
+    height: 60px;
+  }
+}
+

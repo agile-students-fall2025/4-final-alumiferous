@@ -36,10 +36,16 @@ const Home = () => {
     // Remove this block when backend is ready
     const filtered = visibleSkills.filter((skill) => {
       const lowerSearch = searchTerm.toLowerCase();
+      
+      // Check if categories array includes the search term
+      const categoryMatch = skill.categories && Array.isArray(skill.categories) 
+        ? skill.categories.some(cat => cat && cat.toLowerCase().includes(lowerSearch))
+        : false;
+      
       return (
         (skill.name && skill.name.toLowerCase().includes(lowerSearch)) ||
         (skill.brief && skill.brief.toLowerCase().includes(lowerSearch)) ||
-        (skill.category && skill.category.toLowerCase().includes(lowerSearch)) ||
+        categoryMatch ||
         (skill.username && skill.username.toLowerCase().includes(lowerSearch))
       );
     });
