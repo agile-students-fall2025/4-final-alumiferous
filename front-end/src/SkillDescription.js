@@ -40,24 +40,36 @@ export default function SkillDescription() {
 
   // Use the image provided by the backend when available. Per product decision,
   // do NOT use external placeholder images; if `skill.image` is missing, omit the hero image.
-  const finalImageSrc = skill.image || null;
+  // If the skill has multiple images, show the first one as hero and the rest as gallery
+  const images = Array.isArray(skill.images) && skill.images.length > 0 ? skill.images : (skill.image ? [skill.image] : []);
+  const heroImage = images[0] || null;
+  const galleryImages = images.length > 1 ? images.slice(1) : [];
 
   return (
     <div className="page">
       <div className="card">
-        {/* Skill name */}
+        {/* Skill name (from offering) */}
         <h1 className="title">{skill.name}</h1>
 
         {/* Hero image (render only when backend provided an image) */}
-        {finalImageSrc && (
+        {heroImage && (
           <img
-            src={finalImageSrc}
+            src={heroImage}
             alt={skill.name}
             className="image"
           />
         )}
 
-        {/* Long description (detail from Mockaroo).
+        {/* Gallery images if present */}
+        {galleryImages.length > 0 && (
+          <div className="gallery">
+            {galleryImages.map((img, idx) => (
+              <img key={idx} src={img} alt={`${skill.name} ${idx + 2}`} className="gallery-image" />
+            ))}
+          </div>
+        )}
+
+        {/* Long description (detail from offering).
             If detail is empty for that row, fall back to brief. */}
         <p className="description">
           {skill.detail || skill.brief || "No description provided yet."}
@@ -66,7 +78,18 @@ export default function SkillDescription() {
         {/* Extra metadata */}
         <div className="meta">
           <p>
-            <strong>Category:</strong> {skill.category || "—"}
+            <strong>Categories:</strong>{" "}
+            {skill.categories && skill.categories.length > 0 ? (
+              <span className="categories-list">
+                {skill.categories.map((cat, idx) => (
+                  <span key={idx} className="category-tag">
+                    {cat}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              "—"
+            )}
           </p>
           <p>
             <strong>Posted by:</strong> {skill.username || "anonymous"}

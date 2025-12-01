@@ -26,8 +26,11 @@ export const SkillsProvider = ({ children }) => {
 
   // helper: normalize a backend document (handles both old flat objects and new normalized ones)
   const normalize = (item, savedOverride) => {
-    // If it already looks flattened, return as-is (but ensure fields exist)
-    if (item && (item.name || item.brief || item.detail)) {
+    // Check if this is a SkillOffering doc that needs population extraction
+    const isOfferingDoc = item && item.skillId && typeof item.skillId === 'object';
+    
+    // If it already looks flattened (has name/brief/detail AND categories as array), return as-is
+    if (item && !isOfferingDoc && (item.name || item.brief || item.detail)) {
       const skillId = item.skillId || item.id || item._id || (item.skillId && item.skillId.toString && item.skillId.toString());
       return {
         skillId: skillId ? String(skillId) : String(item._id || item.id || Math.random()),
@@ -45,6 +48,7 @@ export const SkillsProvider = ({ children }) => {
         userId: item.userId || item.userId || null,
         username: item.username || null,
         category: item.category || null,
+        categories: Array.isArray(item.categories) ? item.categories : (item.category ? [item.category] : []),
         width: item.width || Math.floor(Math.random() * 80) + 150,
         height: item.height || Math.floor(Math.random() * 100) + 200,
         saved: (savedOverride || savedIds).includes(String(skillId || item.id || item._id || "")),
@@ -79,8 +83,14 @@ export const SkillsProvider = ({ children }) => {
       videos: videosArr,
       image,
       userId: user._id ? String(user._id) : user._id || null,
-      username: user.username || item.username || 'demoUser',
+      username: user.username || 
+                (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) ||
+                user.firstName || 
+                user.email || 
+                item.username || 
+                'Unknown User',
       category: (item.categories && item.categories[0]) || (skill.categories && skill.categories[0]) || (skill.category) || 'General',
+      categories: item.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
       width: Math.floor(Math.random() * 80) + 150,
       height: Math.floor(Math.random() * 100) + 200,
       saved: (savedOverride || savedIds).includes(docId ? String(docId) : ""),
