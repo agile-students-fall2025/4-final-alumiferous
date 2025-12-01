@@ -69,7 +69,6 @@ export default function DraftRequest() {
 
       await response.json();
       
-      alert(`Request sent to ${ownerParam}!`);
       nav(`/skills/${encodeURIComponent(skillId)}`);
     } catch (err) {
       setError(err.message);
