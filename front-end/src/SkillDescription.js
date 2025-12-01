@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SkillsContext } from "./SkillsContext";
 import "./SkillDescription.css";
@@ -10,6 +10,9 @@ export default function SkillDescription() {
 
   // Get skills from context
   const { skills } = useContext(SkillsContext);
+
+  // State for slideshow - MUST be at top level before any returns
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Find the skill by id
   const skill = useMemo(() => {
@@ -40,11 +43,23 @@ export default function SkillDescription() {
 
   // Use the image provided by the backend when available. Per product decision,
   // do NOT use external placeholder images; if `skill.image` is missing, omit the hero image.
-  // If the skill has multiple images, show the first one as hero and the rest as gallery
+  // Combine all media (images and videos) into a slideshow
   const images = Array.isArray(skill.images) && skill.images.length > 0 ? skill.images : (skill.image ? [skill.image] : []);
-  const heroImage = images[0] || null;
-  const galleryImages = images.length > 1 ? images.slice(1) : [];
   const videos = Array.isArray(skill.videos) ? skill.videos : [];
+  
+  // Combine images and videos into one media array
+  const allMedia = [
+    ...images.map(img => ({ type: 'image', src: img })),
+    ...videos.map(vid => ({ type: 'video', src: vid }))
+  ];
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % allMedia.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
+  };
 
   return (
     <div className="page">
@@ -52,33 +67,50 @@ export default function SkillDescription() {
         {/* Skill name */}
         <h1 className="title">{skill.name}</h1>
 
-        {/* Hero image (render only when backend provided an image) */}
-        {heroImage && (
-          <img
-            src={heroImage}
-            alt={skill.name}
-            className="image"
-          />
-        )}
+        {/* Slideshow for images and videos */}
+        {allMedia.length > 0 && (
+          <div className="slideshow">
+            <div className="slideshow-container">
+              {allMedia[currentIndex].type === 'image' ? (
+                <img
+                  src={allMedia[currentIndex].src}
+                  alt={`${skill.name} ${currentIndex + 1}`}
+                  className="slide-image"
+                />
+              ) : (
+                <video controls className="slide-video" key={currentIndex}>
+                  <source src={allMedia[currentIndex].src} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
 
-        {/* Gallery images if present */}
-        {galleryImages.length > 0 && (
-          <div className="gallery">
-            {galleryImages.map((img, idx) => (
-              <img key={idx} src={img} alt={`${skill.name} ${idx + 2}`} className="gallery-image" />
-            ))}
-          </div>
-        )}
-
-        {/* Videos if present */}
-        {videos.length > 0 && (
-          <div className="videos">
-            {videos.map((vid, idx) => (
-              <video key={idx} controls className="video">
-                <source src={vid} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ))}
+            {/* Navigation buttons - only show if more than 1 item */}
+            {allMedia.length > 1 && (
+              <>
+                <button className="slide-btn prev" onClick={prevSlide}>❮</button>
+                <button className="slide-btn next" onClick={nextSlide}>❯</button>
+                
+                {/* Thumbnail gallery */}
+                <div className="thumbnail-gallery">
+                  {allMedia.map((media, idx) => (
+                    <div
+                      key={idx}
+                      className={`thumbnail ${idx === currentIndex ? 'active' : ''}`}
+                      onClick={() => setCurrentIndex(idx)}
+                    >
+                      {media.type === 'image' ? (
+                        <img src={media.src} alt={`Thumbnail ${idx + 1}`} />
+                      ) : (
+                        <div className="video-thumbnail">
+                          <span>▶</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
