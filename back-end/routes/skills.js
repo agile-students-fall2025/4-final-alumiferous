@@ -151,12 +151,7 @@ router.get("/", async (req, res) => {
           images,
           videos,
           userId: user._id ? String(user._id) : null,
-          username: user.username || 
-                    (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) ||
-                    user.firstName || 
-                    user.email || 
-                    off.username || 
-                    'Unknown User',
+          username: user.username || null,
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
           width: Math.floor(Math.random() * 80) + 150,
@@ -359,12 +354,7 @@ router.post(
           images: imageUrls,
           videos: videoUrls,
           userId: String(userObj._id),
-          username: userObj.username || 
-                    (userObj.firstName && userObj.lastName ? `${userObj.firstName} ${userObj.lastName}` : null) ||
-                    userObj.firstName || 
-                    userObj.email || 
-                    username || 
-                    'Unknown User',
+          username: userObj.username || null,
           category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
