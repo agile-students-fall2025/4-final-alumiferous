@@ -40,7 +40,11 @@ export default function SkillDescription() {
 
   // Use the image provided by the backend when available. Per product decision,
   // do NOT use external placeholder images; if `skill.image` is missing, omit the hero image.
-  const finalImageSrc = skill.image || null;
+  // If the skill has multiple images, show the first one as hero and the rest as gallery
+  const images = Array.isArray(skill.images) && skill.images.length > 0 ? skill.images : (skill.image ? [skill.image] : []);
+  const heroImage = images[0] || null;
+  const galleryImages = images.length > 1 ? images.slice(1) : [];
+  const videos = Array.isArray(skill.videos) ? skill.videos : [];
 
   return (
     <div className="page">
@@ -49,12 +53,33 @@ export default function SkillDescription() {
         <h1 className="title">{skill.name}</h1>
 
         {/* Hero image (render only when backend provided an image) */}
-        {finalImageSrc && (
+        {heroImage && (
           <img
-            src={finalImageSrc}
+            src={heroImage}
             alt={skill.name}
             className="image"
           />
+        )}
+
+        {/* Gallery images if present */}
+        {galleryImages.length > 0 && (
+          <div className="gallery">
+            {galleryImages.map((img, idx) => (
+              <img key={idx} src={img} alt={`${skill.name} ${idx + 2}`} className="gallery-image" />
+            ))}
+          </div>
+        )}
+
+        {/* Videos if present */}
+        {videos.length > 0 && (
+          <div className="videos">
+            {videos.map((vid, idx) => (
+              <video key={idx} controls className="video">
+                <source src={vid} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ))}
+          </div>
         )}
 
         {/* Long description (detail from Mockaroo).
