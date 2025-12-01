@@ -91,7 +91,7 @@ const Home = () => {
               brief={skill.brief}
               // Use the image provided by the backend only
               image={skill.image}
-              category={skill.category}
+              category={skill.categories}
               username={skill.username}
               ImgHeight={skill.height}
             />
