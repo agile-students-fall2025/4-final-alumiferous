@@ -90,20 +90,38 @@ let lastSuccessfulSkillsCache = null; // { items: [...], totalCount: number, ts:
 router.get("/", async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
+  const { search, category } = req.query;
 
   // Try DB first
   if (SkillOffering && typeof SkillOffering.find === 'function') {
     try {
       const skip = (page - 1) * limit;
+      
+      // Build MongoDB query based on search and category filters
+      let query = {};
+      
+      if (search && search.trim()) {
+        // Search in offering name AND categories
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { categories: { $regex: search, $options: 'i' } }
+        ];
+      }
+      
+      if (category && category.trim()) {
+        // Filter by category (case-insensitive)
+        query.categories = { $regex: `^${category}$`, $options: 'i' };
+      }
+      
       const [docs, totalCount] = await Promise.all([
-        SkillOffering.find({})
+        SkillOffering.find(query)
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
           .populate('skillId')
           .populate('userId')
           .lean(),
-        SkillOffering.countDocuments(),
+        SkillOffering.countDocuments(query),
       ]);
 
       const items = docs.map((off) => {
@@ -133,12 +151,7 @@ router.get("/", async (req, res) => {
           images,
           videos,
           userId: user._id ? String(user._id) : null,
-          username: user.username || 
-                    (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) ||
-                    user.firstName || 
-                    user.email || 
-                    off.username || 
-                    'Unknown User',
+          username: user.username || null,
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
           width: Math.floor(Math.random() * 80) + 150,
@@ -341,12 +354,7 @@ router.post(
           images: imageUrls,
           videos: videoUrls,
           userId: String(userObj._id),
-          username: userObj.username || 
-                    (userObj.firstName && userObj.lastName ? `${userObj.firstName} ${userObj.lastName}` : null) ||
-                    userObj.firstName || 
-                    userObj.email || 
-                    username || 
-                    'Unknown User',
+          username: userObj.username || null,
           category: (offering.categories && offering.categories[0]) || (skillDoc.categories && skillDoc.categories[0]) || category,
         });
 
