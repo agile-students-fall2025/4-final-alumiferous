@@ -16,6 +16,8 @@ router.post('/signup', async (req, res) => {
     const user = await new User({ email, password, firstName, lastName }).save();
     console.log(`New user: ${user.email}, userId: ${user._id}`);
     const token = user.generateJWT();
+    // Build username from available data
+    const username = user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email.split('@')[0];
     res.json({
       success: true,
       message: 'User saved successfully.',
@@ -23,7 +25,15 @@ router.post('/signup', async (req, res) => {
       userId: user._id, 
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
+      username: username,
+      user: {
+        _id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: username
+      }
     });
   } catch (err) {
     // Handle duplicate email error 
@@ -54,6 +64,8 @@ router.post('/login', async (req, res) => {
     }
       // ...existing code...
       const token = user.generateJWT();
+      // Build username from available data
+      const username = user.username || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email.split('@')[0];
       res.json({
         success: true,
         message: 'User logged in successfully.',
@@ -61,7 +73,15 @@ router.post('/login', async (req, res) => {
         userId: user._id,
         email: user.email,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        username: username,
+        user: {
+          _id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: username
+        }
       });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Error looking up user in database.', error: err });
