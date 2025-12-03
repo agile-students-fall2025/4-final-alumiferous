@@ -10,6 +10,59 @@
 
 .draft-request-page { --messages-header-peek: 8px; }
 
+/* Draft Request Header */
+.draft-request-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999 !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: 60px;
+}
+
+.draft-request-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  flex: 1;
+  text-align: center;
+  margin-right: 80px; /* Offset for back button to center title */
+}
+
+.draft-request-header .back-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #1976d2 !important;
+  color: white !important;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+.draft-request-header .back-btn:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+.draft-request-header .back-btn:active {
+  transform: translateY(0);
+}
+
 /* Fixed header - override sticky behavior from Messages.css */
 .draft-request-page .messages-header {
   position: fixed;
@@ -17,6 +70,36 @@
   left: 0;
   right: 0;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.draft-request-page .back-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  border-radius: 50%;
+  padding: 8px;
+  min-width: 40px;
+  min-height: 40px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.draft-request-page .back-btn:hover {
+  background: #f0f0f0;
 }
 
 /* Scrollable content */
@@ -26,7 +109,7 @@
   -webkit-overflow-scrolling: touch;
   width: 100%;
   padding: 1rem;
-  padding-top: calc(var(--app-header-offset, 64px) + 4rem);
+  padding-top: 80px; /* Space for fixed header */
   padding-bottom: calc(var(--app-footer-offset, 200px) + 1rem);
 }
 
@@ -77,7 +160,36 @@ body.dark-mode .draft-request-page {
   background-color: #121212;
 }
 
-/* Header dark mode styles now use .messages-header from Messages.css */
+body.dark-mode .draft-request-header {
+  background-color: #1e1e1e;
+  border-bottom-color: #2c2c2c;
+}
+
+body.dark-mode .draft-request-title {
+  color: #f1f1f1;
+}
+
+body.dark-mode .draft-request-header .back-btn {
+  background: #1976d2;
+  color: white;
+}
+
+body.dark-mode .draft-request-header .back-btn:hover {
+  background: #1565c0;
+}
+
+body.dark-mode .draft-request-page .messages-header {
+  background-color: #1e1e1e;
+  border-bottom-color: #2c2c2c;
+}
+
+body.dark-mode .draft-request-page .back-btn {
+  color: #f1f1f1;
+}
+
+body.dark-mode .draft-request-page .back-btn:hover {
+  background: #2c2c2c;
+}
 
 body.dark-mode .form-label {
   color: #f1f1f1;

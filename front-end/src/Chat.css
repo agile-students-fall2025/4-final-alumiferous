@@ -63,6 +63,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 /* Size the Heroicons bell */
@@ -70,6 +71,27 @@
   width: 24px;
   height: 24px;
   display: block;
+}
+
+/* Notification Badge */
+.chat-page .notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ff6b35;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(255, 107, 53, 0.5);
+  border: 2px solid white;
+  z-index: 1;
 }
 
 /* Search Container - positioned below fixed header */
@@ -334,6 +356,12 @@ body.dark-mode .requests-btn {
 }
 body.dark-mode .requests-btn:hover {
   background: #2b2b2b !important;
+}
+
+body.dark-mode .notification-badge {
+  background: #ff6b35 !important;
+  color: white !important;
+  border-color: #1e1e1e !important;
 }
 
 /* Search bar */

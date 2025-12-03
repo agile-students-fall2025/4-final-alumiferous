@@ -117,7 +117,6 @@ export default function App() {
               path="/requests/new"
               element={
                 <>
-                  <Header />
                   <DraftRequest />
                   <Footer />
                 </>

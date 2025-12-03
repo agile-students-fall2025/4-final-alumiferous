@@ -47,6 +47,10 @@ export default function SkillDescription() {
     checkExistingRequest();
   }, [id]);
 
+  // Check if the skill belongs to the current user
+  const currentUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
+  const isOwnSkill = skill && currentUserId && String(skill.userId) === String(currentUserId);
+
   // ---- loading state ----
   if (!skills || skills.length === 0) {
     return (
@@ -165,40 +169,45 @@ export default function SkillDescription() {
             )}
           </p>
           <p>
-            <strong>Posted by:</strong> {skill.username || "Unknown User"}
+            <strong>Posted by:</strong> {isOwnSkill ? "You" : (skill.username || "Unknown User")}
           </p>
         </div>
 
-        {checkingRequest ? (
-          <button className="button" disabled>
-            Checking...
-          </button>
-        ) : requestExists ? (
-          <div className="request-already-sent">
-            <p>✓ Request Already Sent</p>
-            <small>You have already sent a request for this skill</small>
-          </div>
-        ) : (
-          <button
-            className="button"
-            onClick={() =>
-              nav(
-                `/requests/new?skillId=${encodeURIComponent(
-                  skill.skillId
-                )}&skillName=${encodeURIComponent(
-                  skill.name
-                )}&owner=${encodeURIComponent(
-                  skill.username || ""
-                )}&ownerId=${encodeURIComponent(
-                  skill.userId || ""
-                )}&category=${encodeURIComponent(
-                  skill.category || ""
-                )}`
-              )
-            }
-          >
-            Draft Request
-          </button>
+        {/* Only show Draft Request button if it's NOT the user's own skill */}
+        {!isOwnSkill && (
+          <>
+            {checkingRequest ? (
+              <button className="button" disabled>
+                Checking...
+              </button>
+            ) : requestExists ? (
+              <div className="request-already-sent">
+                <p>✓ Request Already Sent</p>
+                <small>You have already sent a request for this skill</small>
+              </div>
+            ) : (
+              <button
+                className="button"
+                onClick={() =>
+                  nav(
+                    `/requests/new?skillId=${encodeURIComponent(
+                      skill.skillId
+                    )}&skillName=${encodeURIComponent(
+                      skill.name
+                    )}&owner=${encodeURIComponent(
+                      skill.username || ""
+                    )}&ownerId=${encodeURIComponent(
+                      skill.userId || ""
+                    )}&category=${encodeURIComponent(
+                      skill.category || ""
+                    )}`
+                  )
+                }
+              >
+                Draft Request
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

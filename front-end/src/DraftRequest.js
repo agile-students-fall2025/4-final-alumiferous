@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import "./DraftRequest.css";
-import "./Messages.css";
 
 export default function DraftRequest() {
   const [params] = useSearchParams();
@@ -115,14 +114,15 @@ export default function DraftRequest() {
 
   return (
     <div className="draft-request-page">
-      <header className="messages-header">
+      <header className="draft-request-header">
         <button 
           className="back-btn" 
-          onClick={() => nav(`/skills/${encodeURIComponent(skillId)}`)}
+          onClick={() => nav(-1)}
           aria-label="Back"
         >
-          ←
+          ← Back
         </button>
+        <h1 className="draft-request-title">Draft Request</h1>
       </header>
       
       <div className="draft-request-content">

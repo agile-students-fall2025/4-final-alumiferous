@@ -69,6 +69,22 @@ const Messages = () => {
     }
   }, []);
 
+  // Mark messages as read
+  const markMessagesAsRead = async () => {
+    try {
+      if (!id || !userId) return;
+      
+      await fetch(`${API_BASE}/chats/${id}/mark-read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      console.log('Messages marked as read');
+    } catch (err) {
+      console.error('Failed to mark messages as read:', err);
+    }
+  };
+
   // Fetch chat and messages
   useEffect(() => {
     if (!id) {
@@ -95,6 +111,10 @@ const Messages = () => {
         }
 
         if (isMounted) setChatSenderName(name);
+        
+        // Mark messages as read when chat is opened
+        markMessagesAsRead();
+        
         return name;
       } catch (err) {
         console.error('Failed to load chat info:', err);
