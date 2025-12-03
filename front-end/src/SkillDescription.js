@@ -107,6 +107,9 @@ export default function SkillDescription() {
     try {
       const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
       
+      console.log('Saving skill with ID:', id);
+      console.log('Edited skill data:', editedSkill);
+      
       // Use FormData to support file uploads
       const formData = new FormData();
       formData.append('name', editedSkill.name);
@@ -126,20 +129,26 @@ export default function SkillDescription() {
         newVideos.forEach(file => formData.append('videos', file));
       }
 
+      console.log('Sending PUT request to:', `${apiUrl}/api/skills/${id}`);
+      
       const response = await fetch(`${apiUrl}/api/skills/${id}`, {
         method: 'PUT',
         body: formData
       });
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to update skill');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Update failed:', response.status, errorData);
+        throw new Error(errorData.error || `Failed to update skill (${response.status})`);
       }
 
       // Refresh the page to show updated data
       window.location.reload();
     } catch (error) {
       console.error('Error updating skill:', error);
-      alert('Failed to update skill');
+      alert(`Failed to update skill: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
