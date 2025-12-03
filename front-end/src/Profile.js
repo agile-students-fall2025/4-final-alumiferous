@@ -14,26 +14,27 @@ const Profile = () => {
   const [skillToDelete, setSkillToDelete] = useState(null);
   const { skills } = useContext(SkillsContext);
 
-useEffect(() => {
-  const storedUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
-  if (!storedUserId) {
-    // optionally redirect to login if no user
-    navigate('/login');
-    return;
-  }
+  // Load logged‑in user's profile
+  useEffect(() => {
+    const storedUserId =
+      localStorage.getItem('userId') || localStorage.getItem('currentUserId');
 
-  fetch(`/api/profile/${storedUserId}`)
-    .then(res => res.json())
-    .then(data => {
-      setUser(data);
-      setFormState({ ...data });
-      setPhotoFile(null);
-    })
-    .catch(err => {
-      console.error('Error loading profile:', err);
-    });
-}, [navigate]);
+    if (!storedUserId) {
+      navigate('/login');
+      return;
+    }
 
+    fetch(`/api/profile/${storedUserId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data);
+        setFormState({ ...data });
+        setPhotoFile(null);
+      })
+      .catch((err) => {
+        console.error('Error loading profile:', err);
+      });
+  }, [navigate]);
 
   // Restore edit mode after reload
   useEffect(() => {
@@ -44,10 +45,10 @@ useEffect(() => {
     }
   }, []);
 
-  const handleEditToggle = () => setIsEditing(prev => !prev);
+  const handleEditToggle = () => setIsEditing((prev) => !prev);
 
   const handleChange = (field, value) =>
-    setFormState(s => ({ ...s, [field]: value }));
+    setFormState((s) => ({ ...s, [field]: value }));
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -60,18 +61,27 @@ useEffect(() => {
     formData.append('firstName', formState.firstName || '');
     formData.append('lastName', formState.lastName || '');
     formData.append('bio', formState.bio || '');
-    formData.append('skillsOffered', JSON.stringify(formState.skillsOffered || []));
-    formData.append('skillsWanted', JSON.stringify(formState.skillsWanted || []));
+    formData.append(
+      'skillsOffered',
+      JSON.stringify(formState.skillsOffered || [])
+    );
+    formData.append(
+      'skillsWanted',
+      JSON.stringify(formState.skillsWanted || [])
+    );
     if (photoFile) {
       formData.append('profilePhoto', photoFile);
     }
+
     const res = await fetch(`/api/profile/${user._id}`, {
       method: 'PUT',
-      body: formData
+      body: formData,
     });
+
     if (res.ok) {
-      // After saving, refetch for fresh data
-      const updated = await fetch(`/api/profile/${user._id}`).then(r => r.json());
+      const updated = await fetch(`/api/profile/${user._id}`).then((r) =>
+        r.json()
+      );
       setUser(updated);
       setFormState(updated);
       setPhotoFile(null);
@@ -83,26 +93,33 @@ useEffect(() => {
 
   const handleDeleteSkill = async (skillId) => {
     try {
-      // Delete from userSkills (uploaded skills)
-      const userSkillsCache = JSON.parse(localStorage.getItem('userSkills') || '[]');
-      const updatedUserSkills = userSkillsCache.filter(s => {
-        const sId = s.skillId || s.id;
+      // delete on server
+      const res = await fetch(`/api/skills/${skillId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error('Server failed to delete skill');
+      }
+
+      // update localStorage caches
+      const userSkillsCache = JSON.parse(
+        localStorage.getItem('userSkills') || '[]'
+      );
+      const updatedUserSkills = userSkillsCache.filter((s) => {
+        const sId = s._id || s.skillId || s.id;
         return String(sId) !== String(skillId);
       });
       localStorage.setItem('userSkills', JSON.stringify(updatedUserSkills));
-      
-      // Also delete from skills cache if it exists there
-      const cachedSkills = JSON.parse(localStorage.getItem('skills') || '[]');
-      const updatedSkills = cachedSkills.filter(s => {
-        const sId = s.skillId || s.id;
+
+      const cachedSkills = JSON.parse(
+        localStorage.getItem('skills') || '[]'
+      );
+      const updatedSkills = cachedSkills.filter((s) => {
+        const sId = s._id || s.skillId || s.id;
         return String(sId) !== String(skillId);
       });
       localStorage.setItem('skills', JSON.stringify(updatedSkills));
-      
-      // Keep edit mode active
+
+      // keep edit mode and refresh UI
       sessionStorage.setItem('profileEditMode', 'true');
-      
-      // Reload to update the UI but stay in edit mode
       window.location.reload();
     } catch (err) {
       console.error('Error deleting skill:', err);
@@ -118,7 +135,8 @@ useEffect(() => {
 
   const handleDeleteConfirm = () => {
     if (skillToDelete) {
-      handleDeleteSkill(skillToDelete.skillId || skillToDelete.id);
+      const id = skillToDelete._id || skillToDelete.skillId || skillToDelete.id;
+      handleDeleteSkill(id);
       setShowDeleteModal(false);
       setSkillToDelete(null);
     }
@@ -132,95 +150,121 @@ useEffect(() => {
   if (!user) return <main>Loading...</main>;
 
   // Get user skills from localStorage (skills created by this user)
-  const userCreatedSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');
-  
+  const userCreatedSkills = JSON.parse(
+    localStorage.getItem('userSkills') || '[]'
+  );
+
   // Also filter from context if needed
-  const contextUserSkills = skills.filter(skill => String(skill.userId) === String(user._id));
-  
-  // Combine both sources, removing duplicates by id
-  const allUserSkills = [...userCreatedSkills];
-  contextUserSkills.forEach(skill => {
-    if (!allUserSkills.find(s => s.id === skill.id || s.skillId === skill.skillId)) {
-      allUserSkills.push(skill);
+  const contextUserSkills = skills.filter(
+    (skill) => String(skill.userId) === String(user._id)
+  );
+
+  // Merge and remove duplicates
+  const mergedSkills = [...userCreatedSkills];
+  contextUserSkills.forEach((skill) => {
+    if (
+      !mergedSkills.find(
+        (s) =>
+          s._id === skill._id ||
+          s.skillId === skill.skillId ||
+          s.id === skill.id
+      )
+    ) {
+      mergedSkills.push(skill);
     }
   });
-  
-  const userSkills = allUserSkills;
+
+  // Ensure every skill has a consistent _id for routing
+  const userSkills = mergedSkills.map((s) => {
+    const id = s._id || s.skillId || s.id;
+    return { ...s, _id: id };
+  });
 
   return (
     <main>
       <div className="ProfileContent">
         <div className="ProfileHeader">
-          <h1 className="ProfileTitle" onClick={() => navigate("/Profile")}>Profile</h1>
+          <h1
+            className="ProfileTitle"
+            onClick={() => navigate('/Profile')}
+          >
+            Profile
+          </h1>
           <button
             className="EditButton"
             onClick={isEditing ? handleSave : handleEditToggle}
-            title={isEditing ? "Save Profile" : "Edit Profile"}
-            // style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+            title={isEditing ? 'Save Profile' : 'Edit Profile'}
           >
-            {isEditing ? "Save" : <PencilSquareIcon style={{ width: 22, height: 22 }} />}
+            {isEditing ? 'Save' : (
+              <PencilSquareIcon style={{ width: 22, height: 22 }} />
+            )}
           </button>
         </div>
-          <img
-            className="Avatar"
-            src={
-              isEditing && photoFile
-                ? URL.createObjectURL(photoFile)
-                : user.avatarURL || "/images/avatar-default.png"
-            }
-            alt="Avatar"
-          />
-          {isEditing && (
-            <>
-              <input
-                type="file"
-                accept="image/*"
-                id="profile-photo-upload"
-                style={{ display: "none" }}
-                onChange={handlePhotoChange}
-              />
-              <label
-                htmlFor="profile-photo-upload"
-                className="UploadButton"
-                tabIndex={0}
-                style={{ cursor: "pointer", display: "inline-block", marginTop: 10 }}
-              >
-                Upload/Change Photo
-              </label>
-            </>
-          )}
+
+        <img
+          className="Avatar"
+          src={
+            isEditing && photoFile
+              ? URL.createObjectURL(photoFile)
+              : user.avatarURL || '/images/avatar-default.png'
+          }
+          alt="Avatar"
+        />
+
+        {isEditing && (
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              id="profile-photo-upload"
+              style={{ display: 'none' }}
+              onChange={handlePhotoChange}
+            />
+            <label
+              htmlFor="profile-photo-upload"
+              className="UploadButton"
+              tabIndex={0}
+              style={{
+                cursor: 'pointer',
+                display: 'inline-block',
+                marginTop: 10,
+              }}
+            >
+              Upload/Change Photo
+            </label>
+          </>
+        )}
+
         <div className="UserInfo">
           {isEditing ? (
             <>
-            <input
-              className="ProfileUsernameInput form-input"
-              value={formState.firstName || ""}
-              onChange={e => handleChange("firstName", e.target.value)}
-              placeholder="First Name"
-            />
-            <input
-              className="ProfileUsernameInput form-input"
-              value={formState.lastName || ""}
-              onChange={e => handleChange("lastName", e.target.value)}
-              placeholder="Last Name"
-              style={{ marginTop: 8 }}
-            />
-            <input
-              className="ProfileUsernameInput form-input"
-              value={formState.username || ""}
-              onChange={e => handleChange("username", e.target.value)}
-              placeholder="Username"
-              style={{ marginTop: 8 }}
-            />
+              <input
+                className="ProfileUsernameInput form-input"
+                value={formState.firstName || ''}
+                onChange={(e) => handleChange('firstName', e.target.value)}
+                placeholder="First Name"
+              />
+              <input
+                className="ProfileUsernameInput form-input"
+                value={formState.lastName || ''}
+                onChange={(e) => handleChange('lastName', e.target.value)}
+                placeholder="Last Name"
+                style={{ marginTop: 8 }}
+              />
+              <input
+                className="ProfileUsernameInput form-input"
+                value={formState.username || ''}
+                onChange={(e) => handleChange('username', e.target.value)}
+                placeholder="Username"
+                style={{ marginTop: 8 }}
+              />
             </>
           ) : (
             <>
               <h2 className="ProfileFullName">
                 {user.firstName} {user.lastName}
               </h2>
-              <div className="ProfileUsername">
-                @{user.username}
-              </div>
+              <div className="ProfileUsername">@{user.username}</div>
             </>
           )}
         </div>
@@ -229,14 +273,12 @@ useEffect(() => {
           <div className="AboutLabel">About</div>
           {isEditing ? (
             <textarea
-              value={formState.bio || ""}
-              onChange={e => handleChange("bio", e.target.value)}
+              value={formState.bio || ''}
+              onChange={(e) => handleChange('bio', e.target.value)}
               className="ProfileBioInput form-input"
             />
           ) : (
-            <div className="BioBox">
-              {user.bio}
-            </div>
+            <div className="BioBox">{user.bio}</div>
           )}
         </div>
 
@@ -247,14 +289,16 @@ useEffect(() => {
             {userSkills.length === 0 ? (
               <p>No skills created yet.</p>
             ) : (
-              userSkills.map(skill => (
-                <div className="skill-item-wrapper" key={skill.skillId || skill.id}>
-                  <div 
+              userSkills.map((skill) => (
+                <div
+                  className="skill-item-wrapper"
+                  key={skill._id}
+                >
+                  <div
                     className="SkillCard"
                     onClick={() => {
-                      if (!isEditing) {
-                        const skillId = skill.skillId || skill.id || skill._id;
-                        navigate(`/my-skills/${skillId}`);
+                      if (!isEditing && skill._id) {
+                        navigate(`/my-skills/${skill._id}`);
                       }
                     }}
                     style={{ cursor: isEditing ? 'default' : 'pointer' }}
@@ -266,7 +310,9 @@ useEffect(() => {
                       className="delete-skill-btn"
                       onClick={(e) => confirmDelete(skill, e)}
                       aria-label="Delete skill"
-                    >×</button>
+                    >
+                      ×
+                    </button>
                   )}
                 </div>
               ))
@@ -274,7 +320,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Action buttons including Saved Skills */}
+        {/* Action buttons */}
         <div className="ActionButtons">
           <Link to="/saved">
             <button className="SavedSkillsButton">Saved Skills</button>
@@ -287,17 +333,30 @@ useEffect(() => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="delete-modal-overlay" onClick={handleDeleteCancel}>
-          <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="delete-modal-overlay"
+          onClick={handleDeleteCancel}
+        >
+          <div
+            className="delete-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="delete-modal-title">Delete Skill</h3>
             <p className="delete-modal-text">
-              Are you sure you want to delete "{skillToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{skillToDelete?.name}"? This
+              action cannot be undone.
             </p>
             <div className="delete-modal-buttons">
-              <button className="delete-modal-btn cancel" onClick={handleDeleteCancel}>
+              <button
+                className="delete-modal-btn cancel"
+                onClick={handleDeleteCancel}
+              >
                 Cancel
               </button>
-              <button className="delete-modal-btn confirm" onClick={handleDeleteConfirm}>
+              <button
+                className="delete-modal-btn confirm"
+                onClick={handleDeleteConfirm}
+              >
                 Delete
               </button>
             </div>
@@ -309,6 +368,7 @@ useEffect(() => {
 };
 
 export default Profile;
+
 
 
 
