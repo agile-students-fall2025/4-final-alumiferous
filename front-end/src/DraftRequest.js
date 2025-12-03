@@ -70,6 +70,13 @@ export default function DraftRequest() {
       return;
     }
 
+    // Check if user is trying to request their own skill
+    if (currentUser === ownerIdParam) {
+      setError("You cannot request your own skill");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const requestData = {
         skillId: skillId,
