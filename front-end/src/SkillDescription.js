@@ -16,6 +16,9 @@ export default function SkillDescription() {
   const [requestExists, setRequestExists] = useState(false);
   const [checkingRequest, setCheckingRequest] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSkill, setEditedSkill] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Get current user ID
   useEffect(() => {
@@ -53,6 +56,50 @@ export default function SkillDescription() {
 
     checkExistingRequest();
   }, [id]);
+
+  // Initialize edited skill when entering edit mode
+  useEffect(() => {
+    if (isEditing && skill) {
+      setEditedSkill({
+        name: skill.name || '',
+        brief: skill.brief || '',
+        detail: skill.detail || '',
+        categories: skill.categories || [],
+        images: skill.images || [],
+        videos: skill.videos || []
+      });
+    }
+  }, [isEditing, skill]);
+
+  // Handle save skill edits
+  const handleSaveEdit = async () => {
+    setIsSaving(true);
+    try {
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      const response = await fetch(`${apiUrl}/api/skills/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editedSkill)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update skill');
+      }
+
+      // Refresh the page to show updated data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating skill:', error);
+      alert('Failed to update skill');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedSkill(null);
+  };
 
   // ---- loading state ----
   if (!skills || skills.length === 0) {
@@ -151,39 +198,122 @@ export default function SkillDescription() {
 
         {/* Long description (detail from offering).
             If detail is empty for that row, fall back to brief. */}
-        <p className="description">
-          {skill.detail || skill.brief || "No description provided yet."}
-        </p>
+        {isEditing ? (
+          <div>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Skill Name:</strong>
+              <input
+                type="text"
+                value={editedSkill?.name || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, name: e.target.value})}
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Brief Description:</strong>
+              <textarea
+                value={editedSkill?.brief || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, brief: e.target.value})}
+                rows={3}
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Detailed Description:</strong>
+              <textarea
+                value={editedSkill?.detail || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, detail: e.target.value})}
+                rows={6}
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Categories (comma-separated):</strong>
+              <input
+                type="text"
+                value={editedSkill?.categories?.join(', ') || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, categories: e.target.value.split(',').map(c => c.trim()).filter(c => c)})}
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Image URLs (one per line):</strong>
+              <textarea
+                value={editedSkill?.images?.join('\n') || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, images: e.target.value.split('\n').map(url => url.trim()).filter(url => url)})}
+                rows={4}
+                placeholder="Enter image URLs, one per line"
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Video URLs (one per line):</strong>
+              <textarea
+                value={editedSkill?.videos?.join('\n') || ''}
+                onChange={(e) => setEditedSkill({...editedSkill, videos: e.target.value.split('\n').map(url => url.trim()).filter(url => url)})}
+                rows={4}
+                placeholder="Enter video URLs, one per line"
+                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+              />
+            </label>
+          </div>
+        ) : (
+          <>
+            <p className="description">
+              {skill.detail || skill.brief || "No description provided yet."}
+            </p>
 
-        {/* Extra metadata */}
-        <div className="meta">
-          <p>
-            <strong>Categories:</strong>{" "}
-            {skill.categories && skill.categories.length > 0 ? (
-              <span className="categories-list">
-                {skill.categories.map((cat, idx) => (
-                  <span key={idx} className="category-tag">
-                    {cat}
+            {/* Extra metadata */}
+            <div className="meta">
+              <p>
+                <strong>Categories:</strong>{" "}
+                {skill.categories && skill.categories.length > 0 ? (
+                  <span className="categories-list">
+                    {skill.categories.map((cat, idx) => (
+                      <span key={idx} className="category-tag">
+                        {cat}
+                      </span>
+                    ))}
                   </span>
-                ))}
-              </span>
-            ) : (
-              "—"
-            )}
-          </p>
-          <p>
-            <strong>Posted by:</strong> {skill.username || "Unknown User"}
-          </p>
-        </div>
+                ) : (
+                  "—"
+                )}
+              </p>
+              <p>
+                <strong>Posted by:</strong> {skill.username || "Unknown User"}
+              </p>
+            </div>
+          </>
+        )}
 
         {/* Show Edit button if user owns this skill, otherwise show Draft Request */}
         {currentUserId && currentUserId === skill.userId ? (
-          <button
-            className="button"
-            onClick={() => nav(`/upload?edit=${skill.skillId}`)}
-          >
-            Edit Skill
-          </button>
+          isEditing ? (
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                className="button"
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                className="button"
+                onClick={handleCancelEdit}
+                disabled={isSaving}
+                style={{ background: '#666' }}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              className="button"
+              onClick={() => setIsEditing(true)}
+            >
+              Edit Skill
+            </button>
+          )
         ) : checkingRequest ? (
           <button className="button" disabled>
             Checking...
