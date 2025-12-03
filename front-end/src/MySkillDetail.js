@@ -6,6 +6,59 @@ export default function MySkillDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [skill, setSkill] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSkill, setEditedSkill] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [newVideos, setNewVideos] = useState([]);
+  const [removedImages, setRemovedImages] = useState([]);
+  const [removedVideos, setRemovedVideos] = useState([]);
+  const [catsOpen, setCatsOpen] = useState(false);
+  const catsRef = React.useRef(null);
+
+  // Fetch available categories
+  useEffect(() => {
+    (async function fetchCategories(){
+      try {
+        const res = await fetch('/api/fixeddata');
+        if (res.ok) {
+          const body = await res.json();
+          const c = Array.isArray(body.categories) ? body.categories : [];
+          if (c.length) setAvailableCategories(c.sort());
+        }
+      } catch (e) {
+        console.error('Error fetching categories:', e);
+      }
+    })();
+
+    // Click-away handler for categories dropdown
+    function onDocClick(e){
+      if (catsRef.current && !catsRef.current.contains(e.target)) {
+        setCatsOpen(false);
+      }
+    }
+    document.addEventListener('click', onDocClick);
+    return () => { document.removeEventListener('click', onDocClick); };
+  }, []);
+
+  // Initialize edited skill when entering edit mode
+  useEffect(() => {
+    if (isEditing && skill) {
+      // Deduplicate images and videos arrays
+      const uniqueImages = skill.images ? [...new Set(skill.images)] : [];
+      const uniqueVideos = skill.videos ? [...new Set(skill.videos)] : [];
+      
+      setEditedSkill({
+        name: skill.name || '',
+        brief: skill.brief || '',
+        detail: skill.detail || skill.description || '',
+        categories: skill.categories || [],
+        images: uniqueImages,
+        videos: uniqueVideos
+      });
+    }
+  }, [isEditing, skill]);
 
   useEffect(() => {
     // Get user skills from localStorage
@@ -50,6 +103,82 @@ export default function MySkillDetail() {
         setSkill(null);
       });
   }, [id]);
+
+  // Handle save skill edits
+  const handleSaveEdit = async () => {
+    setIsSaving(true);
+    try {
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      
+      console.log('Saving skill with ID:', id);
+      console.log('Edited skill data:', editedSkill);
+      
+      // Use FormData to support file uploads
+      const formData = new FormData();
+      formData.append('name', editedSkill.name);
+      formData.append('brief', editedSkill.brief);
+      formData.append('detail', editedSkill.detail);
+      if (editedSkill.categories && editedSkill.categories.length) {
+        formData.append('categories', editedSkill.categories.join(','));
+      }
+      
+      // Append new image files
+      if (newImages && newImages.length) {
+        newImages.forEach(file => formData.append('images', file));
+      }
+      
+      // Append new video files
+      if (newVideos && newVideos.length) {
+        newVideos.forEach(file => formData.append('videos', file));
+      }
+      
+      // Send list of removed media URLs
+      if (removedImages.length > 0) {
+        formData.append('removedImages', removedImages.join(','));
+      }
+      if (removedVideos.length > 0) {
+        formData.append('removedVideos', removedVideos.join(','));
+      }
+
+      console.log('Sending PUT request to:', `${apiUrl}/api/skills/${id}`);
+      
+      const response = await fetch(`${apiUrl}/api/skills/${id}`, {
+        method: 'PUT',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Update failed:', response.status, errorData);
+        throw new Error(errorData.error || `Failed to update skill (${response.status})`);
+      }
+
+      const responseData = await response.json();
+      console.log('Update successful! Response data:', responseData);
+
+      // Clear caches to force fresh data on reload
+      localStorage.removeItem('skills');
+      localStorage.removeItem('userSkills');
+      
+      // Reload the page to show updated data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating skill:', error);
+      alert(`Failed to update skill: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedSkill(null);
+    setNewImages([]);
+    setNewVideos([]);
+    setRemovedImages([]);
+    setRemovedVideos([]);
+    setCatsOpen(false);
+  };
 
   if (!skill) {
     return (

@@ -81,7 +81,7 @@ const Messages = () => {
   }, []);
 
   // Mark messages as read
-  const markMessagesAsRead = async () => {
+  const markMessagesAsRead = useCallback(async () => {
     try {
       if (!id || !userId) return;
       
@@ -94,7 +94,7 @@ const Messages = () => {
     } catch (err) {
       console.error('Failed to mark messages as read:', err);
     }
-  };
+  }, [id, userId]);
 
   // Fetch chat and messages
   useEffect(() => {
@@ -177,7 +177,7 @@ const Messages = () => {
     return () => {
       isMounted = false;
     };
-  }, [id, userId, navigate]);
+  }, [id, userId, navigate, markMessagesAsRead]);
 
   const onSend = async (e) => {
     e.preventDefault();
