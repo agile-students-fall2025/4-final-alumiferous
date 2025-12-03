@@ -3,10 +3,7 @@ import {
   HomeIcon,
   UserIcon,
   Cog6ToothIcon,
-  ArrowUpTrayIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-  BellIcon,
-  FolderIcon
+  ChatBubbleOvalLeftEllipsisIcon
 } from "@heroicons/react/24/outline";
 import "./Footer.css";
 import { Link, useLocation } from "react-router-dom";

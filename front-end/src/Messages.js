@@ -4,7 +4,6 @@ import './Messages.css';
 
 // Constants
 const API_BASE = 'http://localhost:3000/api';
-const AVATAR_SIZE = 40;
 
 // Helper avatar from Picsum
 // const avatarUrl = (seed, size = AVATAR_SIZE) =>
@@ -70,7 +69,7 @@ const Messages = () => {
   }, []);
 
   // Mark messages as read
-  const markMessagesAsRead = async () => {
+  const markMessagesAsRead = useCallback(async () => {
     try {
       if (!id || !userId) return;
       
@@ -83,7 +82,7 @@ const Messages = () => {
     } catch (err) {
       console.error('Failed to mark messages as read:', err);
     }
-  };
+  }, [id, userId]);
 
   // Fetch chat and messages
   useEffect(() => {
@@ -153,7 +152,7 @@ const Messages = () => {
     return () => {
       isMounted = false;
     };
-  }, [id, userId, navigate]);
+  }, [id, userId, navigate, markMessagesAsRead]);
 
   const onSend = async (e) => {
     e.preventDefault();
