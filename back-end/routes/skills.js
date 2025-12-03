@@ -478,6 +478,145 @@ router.post(
   }
 );
 
+// ===== UPDATE SKILL =====
+router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), async (req, res) => {
+  try {
+    const { skillId } = req.params;
+    const { name, brief, detail, categories, removedImages, removedVideos } = req.body;
+
+    console.log('PUT /api/skills/:skillId received:', { skillId, name, brief, detail, categories, removedImages, removedVideos });
+
+    // Find skill in MongoDB - handle both ObjectId and numeric skillId
+    let skillOffering;
+    
+    // Check if it's a MongoDB ObjectId (24 hex characters)
+    if (skillId.match(/^[0-9a-fA-F]{24}$/)) {
+      console.log('Searching by MongoDB _id:', skillId);
+      skillOffering = await SkillOffering.findById(skillId);
+    } else {
+      // Otherwise treat it as numeric skillId
+      console.log('Searching by numeric skillId:', parseInt(skillId));
+      skillOffering = await SkillOffering.findOne({ skillId: parseInt(skillId) });
+    }
+    
+    if (!skillOffering) {
+      console.log('Skill not found for skillId:', skillId);
+      return res.status(404).json({ error: 'Skill not found' });
+    }
+
+    console.log('Found skill offering:', skillOffering._id);
+
+    // Update text fields
+    if (name !== undefined) skillOffering.name = name;
+    if (brief !== undefined) skillOffering.brief = brief;
+    if (detail !== undefined) skillOffering.detail = detail;
+    
+    // Handle categories - can be comma-separated string or array
+    if (categories !== undefined) {
+      if (typeof categories === 'string') {
+        skillOffering.categories = categories.split(',').map(c => c.trim()).filter(c => c);
+      } else if (Array.isArray(categories)) {
+        skillOffering.categories = categories;
+      }
+    }
+
+    // Handle removed images
+    if (removedImages) {
+      const toRemove = typeof removedImages === 'string' 
+        ? removedImages.split(',').map(url => url.trim()).filter(url => url)
+        : (Array.isArray(removedImages) ? removedImages : []);
+      
+      if (toRemove.length > 0) {
+        console.log('Removing images:', toRemove);
+        console.log('Before removal - skillOffering.images:', skillOffering.images);
+        skillOffering.images = (skillOffering.images || []).filter(img => !toRemove.includes(img));
+        console.log('After removal - skillOffering.images:', skillOffering.images);
+      }
+    }
+
+    // Handle removed videos
+    if (removedVideos) {
+      const toRemove = typeof removedVideos === 'string'
+        ? removedVideos.split(',').map(url => url.trim()).filter(url => url)
+        : (Array.isArray(removedVideos) ? removedVideos : []);
+      
+      if (toRemove.length > 0) {
+        console.log('Removing videos:', toRemove);
+        console.log('Before removal - skillOffering.videos:', skillOffering.videos);
+        skillOffering.videos = (skillOffering.videos || []).filter(vid => !toRemove.includes(vid));
+        console.log('After removal - skillOffering.videos:', skillOffering.videos);
+      }
+    }
+
+    // Handle new image uploads
+    if (req.files && req.files.images) {
+      const imageUrls = [];
+      for (const file of req.files.images) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'skills/images', resource_type: 'image' },
+              (error, result) => error ? reject(error) : resolve(result)
+            );
+            uploadStream.end(file.buffer);
+          });
+          imageUrls.push(result.secure_url);
+        } catch (err) {
+          console.error('Error uploading image to Cloudinary:', err);
+        }
+      }
+      // Append new images to existing ones
+      skillOffering.images = [...(skillOffering.images || []), ...imageUrls];
+    }
+
+    // Handle new video uploads
+    if (req.files && req.files.videos) {
+      const videoUrls = [];
+      for (const file of req.files.videos) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'skills/videos', resource_type: 'video' },
+              (error, result) => error ? reject(error) : resolve(result)
+            );
+            uploadStream.end(file.buffer);
+          });
+          videoUrls.push(result.secure_url);
+        } catch (err) {
+          console.error('Error uploading video to Cloudinary:', err);
+        }
+      }
+      // Append new videos to existing ones
+      skillOffering.videos = [...(skillOffering.videos || []), ...videoUrls];
+    }
+
+    await skillOffering.save();
+    console.log('Skill offering saved successfully');
+
+    // Also update the Skill model if it exists
+    const updateResult = await Skill.updateMany(
+      { offeringSlug: skillOffering.offeringSlug },
+      {
+        $set: {
+          name: skillOffering.name,
+          brief: skillOffering.brief,
+          detail: skillOffering.detail,
+          categories: skillOffering.categories,
+          images: skillOffering.images,
+          videos: skillOffering.videos
+        }
+      }
+    );
+    console.log('Skill model update result:', updateResult);
+
+    res.json({ message: 'Skill updated successfully', skill: skillOffering });
+  } catch (error) {
+    console.error('Error updating skill:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Failed to update skill', details: error.message });
+  }
+});
+
 
 
 export default router;
