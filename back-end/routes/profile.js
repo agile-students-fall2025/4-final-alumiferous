@@ -4,26 +4,14 @@ import multer from "multer";
 import path from "path";
 import mongoose from "mongoose";
 import User from "../models/User.js";
-
+import cloudinaryProfile from "../config/cloudinaryProfile.js";
 dotenv.config();
 
 const router = express.Router();
 
 // MULTER CONFIG FOR PROFILE PHOTOS
-const imageStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/profile-photos");
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    const uniqueName = base + "-" + Date.now() + ext;
-    cb(null, uniqueName);
-  }
-});
-
 const imageUpload = multer({
-  storage: imageStorage,
+  storage: multer.memoryStorage(), // keep in memory for Cloudinary
   fileFilter: (req, file, cb) => {
     const mime = file.mimetype || "";
     const ext = path.extname(file.originalname).toLowerCase();
@@ -31,7 +19,7 @@ const imageUpload = multer({
     const isImageExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext);
     if (isImageMime && isImageExt) return cb(null, true);
     cb(new Error("Only image files are allowed"));
-  }
+  },
 });
 
 // GET profile for a specific user (from users collection)
@@ -74,7 +62,15 @@ router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
     };
 
     if (req.file) {
-      update.photo = `/uploads/profile-photos/${req.file.filename}`;
+      // Upload profile photo to Cloudinary
+      const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+        "base64"
+      )}`;
+      const result = await cloudinaryProfile.uploader.upload(dataUri, {
+        folder: "instaskill/avatars",
+        resource_type: "image",
+      });
+      update.photo = result.secure_url; // store Cloudinary URL
     }
 
     if (req.body.skillsOffered) {
@@ -84,11 +80,10 @@ router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
       update.neededSkills = JSON.parse(req.body.skillsWanted || "[]");
     }
 
-    const user = await User.findByIdAndUpdate(
-      userObjectId,
-      update,
-      { new: true, runValidators: true }
-    ).exec();
+    const user = await User.findByIdAndUpdate(userObjectId, update, {
+      new: true,
+      runValidators: true,
+    }).exec();
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -113,4 +108,5 @@ router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
 });
 
 export default router;
+
 
