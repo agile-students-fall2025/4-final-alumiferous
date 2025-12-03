@@ -186,6 +186,65 @@ router.get("/", async (req, res) => {
   return res.status(503).json({ error: 'Skills not available at this time' });
 });
 
+// GET /api/skills/:id  -> get a single skill by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const off = await SkillOffering.findById(id)
+      .populate('skillId')
+      .populate('userId')
+      .lean()
+      .exec();
+      
+    if (!off) {
+      return res.status(404).json({ error: "Skill not found" });
+    }
+    
+    // Use the same normalization logic as the GET list endpoint
+    const skill = off.skillId || {};
+    const user = off.userId || {};
+    const detail = Array.isArray(off.description) ? off.description.join('\n') : off.detail || off.description || '';
+    const brief = off.brief || (detail.length > 120 ? detail.slice(0, 117) + '...' : detail);
+
+    // normalize arrays: ensure `images` and `videos` are arrays
+    const images = Array.isArray(off.images) ? off.images : (off.images ? [off.images] : []);
+    const videos = Array.isArray(off.videos) ? off.videos : (off.videos ? [off.videos] : []);
+
+    // keep legacy `image` as the first thumbnail for compatibility
+    const image = (images.length && images[0]) || off.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || off.offeringSlug || 'Skill')}`;
+
+    // Build username from available user data
+    const username = user.username || 
+                    (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
+                    user.firstName || 
+                    user.email?.split('@')[0] || 
+                    'Anonymous';
+
+    const normalizedSkill = {
+      skillId: String(off._id),
+      id: String(off._id),
+      _id: String(off._id),
+      name: off.name || skill.name || off.offeringSlug || 'Unknown Skill',
+      generalSkill: skill.name || null,
+      brief,
+      detail,
+      description: detail,
+      image,
+      images,
+      videos,
+      userId: user._id ? String(user._id) : null,
+      username: username,
+      category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
+      categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
+    };
+    
+    res.json(normalizedSkill);
+  } catch (err) {
+    console.error("Error fetching skill by ID:", err);
+    res.status(500).json({ error: "Failed to fetch skill" });
+  }
+});
+
 // DELETE /api/skills/:id  -> delete a single skill
 router.delete("/:id", async (req, res) => {
   try {
