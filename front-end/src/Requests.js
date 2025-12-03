@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Requests.css";
 
 export default function Requests() {
+  const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Helper to randomly pick one element from an array
-  const pickOne = (arr) =>
-    Array.isArray(arr) && arr.length > 0
-      ? arr[Math.floor(Math.random() * arr.length)]
-      : "N/A";
 
   useEffect(() => {
     let isMounted = true;
@@ -37,22 +33,27 @@ export default function Requests() {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 
         const data = await res.json();
+        console.log('Received requests data:', data);
 
         const normalized = (Array.isArray(data) ? data : [data]).map(
           (req, i) => ({
-            id: req.requestId ?? req.id ?? i,
+            id: req._id || req.id || i,
             // person who wants to learn from me
             name: req.requesterName || "Unknown learner",
-            // what they OFFER (their own skills)
-            offers: pickOne(req.skillsAcquired || req._allSkills),
-            // what they WANT to learn – same as before
-            wants:
-              pickOne(req.skillsWanted) ||
-              req.skillName ||
-              "N/A",
+            // what they WANT to learn from the owner
+            wants: req.skillName || "N/A",
+            // their message/introduction
+            message: req.message || "No message provided",
+            // when the request was created
+            createdAt: req.createdAt,
+            // Store the requesterId - handle both object (populated) and string cases
+            requesterId: typeof req.requesterId === 'object' && req.requesterId?._id 
+                        ? String(req.requesterId._id) 
+                        : String(req.requesterId),
           })
         );
 
+        console.log('Normalized requests:', normalized);
         if (isMounted) setRequests(normalized);
       } catch (err) {
         console.error("Failed to load requests:", err);
@@ -81,7 +82,7 @@ export default function Requests() {
       if (!res.ok) {
         console.error("Failed to update request status:", res.status);
         alert("Failed to update request status on server.");
-        return;
+        return null;
       }
 
       const updated = await res.json();
@@ -89,14 +90,84 @@ export default function Requests() {
 
       // Remove the request from the UI list since it's no longer pending
       setRequests((prev) => prev.filter((r) => r.id !== id));
+      
+      return updated;
     } catch (err) {
       console.error("Error updating request status:", err);
       alert("Error updating request status. Check console for details.");
+      return null;
     }
   };
 
-  const handleAccept = (id) => {
-    updateRequestStatus(id, "accepted");
+  const handleAccept = async (requestId) => {
+    try {
+      // Get the current user's ID
+      const currentUserId = localStorage.getItem('userId');
+      
+      if (!currentUserId) {
+        alert('Please log in to accept requests');
+        return;
+      }
+      
+      // Find the request to get the requester's ID
+      const request = requests.find(r => r.id === requestId);
+      if (!request) {
+        console.error('Request not found');
+        alert('Error: Request not found');
+        return;
+      }
+      
+      if (!request.requesterId) {
+        console.error('Requester ID not found in request');
+        alert('Error: Could not identify the requester');
+        return;
+      }
+      
+      console.log('Accepting request from:', request.name, 'ID:', request.requesterId);
+      
+      // First, update the request status to accepted
+      const updatedRequest = await updateRequestStatus(requestId, "accepted");
+      
+      if (!updatedRequest) {
+        return; // Error already handled in updateRequestStatus
+      }
+      
+      console.log('Finding or creating chat between:', currentUserId, 'and', request.requesterId);
+      
+      // Find or create a chat between the current user and the requester
+      const chatRes = await fetch('/api/chats/find-or-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUserId,
+          friendId: String(request.requesterId)
+        })
+      });
+      
+      console.log('Chat response status:', chatRes.status);
+      
+      if (chatRes.ok) {
+        const chat = await chatRes.json();
+        console.log('Chat created/found:', chat);
+        
+        if (!chat._id) {
+          console.error('Chat object missing _id:', chat);
+          alert('Request accepted, but chat data is invalid. Please check the Chat page manually.');
+          return;
+        }
+        
+        console.log('Navigating to chat:', chat._id);
+        // Navigate to the Messages page with the chat ID
+        navigate(`/chat/${chat._id}`);
+      } else {
+        const errorData = await chatRes.json().catch(() => ({}));
+        console.error('Failed to create/find chat. Status:', chatRes.status, 'Error:', errorData);
+        alert(`Request accepted, but failed to open chat (Error ${chatRes.status}). Please check the Chat page.`);
+      }
+    } catch (err) {
+      console.error('Error accepting request:', err);
+      alert(`Error accepting request: ${err.message}. Check console for details.`);
+    }
   };
 
   const handleDecline = (id) => {
@@ -128,10 +199,10 @@ export default function Requests() {
               <div className="request-info">
                 <span className="request-name">{req.name}</span>
                 <span className="request-skill">
-                  <strong>Offers:</strong> {req.offers}
+                  <strong>Wants to learn:</strong> {req.wants}
                 </span>
-                <span className="request-skill">
-                  <strong>Wants:</strong> {req.wants}
+                <span className="request-message">
+                  <strong>Message:</strong> {req.message}
                 </span>
               </div>
 

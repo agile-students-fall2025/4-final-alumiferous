@@ -16,11 +16,43 @@ export default function DraftRequest() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUsername, setCurrentUsername] = useState(null);
 
   // Get logged-in user from localStorage
   useEffect(() => {
     const userId = localStorage.getItem('userId');
+    let username = localStorage.getItem('username');
+    const userString = localStorage.getItem('user');
+    
     setCurrentUser(userId);
+    
+    // Try to get username from various sources
+    if (username && username !== 'undefined' && username !== 'null') {
+      setCurrentUsername(username);
+    } else if (userString && userString !== 'undefined' && userString !== 'null') {
+      try {
+        const parsedUser = JSON.parse(userString);
+        // Build username from available data
+        if (parsedUser.username && parsedUser.username !== 'undefined') {
+          setCurrentUsername(parsedUser.username);
+        } else if (parsedUser.firstName || parsedUser.lastName) {
+          const fullName = `${parsedUser.firstName || ''} ${parsedUser.lastName || ''}`.trim();
+          setCurrentUsername(fullName || 'User');
+        } else if (parsedUser.email) {
+          // Use part of email as fallback
+          setCurrentUsername(parsedUser.email.split('@')[0]);
+        } else {
+          setCurrentUsername('User');
+        }
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+        setCurrentUsername('User');
+      }
+    } else {
+      setCurrentUsername('User');
+    }
+    
+    console.log('Current user ID:', userId, 'Username:', currentUsername);
   }, []);
 
   const skill = { id: skillId, name: skillName };
@@ -45,9 +77,11 @@ export default function DraftRequest() {
         ownerId: ownerIdParam,
         ownerName: ownerParam,
         requesterId: currentUser,
-        requesterName: "User",
+        requesterName: currentUsername || "User",
         message: aboutYou,
       };
+
+      console.log('Sending request:', requestData);
 
       const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
       const response = await fetch(`${apiUrl}/api/requests`, {
@@ -58,6 +92,14 @@ export default function DraftRequest() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        if (response.status === 409) {
+          // Duplicate request error
+          setError("You have already sent a request for this skill.");
+          setTimeout(() => {
+            nav(`/skills/${encodeURIComponent(skillId)}`);
+          }, 2000);
+          return;
+        }
         throw new Error(errorData.error || "Failed to send request");
       }
 

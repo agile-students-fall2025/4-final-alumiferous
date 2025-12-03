@@ -219,6 +219,33 @@
   cursor: pointer;
 }
 
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.request-already-sent {
+  margin-top: 24px;
+  padding: 16px 24px;
+  background: #e8f5e9;
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  color: #2e7d32;
+}
+
+.request-already-sent p {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.request-already-sent small {
+  font-size: 14px;
+  color: #558b2f;
+}
+
 .back {
   display: block;
   margin-top: 16px;
@@ -259,6 +286,16 @@ body.dark-mode .button {
 
 body.dark-mode .button:hover {
   background: var(--primary-hover, #1565c0);
+}
+
+body.dark-mode .request-already-sent {
+  background: #1b5e20;
+  border-color: #4caf50;
+}
+
+body.dark-mode .request-already-sent p,
+body.dark-mode .request-already-sent small {
+  color: #a5d6a7;
 }
 
 body.dark-mode .back {
