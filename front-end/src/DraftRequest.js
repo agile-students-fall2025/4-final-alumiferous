@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./DraftRequest.css";
 import "./Messages.css";
 
@@ -51,8 +51,6 @@ export default function DraftRequest() {
     } else {
       setCurrentUsername('User');
     }
-    
-    console.log('Current user ID:', userId, 'Username:', currentUsername);
   }, []);
 
   const skill = { id: skillId, name: skillName };
