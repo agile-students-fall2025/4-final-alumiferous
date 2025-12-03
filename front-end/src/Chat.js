@@ -10,6 +10,7 @@ const Chat = props => {
     const [chatList, setChatList] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [unreadRequestsCount, setUnreadRequestsCount] = useState(0)
 
     // Load chat list from backend API
     useEffect(() => {
@@ -70,6 +71,32 @@ const Chat = props => {
         return () => { isMounted = false }
     }, [])
 
+    // Load unread requests count
+    useEffect(() => {
+        const loadUnreadRequests = async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) return;
+                
+                const response = await fetch(`/api/requests/mock-incoming?userId=${userId}`);
+                if (response.ok) {
+                    const requests = await response.json();
+                    const pendingRequests = Array.isArray(requests) 
+                        ? requests.filter(req => req.status === 'pending' || !req.status)
+                        : [];
+                    setUnreadRequestsCount(pendingRequests.length);
+                }
+            } catch (err) {
+                console.error('Error loading unread requests:', err);
+            }
+        };
+        
+        loadUnreadRequests();
+        // Refresh count every 30 seconds
+        const interval = setInterval(loadUnreadRequests, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
     // Filter chats based on search term
     const filteredChats = chatList.filter(chat =>
         chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,12 +110,17 @@ const Chat = props => {
                 <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Chat</h1>
                 <div className="flex gap-3">
                     <button
-                        className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center"
+                        className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center relative"
                         aria-label="Requests"
                         title="Requests"
                         onClick={() => navigate('/requests')}
                     >
                         <BellIcon className="w-6 h-6 block" aria-hidden="true" />
+                        {unreadRequestsCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                {unreadRequestsCount}
+                            </span>
+                        )}
                     </button>
                 </div>
             </div>

@@ -96,8 +96,8 @@ export default function SkillDescription() {
 
         {/* Slideshow for images and videos */}
         {allMedia.length > 0 && (
-          <div className="relative mb-6">
-            <div className="rounded-app overflow-hidden bg-gray-100 dark:bg-gray-800">
+          <div className="mb-6">
+            <div className="relative rounded-app overflow-hidden bg-gray-100 dark:bg-gray-800">
               {allMedia[currentIndex].type === 'image' ? (
                 <img
                   src={allMedia[currentIndex].src}
@@ -110,35 +110,49 @@ export default function SkillDescription() {
                   Your browser does not support the video tag.
                 </video>
               )}
+
+              {/* Navigation buttons - only show if more than 1 item */}
+              {allMedia.length > 1 && (
+                <>
+                  <button 
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10" 
+                    onClick={prevSlide}
+                    aria-label="Previous"
+                  >
+                    ❮
+                  </button>
+                  <button 
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10" 
+                    onClick={nextSlide}
+                    aria-label="Next"
+                  >
+                    ❯
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Navigation buttons - only show if more than 1 item */}
+            {/* Thumbnail gallery */}
             {allMedia.length > 1 && (
-              <>
-                <button className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors" onClick={prevSlide}>❮</button>
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors" onClick={nextSlide}>❯</button>
-                
-                {/* Thumbnail gallery */}
-                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                  {allMedia.map((media, idx) => (
-                    <div
-                      key={idx}
-                      className={`flex-shrink-0 w-16 h-16 rounded-app overflow-hidden cursor-pointer border-2 transition-all ${
-                        idx === currentIndex ? 'border-primary' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                      }`}
-                      onClick={() => setCurrentIndex(idx)}
-                    >
-                      {media.type === 'image' ? (
-                        <img src={media.src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-white text-2xl">
-                          <span>▶</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                {allMedia.map((media, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex-shrink-0 w-16 h-16 rounded-app overflow-hidden cursor-pointer border-2 transition-all ${
+                      idx === currentIndex ? 'border-primary' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
+                    onClick={() => setCurrentIndex(idx)}
+                  >
+                    {media.type === 'image' ? (
+                      <img src={media.src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center text-white text-2xl">
+                        <span>▶</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}
