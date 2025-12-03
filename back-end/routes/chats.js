@@ -96,7 +96,11 @@ router.post('/find-or-create', async (req, res) => {
     const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
     let unreadCount = 0;
     if (userId) {
-      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: userId }, read: false });
+      unreadCount = await Message.countDocuments({ 
+        chatId: chat._id, 
+        senderId: { $ne: userId },
+        readBy: { $ne: userId }
+      });
     }
     
     const chatObj = {

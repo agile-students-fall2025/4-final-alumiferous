@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
       content,
       senderId,
       sentAt: sentAt || new Date(),
-      read: false,
+      readBy: [], // Initialize empty readBy array
     });
     await message.save();
     res.status(201).json(message);
@@ -51,10 +51,10 @@ router.put('/mark-read', async (req, res) => {
     return res.status(400).json({ success: false, message: 'chatId and userId are required' });
   }
   try {
-    // Mark all messages in this chat that were NOT sent by userId as read
+    // Add userId to readBy array for all messages in this chat that were NOT sent by userId
     const result = await Message.updateMany(
-      { chatId, senderId: { $ne: userId }, read: false },
-      { $set: { read: true } }
+      { chatId, senderId: { $ne: userId }, readBy: { $ne: userId } },
+      { $addToSet: { readBy: userId } }
     );
     res.json({ success: true, modifiedCount: result.modifiedCount });
   } catch (err) {

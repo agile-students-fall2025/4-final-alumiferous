@@ -185,7 +185,7 @@ export default function Requests() {
           onClick={() => window.history.back()}
           aria-label="Go back"
         >
-          <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+          &larr;
         </button>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Incoming Requests</h2>
       </header>
@@ -195,26 +195,26 @@ export default function Requests() {
           <p className="text-center text-gray-500 dark:text-gray-400">No new requests </p>
         ) : (
           requests.map((req) => (
-            <div key={req.id} className="card mb-4 p-4">
+            <div key={req.id} className="bg-white dark:bg-[#1e1e1e] rounded-lg shadow-md p-4 mb-4 border border-gray-200 dark:border-[#333]">
               <div className="mb-4">
                 <span className="block text-lg font-semibold text-gray-900 dark:text-white mb-2">{req.name}</span>
-                <span className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
-                  <strong>Offers:</strong> {req.offers}
+                <span className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  <strong>Wants to learn:</strong> {req.wants}
                 </span>
                 <span className="block text-sm text-gray-700 dark:text-gray-300">
-                  <strong>Wants:</strong> {req.wants}
+                  <strong>Message:</strong> {req.message}
                 </span>
               </div>
 
               <div className="flex gap-2">
                 <button
-                  className="btn btn-primary flex-1"
+                  className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors"
                   onClick={() => handleAccept(req.id)}
                 >
                   Accept
                 </button>
                 <button
-                  className="btn bg-danger hover:bg-red-700 text-white flex-1"
+                  className="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
                   onClick={() => handleDecline(req.id)}
                 >
                   Decline
