@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SkillsContext } from "./SkillsContext";
 
@@ -12,11 +12,39 @@ export default function SkillDescription() {
 
   // State for slideshow - MUST be at top level before any returns
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [requestExists, setRequestExists] = useState(false);
+  const [checkingRequest, setCheckingRequest] = useState(true);
 
   // Find the skill by id
   const skill = useMemo(() => {
     return skills.find((s) => String(s.skillId) === String(id));
   }, [skills, id]);
+
+  // Check if user already sent a request for this skill
+  useEffect(() => {
+    const checkExistingRequest = async () => {
+      const currentUserId = localStorage.getItem('userId');
+      
+      if (!currentUserId || !id) {
+        setCheckingRequest(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/requests/check?skillId=${id}&requesterId=${currentUserId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRequestExists(data.exists);
+        }
+      } catch (error) {
+        console.error('Error checking for existing request:', error);
+      } finally {
+        setCheckingRequest(false);
+      }
+    };
+
+    checkExistingRequest();
+  }, [id]);
 
   // ---- loading state ----
   if (!skills || skills.length === 0) {
