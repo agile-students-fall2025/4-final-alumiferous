@@ -14,10 +14,15 @@
   cursor: pointer;
   margin-bottom: 15px;
   transition: color 0.2s;
+  outline: none;
 }
 
 .back-button:hover {
   color: #666;
+}
+
+.back-button:focus {
+  outline: none;
 }
 
 .skill-detail-card {
