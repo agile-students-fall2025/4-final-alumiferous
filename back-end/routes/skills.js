@@ -138,6 +138,13 @@ router.get("/", async (req, res) => {
         const image = (images.length && images[0]) || off.image || user.photo || `https://via.placeholder.com/300x200?text=${encodeURIComponent(skill.name || off.offeringSlug || 'Skill')}`;
         const id = off._id ? String(off._id) : null;
 
+        // Build username from available user data
+        const username = user.username || 
+                        (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}`.trim() : null) ||
+                        user.firstName || 
+                        user.email?.split('@')[0] || 
+                        'Anonymous';
+
         return {
           skillId: id,
           id,
@@ -151,7 +158,7 @@ router.get("/", async (req, res) => {
           images,
           videos,
           userId: user._id ? String(user._id) : null,
-          username: user.username || null,
+          username: username,
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
           width: Math.floor(Math.random() * 80) + 150,

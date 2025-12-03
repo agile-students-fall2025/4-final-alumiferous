@@ -57,6 +57,60 @@ router.post('/', async (req, res) => {
   }
 });
 
+// POST /api/chats/find-or-create - find existing chat or create new one
+router.post('/find-or-create', async (req, res) => {
+  const { userId, friendId } = req.body;
+  
+  if (!userId || !friendId) {
+    return res.status(400).json({ success: false, message: 'userId and friendId are required' });
+  }
+  
+  try {
+    // Try to find existing chat between these two users (in either direction)
+    let chat = await Chats.findOne({
+      $or: [
+        { userId: userId, friendId: friendId },
+        { userId: friendId, friendId: userId }
+      ]
+    }).populate('userId', 'username email firstName lastName').populate('friendId', 'username email firstName lastName');
+    
+    // If chat doesn't exist, create a new one
+    if (!chat) {
+      chat = new Chats({
+        userId,
+        friendId,
+        online: false,
+      });
+      await chat.save();
+      
+      // Populate the user fields after saving
+      chat = await Chats.findById(chat._id)
+        .populate('userId', 'username email firstName lastName')
+        .populate('friendId', 'username email firstName lastName');
+    }
+    
+    // Get last message and unread count
+    const Message = (await import('../models/Message.js')).default;
+    const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
+    let unreadCount = 0;
+    if (userId) {
+      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: userId } });
+    }
+    
+    const chatObj = {
+      ...chat.toObject(),
+      lastMessage: lastMsg ? lastMsg.content : '',
+      lastMessageTime: lastMsg ? lastMsg.sentAt || lastMsg.timestamp : null,
+      unread: unreadCount,
+    };
+    
+    res.json(chatObj);
+  } catch (err) {
+    console.error('Error finding or creating chat:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // DELETE /api/chats/:id - delete a chat
 router.delete('/:id', async (req, res) => {
   try {

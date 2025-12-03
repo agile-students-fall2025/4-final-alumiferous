@@ -30,6 +30,20 @@ router.post("/", async (req, res) => {
   }
 
   try {
+    // Check if a pending request already exists for this skill from this requester
+    const existingRequest = await Request.findOne({
+      skillId,
+      requesterId,
+      status: "pending"
+    });
+
+    if (existingRequest) {
+      return res.status(409).json({
+        error: "You have already sent a request for this skill",
+        existingRequest: existingRequest
+      });
+    }
+
     const newRequest = new Request({
       skillId,
       skillName: skillName || "Unknown Skill",
@@ -50,6 +64,36 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * GET /api/requests/check?skillId=123&requesterId=456
+ * Check if a pending request already exists for this skill from this requester
+ */
+router.get("/check", async (req, res) => {
+  const { skillId, requesterId } = req.query;
+
+  if (!skillId || !requesterId) {
+    return res.status(400).json({
+      error: "skillId and requesterId query parameters are required",
+    });
+  }
+
+  try {
+    const existingRequest = await Request.findOne({
+      skillId,
+      requesterId,
+      status: "pending"
+    });
+
+    return res.json({
+      exists: !!existingRequest,
+      request: existingRequest
+    });
+  } catch (error) {
+    console.error("Error checking for existing request:", error);
+    return res.status(500).json({ error: "Failed to check request" });
+  }
+});
+
+/**
  * GET /api/requests/incoming?userId=123
  * Fetches incoming requests for a skill owner from MongoDB.
  */
@@ -66,9 +110,26 @@ router.get("/incoming", async (req, res) => {
     const incoming = await Request.find({
       ownerId: userId,
       status: "pending"
-    }).sort({ createdAt: -1 });
+    })
+    .populate('requesterId', 'username firstName lastName email')
+    .sort({ createdAt: -1 });
 
-    return res.json(incoming);
+    // Map requests to include the actual user's name from the populated data
+    const requestsWithNames = incoming.map(req => {
+      const requester = req.requesterId || {};
+      const actualName = requester.username || 
+                        `${requester.firstName || ''} ${requester.lastName || ''}`.trim() ||
+                        requester.email?.split('@')[0] ||
+                        req.requesterName ||
+                        'Unknown User';
+      
+      return {
+        ...req.toObject(),
+        requesterName: actualName
+      };
+    });
+
+    return res.json(requestsWithNames);
   } catch (error) {
     console.error("Error fetching incoming requests:", error);
     return res.status(500).json({ error: "Failed to fetch requests" });
@@ -142,9 +203,26 @@ router.get("/mock-incoming", async (req, res) => {
     const incoming = await Request.find({
       ownerId: userId,
       status: "pending"
-    }).sort({ createdAt: -1 });
+    })
+    .populate('requesterId', 'username firstName lastName email')
+    .sort({ createdAt: -1 });
 
-    return res.json(incoming);
+    // Map requests to include the actual user's name from the populated data
+    const requestsWithNames = incoming.map(req => {
+      const requester = req.requesterId || {};
+      const actualName = requester.username || 
+                        `${requester.firstName || ''} ${requester.lastName || ''}`.trim() ||
+                        requester.email?.split('@')[0] ||
+                        req.requesterName ||
+                        'Unknown User';
+      
+      return {
+        ...req.toObject(),
+        requesterName: actualName
+      };
+    });
+
+    return res.json(requestsWithNames);
   } catch (error) {
     console.error("Error fetching requests:", error);
     return res.status(500).json({ error: "Failed to fetch requests" });
