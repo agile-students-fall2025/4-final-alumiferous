@@ -89,20 +89,12 @@ export default function MySkillDetail() {
       <div className="skill-detail-card">
         <h1 className="skill-title">{skill.name}</h1>
         
-        {/* Main Category */}
-        {skill.category && (
-          <div className="field-tag">{skill.category}</div>
-        )}
-        
         {/* All Categories */}
         {categories.length > 0 && (
-          <div className="info-section">
-            <h3>Categories</h3>
-            <div className="categories-list">
-              {categories.map((cat, idx) => (
-                <span key={idx} className="category-badge">{cat}</span>
-              ))}
-            </div>
+          <div className="categories-list">
+            {categories.map((cat, idx) => (
+              <span key={idx} className="category-badge">{cat}</span>
+            ))}
           </div>
         )}
         

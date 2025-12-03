@@ -11,9 +11,36 @@ const Chat = props => {
     const [chatList, setChatList] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [pendingRequestsCount, setPendingRequestsCount] = useState(0)
 
     // Helper to generate stable Picsum avatar URLs per user
     const avatarUrl = (seed, size = 50) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`
+
+    // Load pending requests count
+    useEffect(() => {
+        const loadPendingRequests = async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) return;
+                
+                const response = await fetch(`/api/requests/mock-incoming?userId=${userId}`);
+                if (response.ok) {
+                    const requests = await response.json();
+                    const requestsArray = Array.isArray(requests) ? requests : [requests];
+                    const pending = requestsArray.filter(req => req.status === 'pending');
+                    console.log('Pending requests count:', pending.length);
+                    setPendingRequestsCount(pending.length);
+                }
+            } catch (err) {
+                console.error('Error loading pending requests:', err);
+            }
+        };
+        
+        loadPendingRequests();
+        // Refresh count every 30 seconds
+        const interval = setInterval(loadPendingRequests, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Load chat list from backend API
     useEffect(() => {
@@ -93,6 +120,9 @@ const Chat = props => {
                         onClick={() => navigate('/requests')}
                     >
                         <BellIcon aria-hidden="true" />
+                        {pendingRequestsCount > 0 && (
+                            <span className="notification-badge">{pendingRequestsCount}</span>
+                        )}
                     </button>
                 </div>
             </div>

@@ -89,98 +89,9 @@ export default function SkillDescription() {
     checkExistingRequest();
   }, [id]);
 
-  // Initialize edited skill when entering edit mode
-  useEffect(() => {
-    if (isEditing && skill) {
-      // Deduplicate images and videos arrays
-      const uniqueImages = skill.images ? [...new Set(skill.images)] : [];
-      const uniqueVideos = skill.videos ? [...new Set(skill.videos)] : [];
-      
-      setEditedSkill({
-        name: skill.name || '',
-        brief: skill.brief || '',
-        detail: skill.detail || '',
-        categories: skill.categories || [],
-        images: uniqueImages,
-        videos: uniqueVideos
-      });
-    }
-  }, [isEditing, skill]);
-
-  // Handle save skill edits
-  const handleSaveEdit = async () => {
-    setIsSaving(true);
-    try {
-      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
-      
-      console.log('Saving skill with ID:', id);
-      console.log('Edited skill data:', editedSkill);
-      
-      // Use FormData to support file uploads
-      const formData = new FormData();
-      formData.append('name', editedSkill.name);
-      formData.append('brief', editedSkill.brief);
-      formData.append('detail', editedSkill.detail);
-      if (editedSkill.categories && editedSkill.categories.length) {
-        formData.append('categories', editedSkill.categories.join(','));
-      }
-      
-      // Append new image files
-      if (newImages && newImages.length) {
-        newImages.forEach(file => formData.append('images', file));
-      }
-      
-      // Append new video files
-      if (newVideos && newVideos.length) {
-        newVideos.forEach(file => formData.append('videos', file));
-      }
-      
-      // Send list of removed media URLs
-      if (removedImages.length > 0) {
-        formData.append('removedImages', removedImages.join(','));
-      }
-      if (removedVideos.length > 0) {
-        formData.append('removedVideos', removedVideos.join(','));
-      }
-
-      console.log('Sending PUT request to:', `${apiUrl}/api/skills/${id}`);
-      
-      const response = await fetch(`${apiUrl}/api/skills/${id}`, {
-        method: 'PUT',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Update failed:', response.status, errorData);
-        throw new Error(errorData.error || `Failed to update skill (${response.status})`);
-      }
-
-      const responseData = await response.json();
-      console.log('Update successful! Response data:', responseData);
-
-      // Clear skills cache to force fresh data on reload
-      localStorage.removeItem('skills');
-      
-      // Reload the page to show updated data
-      window.location.reload();
-    } catch (error) {
-      console.error('Error updating skill:', error);
-      alert(`Failed to update skill: ${error.message}`);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditedSkill(null);
-    setNewImages([]);
-    setNewVideos([]);
-    setRemovedImages([]);
-    setRemovedVideos([]);
-    setCatsOpen(false);
-  };
+  // Check if the skill belongs to the current user
+  const currentUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
+  const isOwnSkill = skill && currentUserId && String(skill.userId) === String(currentUserId);
 
   // ---- loading state ----
   if (!skills || skills.length === 0) {
@@ -588,75 +499,52 @@ export default function SkillDescription() {
                       </span>
                     ))}
                   </span>
-                ) : (
-                  "—"
-                )}
-              </p>
-              <p>
-                <strong>Posted by:</strong> {skill.username || "Unknown User"}
-              </p>
-            </div>
-          </>
-        )}
+                ))}
+              </span>
+            ) : (
+              "—"
+            )}
+          </p>
+          <p>
+            <strong>Posted by:</strong> {isOwnSkill ? "You" : (skill.username || "Unknown User")}
+          </p>
+        </div>
 
-        {/* Show Edit button if user owns this skill, otherwise show Draft Request */}
-        {currentUserId && currentUserId === skill.userId ? (
-          isEditing ? (
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        {/* Only show Draft Request button if it's NOT the user's own skill */}
+        {!isOwnSkill && (
+          <>
+            {checkingRequest ? (
+              <button className="button" disabled>
+                Checking...
+              </button>
+            ) : requestExists ? (
+              <div className="request-already-sent">
+                <p>✓ Request Already Sent</p>
+                <small>You have already sent a request for this skill</small>
+              </div>
+            ) : (
               <button
                 className="button"
-                onClick={handleSaveEdit}
-                disabled={isSaving}
+                onClick={() =>
+                  nav(
+                    `/requests/new?skillId=${encodeURIComponent(
+                      skill.skillId
+                    )}&skillName=${encodeURIComponent(
+                      skill.name
+                    )}&owner=${encodeURIComponent(
+                      skill.username || ""
+                    )}&ownerId=${encodeURIComponent(
+                      skill.userId || ""
+                    )}&category=${encodeURIComponent(
+                      skill.category || ""
+                    )}`
+                  )
+                }
               >
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                Draft Request
               </button>
-              <button
-                className="button"
-                onClick={handleCancelEdit}
-                disabled={isSaving}
-                style={{ background: '#666' }}
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button
-              className="button"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit Skill
-            </button>
-          )
-        ) : checkingRequest ? (
-          <button className="button" disabled>
-            Checking...
-          </button>
-        ) : requestExists ? (
-          <div className="request-already-sent">
-            <p>✓ Request Already Sent</p>
-            <small>You have already sent a request for this skill</small>
-          </div>
-        ) : (
-          <button
-            className="button"
-            onClick={() =>
-              nav(
-                `/requests/new?skillId=${encodeURIComponent(
-                  skill.skillId
-                )}&skillName=${encodeURIComponent(
-                  skill.name
-                )}&owner=${encodeURIComponent(
-                  skill.username || ""
-                )}&ownerId=${encodeURIComponent(
-                  skill.userId || ""
-                )}&category=${encodeURIComponent(
-                  skill.category || ""
-                )}`
-              )
-            }
-          >
-            Draft Request
-          </button>
+            )}
+          </>
         )}
       </div>
     </div>
