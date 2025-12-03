@@ -404,5 +404,50 @@ router.post(
   }
 );
 
+// ===== UPDATE SKILL =====
+router.put('/:skillId', async (req, res) => {
+  try {
+    const { skillId } = req.params;
+    const { name, brief, detail, categories, images, videos } = req.body;
+
+    // Find and update in MongoDB
+    const skillOffering = await SkillOffering.findOne({ skillId: parseInt(skillId) });
+    
+    if (!skillOffering) {
+      return res.status(404).json({ error: 'Skill not found' });
+    }
+
+    // Update fields
+    if (name !== undefined) skillOffering.name = name;
+    if (brief !== undefined) skillOffering.brief = brief;
+    if (detail !== undefined) skillOffering.detail = detail;
+    if (categories !== undefined) skillOffering.categories = categories;
+    if (images !== undefined) skillOffering.images = images;
+    if (videos !== undefined) skillOffering.videos = videos;
+
+    await skillOffering.save();
+
+    // Also update the Skill model if it exists
+    await Skill.updateMany(
+      { offeringSlug: skillOffering.offeringSlug },
+      {
+        $set: {
+          name: skillOffering.name,
+          brief: skillOffering.brief,
+          detail: skillOffering.detail,
+          categories: skillOffering.categories,
+          images: skillOffering.images,
+          videos: skillOffering.videos
+        }
+      }
+    );
+
+    res.json({ message: 'Skill updated successfully', skill: skillOffering });
+  } catch (error) {
+    console.error('Error updating skill:', error);
+    res.status(500).json({ error: 'Failed to update skill' });
+  }
+});
+
 
 export default router;

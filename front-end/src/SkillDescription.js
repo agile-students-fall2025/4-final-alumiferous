@@ -19,6 +19,25 @@ export default function SkillDescription() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedSkill, setEditedSkill] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [newVideos, setNewVideos] = useState([]);
+
+  // Fetch available categories
+  useEffect(() => {
+    (async function fetchCategories(){
+      try {
+        const res = await fetch('/api/fixeddata');
+        if (res.ok) {
+          const body = await res.json();
+          const c = Array.isArray(body.categories) ? body.categories : [];
+          if (c.length) setAvailableCategories(c.sort());
+        }
+      } catch (e) {
+        console.error('Error fetching categories:', e);
+      }
+    })();
+  }, []);
 
   // Get current user ID
   useEffect(() => {
@@ -76,10 +95,29 @@ export default function SkillDescription() {
     setIsSaving(true);
     try {
       const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      
+      // Use FormData to support file uploads
+      const formData = new FormData();
+      formData.append('name', editedSkill.name);
+      formData.append('brief', editedSkill.brief);
+      formData.append('detail', editedSkill.detail);
+      if (editedSkill.categories && editedSkill.categories.length) {
+        formData.append('categories', editedSkill.categories.join(','));
+      }
+      
+      // Append new image files
+      if (newImages && newImages.length) {
+        newImages.forEach(file => formData.append('images', file));
+      }
+      
+      // Append new video files
+      if (newVideos && newVideos.length) {
+        newVideos.forEach(file => formData.append('videos', file));
+      }
+
       const response = await fetch(`${apiUrl}/api/skills/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editedSkill)
+        body: formData
       });
 
       if (!response.ok) {
@@ -99,6 +137,8 @@ export default function SkillDescription() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditedSkill(null);
+    setNewImages([]);
+    setNewVideos([]);
   };
 
   // ---- loading state ----
@@ -228,33 +268,49 @@ export default function SkillDescription() {
               />
             </label>
             <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Categories (comma-separated):</strong>
+              <strong>Categories:</strong>
+              <div style={{ marginTop: '5px', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '8px', borderRadius: '4px' }}>
+                {availableCategories.map((cat) => (
+                  <label key={cat} style={{ display: 'block', marginBottom: '5px' }}>
+                    <input
+                      type="checkbox"
+                      checked={editedSkill?.categories?.includes(cat) || false}
+                      onChange={(e) => {
+                        const currentCats = editedSkill?.categories || [];
+                        if (e.target.checked) {
+                          setEditedSkill({...editedSkill, categories: [...currentCats, cat]});
+                        } else {
+                          setEditedSkill({...editedSkill, categories: currentCats.filter(c => c !== cat)});
+                        }
+                      }}
+                      style={{ marginRight: '8px' }}
+                    />
+                    {cat}
+                  </label>
+                ))}
+              </div>
+            </label>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>Add Images:</strong>
               <input
-                type="text"
-                value={editedSkill?.categories?.join(', ') || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, categories: e.target.value.split(',').map(c => c.trim()).filter(c => c)})}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setNewImages(Array.from(e.target.files))}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
+              {newImages.length > 0 && <small>{newImages.length} image(s) selected</small>}
             </label>
             <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Image URLs (one per line):</strong>
-              <textarea
-                value={editedSkill?.images?.join('\n') || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, images: e.target.value.split('\n').map(url => url.trim()).filter(url => url)})}
-                rows={4}
-                placeholder="Enter image URLs, one per line"
+              <strong>Add Videos:</strong>
+              <input
+                type="file"
+                accept="video/*"
+                multiple
+                onChange={(e) => setNewVideos(Array.from(e.target.files))}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
-            </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Video URLs (one per line):</strong>
-              <textarea
-                value={editedSkill?.videos?.join('\n') || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, videos: e.target.value.split('\n').map(url => url.trim()).filter(url => url)})}
-                rows={4}
-                placeholder="Enter video URLs, one per line"
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
-              />
+              {newVideos.length > 0 && <small>{newVideos.length} video(s) selected</small>}
             </label>
           </div>
         ) : (
