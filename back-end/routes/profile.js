@@ -1,16 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
-//import axios from "axios";
 import multer from "multer";
 import path from "path";
-import Profile from "../models/Profile.js";
 import mongoose from "mongoose";
+import User from "../models/User.js";
 
 dotenv.config();
 
 const router = express.Router();
 
-//MULTER CONFIG FOR PROFILE PHOTOS
+// MULTER CONFIG FOR PROFILE PHOTOS
 const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads/profile-photos");
@@ -22,6 +21,7 @@ const imageStorage = multer.diskStorage({
     cb(null, uniqueName);
   }
 });
+
 const imageUpload = multer({
   storage: imageStorage,
   fileFilter: (req, file, cb) => {
@@ -34,79 +34,83 @@ const imageUpload = multer({
   }
 });
 
+// GET profile for a specific user (from users collection)
 router.get("/:id", async (req, res) => {
   try {
     const userObjectId = new mongoose.Types.ObjectId(req.params.id);
-    const profile = await Profile.findOne({ _id: userObjectId });
-    if (profile) return res.json(profile);
-    res.status(404).json({ error: "Profile not found" });
+    const user = await User.findById(userObjectId).exec();
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const profileData = {
+      _id: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      bio: user.bio,
+      avatarURL: user.photo,
+      skillsOffered: user.offeredSkills || [],
+      skillsWanted: user.neededSkills || [],
+    };
+
+    res.json(profileData);
   } catch (err) {
-    console.error("Error fetching profile:", err);
+    console.error("Error fetching user profile:", err);
     res.status(500).json({ error: "Failed to fetch profile." });
   }
 });
 
-// GET all profiles
-router.get("/", async (req, res) => {
-  try {
-    const profiles = await Profile.find();
-    res.json(profiles);
-  } catch (err) {
-    console.error("Error fetching all profiles:", err);
-    res.status(500).json({ error: "Failed to fetch profiles." });
-  }
-});
-
-// PUT: Update profile by userId with photo upload
+// UPDATE profile for a specific user (writes into users collection)
 router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
   try {
-    console.log("req.file:", req.file);
-    console.log("req.body:", req.body);
     const userObjectId = new mongoose.Types.ObjectId(req.params.id);
-    // Build the profile update object
+
     const update = {
       username: req.body.username,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      bio: req.body.bio || req.body.bio, // either source
-      skillsOffered: JSON.parse(req.body.skillsOffered || req.body.skillsAcquired || "[]"),
-      skillsWanted: JSON.parse(req.body.skillsWanted || "[]"),
+      bio: req.body.bio,
     };
-    if (req.file) {
-      update.avatarURL = `/uploads/profile-photos/${req.file.filename}`;
-    } //else if (req.body.avatarURL) {update.avatarURL = req.body.avatarURL;}
 
-    const profile = await Profile.findOneAndUpdate(
-      { _id: userObjectId },
+    if (req.file) {
+      update.photo = `/uploads/profile-photos/${req.file.filename}`;
+    }
+
+    if (req.body.skillsOffered) {
+      update.offeredSkills = JSON.parse(req.body.skillsOffered || "[]");
+    }
+    if (req.body.skillsWanted) {
+      update.neededSkills = JSON.parse(req.body.skillsWanted || "[]");
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userObjectId,
       update,
       { new: true, runValidators: true }
-    );
-    if (!profile) return res.status(404).json({ error: "Profile not found" });
-    res.json({ success: true, profile });
+    ).exec();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const profileData = {
+      _id: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      bio: user.bio,
+      avatarURL: user.photo,
+      skillsOffered: user.offeredSkills || [],
+      skillsWanted: user.neededSkills || [],
+    };
+
+    res.json({ success: true, profile: profileData });
   } catch (err) {
-    console.error("Error updating profile with photo:", err);
+    console.error("Error updating user profile:", err);
     res.status(400).json({ error: "Failed to process profile update" });
   }
 });
 
-// POST: Create profile
-router.post("/", imageUpload.single("profilePhoto"), async (req, res) => {
-  try {
-    const data = {
-      _id: new mongoose.Types.ObjectId(req.body._id),
-      username: req.body.username,
-      bio: req.body.bio,
-      skillsOffered: JSON.parse(req.body.skillsOffered || req.body.skillsAcquired || "[]"),
-      skillsWanted: JSON.parse(req.body.skillsWanted || "[]"),
-      avatarURL: req.file ? `/uploads/profile-photos/${req.file.filename}` : req.body.avatarURL,
-    };
-    const newProfile = new Profile(data);
-    await newProfile.save();
-    res.status(201).json({ success: true, profile: newProfile });
-  } catch (err) {
-    console.error("Error creating profile:", err);
-    res.status(400).json({ error: "Failed to create profile" });
-  }
-});
-
 export default router;
+
