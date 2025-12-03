@@ -1,7 +1,6 @@
 //import needed modules
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Chat.css'
 import { BellIcon,} from "@heroicons/react/24/outline";
 
 //MAIN chat component
@@ -11,36 +10,7 @@ const Chat = props => {
     const [chatList, setChatList] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [pendingRequestsCount, setPendingRequestsCount] = useState(0)
-
-    // Helper to generate stable Picsum avatar URLs per user
-    const avatarUrl = (seed, size = 50) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`
-
-    // Load pending requests count
-    useEffect(() => {
-        const loadPendingRequests = async () => {
-            try {
-                const userId = localStorage.getItem('userId');
-                if (!userId) return;
-                
-                const response = await fetch(`/api/requests/mock-incoming?userId=${userId}`);
-                if (response.ok) {
-                    const requests = await response.json();
-                    const requestsArray = Array.isArray(requests) ? requests : [requests];
-                    const pending = requestsArray.filter(req => req.status === 'pending');
-                    console.log('Pending requests count:', pending.length);
-                    setPendingRequestsCount(pending.length);
-                }
-            } catch (err) {
-                console.error('Error loading pending requests:', err);
-            }
-        };
-        
-        loadPendingRequests();
-        // Refresh count every 30 seconds
-        const interval = setInterval(loadPendingRequests, 30000);
-        return () => clearInterval(interval);
-    }, []);
+    const [unreadRequestsCount, setUnreadRequestsCount] = useState(0)
 
     // Load chat list from backend API
     useEffect(() => {
@@ -54,22 +24,23 @@ const Chat = props => {
                 if (!userId) {
                     throw new Error('No userId found in localStorage. Please log in.');
                 }
-                console.log('Fetching chat list from backend for user:', userId);
                 const res = await fetch(`http://localhost:3000/api/chats?userId=${userId}`);
-                console.log('Response status:', res.status);
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`);
                 const data = await res.json();
                 // Normalize records to the shape used by the UI
                 const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
             
                     let name = 'Unknown';
+                    let photo = '/images/avatar-default.png';
        
                     if (item.userId && item.friendId) {
                         // If logged-in user is userId, show friendId's name
                         if (item.userId._id === userId && typeof item.friendId === 'object') {
                             name = item.friendId.username || item.friendId.email || 'Unknown';
+                            photo = item.friendId.photo || '/images/avatar-default.png';
                         } else if (item.friendId._id === userId && typeof item.userId === 'object') {
                             name = item.userId.username || item.userId.email || 'Unknown';
+                            photo = item.userId.photo || '/images/avatar-default.png';
                         }
                     }
                     let time = '';
@@ -80,11 +51,10 @@ const Chat = props => {
                     return {
                         id: item._id,
                         name,
-                        photo: avatarUrl(name),
+                        photo,
                         last_message: item.lastMessage || '',
                         timestamp: time,
                         unread: item.unread || 0,
-                        online: item.online || false,
                     };
                 });
                 if (isMounted) setChatList(normalized);
@@ -101,6 +71,32 @@ const Chat = props => {
         return () => { isMounted = false }
     }, [])
 
+    // Load unread requests count
+    useEffect(() => {
+        const loadUnreadRequests = async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) return;
+                
+                const response = await fetch(`/api/requests/mock-incoming?userId=${userId}`);
+                if (response.ok) {
+                    const requests = await response.json();
+                    const pendingRequests = Array.isArray(requests) 
+                        ? requests.filter(req => req.status === 'pending' || !req.status)
+                        : [];
+                    setUnreadRequestsCount(pendingRequests.length);
+                }
+            } catch (err) {
+                console.error('Error loading unread requests:', err);
+            }
+        };
+        
+        loadUnreadRequests();
+        // Refresh count every 30 seconds
+        const interval = setInterval(loadUnreadRequests, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
     // Filter chats based on search term
     const filteredChats = chatList.filter(chat =>
         chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,27 +104,29 @@ const Chat = props => {
     )
 
     return (
-        <div className="chat-page">
+        <div className="flex flex-col items-stretch h-screen w-screen bg-white dark:bg-[#121212] box-border overflow-hidden m-0">
             {/* Header */}
-            <div className="chat-header">
-                <h1 className="chat-title">Chat</h1>
-                <div className="header-actions">
+            <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen shrink-0">
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Chat</h1>
+                <div className="flex gap-3">
                     <button
-                        className="requests-btn"
+                        className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center relative"
                         aria-label="Requests"
                         title="Requests"
                         onClick={() => navigate('/requests')}
                     >
-                        <BellIcon aria-hidden="true" />
-                        {pendingRequestsCount > 0 && (
-                            <span className="notification-badge">{pendingRequestsCount}</span>
+                        <BellIcon className="w-6 h-6 block" aria-hidden="true" />
+                        {unreadRequestsCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                {unreadRequestsCount}
+                            </span>
                         )}
                     </button>
                 </div>
             </div>
 
             {/* Search Bar */}
-            <div className="search-container">
+            <div className="fixed top-[calc(64px+62px)] left-0 right-0 z-[9] text-center py-4 px-0 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333]">
                 <input
                     type="text"
                     placeholder="Search conversations..."
@@ -139,12 +137,12 @@ const Chat = props => {
             </div>
 
             {/* Chat List */}
-            <div className="chat-list">
+            <div className="flex-1 overflow-y-auto bg-white dark:bg-[#121212] pt-[calc(64px+135px)] pb-[calc(200px+env(safe-area-inset-bottom))] -webkit-overflow-scrolling-touch">
                 {loading && (
-                    <div className="no-results"><p>Loading conversations…</p></div>
+                    <div className="text-center py-12"><p className="text-[#888] dark:text-[#aaa]">Loading conversations…</p></div>
                 )}
                 {!loading && error && (
-                    <div className="no-results"><p>{error}</p></div>
+                    <div className="text-center py-12"><p className="text-[#888] dark:text-[#aaa]">{error}</p></div>
                 )}
                 {!loading && !error && filteredChats.length > 0 ? (
                     filteredChats.map(chat => (
@@ -156,13 +154,12 @@ const Chat = props => {
                             last_message={chat.last_message}
                             timestamp={chat.timestamp}
                             unread={chat.unread}
-                            online={chat.online}
                         />
                     ))
                 ) : (
                     !loading && !error && (
-                        <div className="no-results">
-                            <p>No conversations found</p>
+                        <div className="text-center py-12">
+                            <p className="text-[#888] dark:text-[#aaa]">No conversations found</p>
                         </div>
                     )
                 )}
@@ -182,7 +179,7 @@ const ProfileImage = ({ photo, name }) => {
 
     if (imageError) {
         return (
-            <div className="profile-fallback">
+            <div className="w-full h-full flex items-center justify-center bg-[#6c757d] text-white text-base font-semibold rounded-full">
                 {initial}
             </div>
         )
@@ -193,35 +190,35 @@ const ProfileImage = ({ photo, name }) => {
             src={photo} 
             alt={name} 
             onError={handleImageError}
+            className="w-full h-full object-cover"
         />
     )
 }
 
 //chatitem component 
-const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) => {
+const ChatItem = ({ id, name, photo, last_message, timestamp, unread }) => {
     const navigate = useNavigate()
     const handleChatClick = () => {
         navigate(`/chat/${id}`)
     }
 
     return (
-        <div className="chat-item" onClick={handleChatClick}>
-            <div className="profile-section">
-                <div className="profile-picture">
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-[#f0f0f0] dark:border-[#2c2c2c] cursor-pointer transition-colors hover:bg-[#f8f9fa] dark:hover:bg-[#1e1e1e] active:bg-[#e9ecef] dark:active:bg-[#2a2a2a]" onClick={handleChatClick}>
+            <div className="relative shrink-0">
+                <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
                     <ProfileImage photo={photo} name={name} />
-                    {online && <div className="online-indicator"></div>}
                 </div>
             </div>
             
-            <div className="chat-content">
-                <div className="chat-header-row">
-                    <span className="contact-name">{name}</span>
-                    <span className="message-time">{timestamp}</span>
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-[15px] text-[#212529] dark:text-[#f1f1f1] truncate">{name}</span>
+                    <span className="text-xs text-[#6c757d] dark:text-[#aaa] whitespace-nowrap ml-2">{timestamp}</span>
                 </div>
-                <div className="message-preview">
-                    <span className="last-message">{last_message}</span>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#6c757d] dark:text-[#aaa] truncate flex-1">{last_message}</span>
                     {unread > 0 && (
-                        <div className="unread-badge">
+                        <div className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-primary text-white text-xs font-semibold rounded-full ml-2">
                             {unread}
                         </div>
                     )}

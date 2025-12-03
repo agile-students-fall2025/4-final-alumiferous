@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SkillsContext } from './SkillsContext';
-import './Profile.css';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 const Profile = () => {
@@ -181,133 +180,134 @@ const Profile = () => {
   });
 
   return (
-    <main>
-      <div className="ProfileContent">
-        <div className="ProfileHeader">
-          <h1
-            className="ProfileTitle"
-            onClick={() => navigate('/Profile')}
-          >
-            Profile
-          </h1>
-          <button
-            className="EditButton"
-            onClick={isEditing ? handleSave : handleEditToggle}
-            title={isEditing ? 'Save Profile' : 'Edit Profile'}
-          >
-            {isEditing ? 'Save' : (
-              <PencilSquareIcon style={{ width: 22, height: 22 }} />
-            )}
-          </button>
+    <main className="min-h-screen bg-white dark:bg-[#121212] pt-20 pb-24">
+      {/* Header */}
+      <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
+        <h1 
+          className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 cursor-pointer"
+          onClick={() => navigate("/Profile")}
+        >
+          Profile
+        </h1>
+        <button
+          className="flex items-center justify-center gap-1.5 bg-transparent hover:bg-gray-100 dark:hover:bg-[#2b2b2b] text-gray-900 dark:text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          onClick={isEditing ? handleSave : handleEditToggle}
+          title={isEditing ? "Save Profile" : "Edit Profile"}
+        >
+          {isEditing ? "Save" : <PencilSquareIcon className="w-5 h-5" />}
+        </button>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-6 mt-[72px]">
+        {/* Header with Profile Title and Edit/Save Button */}
+        <div className="flex justify-between items-center mb-6">
         </div>
 
-        <img
-          className="Avatar"
-          src={
-            isEditing && photoFile
-              ? URL.createObjectURL(photoFile)
-              : user.avatarURL || '/images/avatar-default.png'
-          }
-          alt="Avatar"
-        />
-
-        {isEditing && (
-          <>
-            <input
-              type="file"
-              accept="image/*"
-              id="profile-photo-upload"
-              style={{ display: 'none' }}
-              onChange={handlePhotoChange}
-            />
-            <label
-              htmlFor="profile-photo-upload"
-              className="UploadButton"
-              tabIndex={0}
-              style={{
-                cursor: 'pointer',
-                display: 'inline-block',
-                marginTop: 10,
-              }}
-            >
-              Upload/Change Photo
-            </label>
-          </>
-        )}
-
-        <div className="UserInfo">
-          {isEditing ? (
+        {/* Profile Photo */}
+        <div className="text-center mb-6">
+          <img
+            className="w-[104px] h-[104px] rounded-full object-cover shadow-lg border-4 border-[#e6f0ff] dark:border-[#2b2b2b] mx-auto"
+            src={
+              isEditing && photoFile
+                ? URL.createObjectURL(photoFile)
+                : user.avatarURL || "/images/avatar-default.png"
+            }
+            alt="Avatar"
+          />
+          {isEditing && (
             <>
               <input
-                className="ProfileUsernameInput form-input"
-                value={formState.firstName || ''}
-                onChange={(e) => handleChange('firstName', e.target.value)}
-                placeholder="First Name"
+                type="file"
+                accept="image/*"
+                id="profile-photo-upload"
+                className="hidden"
+                onChange={handlePhotoChange}
               />
-              <input
-                className="ProfileUsernameInput form-input"
-                value={formState.lastName || ''}
-                onChange={(e) => handleChange('lastName', e.target.value)}
-                placeholder="Last Name"
-                style={{ marginTop: 8 }}
-              />
-              <input
-                className="ProfileUsernameInput form-input"
-                value={formState.username || ''}
-                onChange={(e) => handleChange('username', e.target.value)}
-                placeholder="Username"
-                style={{ marginTop: 8 }}
-              />
-            </>
-          ) : (
-            <>
-              <h2 className="ProfileFullName">
-                {user.firstName} {user.lastName}
-              </h2>
-              <div className="ProfileUsername">@{user.username}</div>
+              <label
+                htmlFor="profile-photo-upload"
+                className="cursor-pointer inline-block mt-3 bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 px-6 rounded-lg transition-colors"
+                tabIndex={0}
+              >
+                Upload/Change Photo
+              </label>
             </>
           )}
         </div>
 
-        <div className="AboutSection">
-          <div className="AboutLabel">About</div>
+        {/* User Info (Name and Username) */}
+        <div className="text-center mb-6">
+          {isEditing ? (
+            <div className="flex flex-col items-center gap-2 max-w-md mx-auto">
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.firstName || ""}
+                onChange={e => handleChange("firstName", e.target.value)}
+                placeholder="First Name"
+              />
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.lastName || ""}
+                onChange={e => handleChange("lastName", e.target.value)}
+                placeholder="Last Name"
+              />
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.username || ""}
+                onChange={e => handleChange("username", e.target.value)}
+                placeholder="Username"
+              />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-2xl font-semibold text-[#191c1f] dark:text-[#f1f1f1] mb-1">
+                {user.firstName} {user.lastName}
+              </h2>
+              <div className="text-[#6a7791] dark:text-[#a0a0a0] text-base font-medium">
+                @{user.username}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* About Section */}
+        <div className="mb-6">
+          <div className="text-lg font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3 text-center">About</div>
           {isEditing ? (
             <textarea
-              value={formState.bio || ''}
-              onChange={(e) => handleChange('bio', e.target.value)}
-              className="ProfileBioInput form-input"
+              value={formState.bio || ""}
+              onChange={e => handleChange("bio", e.target.value)}
+              className="w-full min-h-[100px] py-3 px-4 rounded-lg bg-white dark:bg-[#2b2b2b] border-2 border-[#cbcbcb] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-base text-center resize-y focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+              placeholder="Tell us about yourself..."
             />
           ) : (
-            <div className="BioBox">{user.bio}</div>
+            <div className="w-full min-h-[80px] py-4 px-4 rounded-lg bg-white dark:bg-[#1e1e1e] border border-[#e0e0e0] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-base text-center shadow-sm">
+              {user.bio || "No bio added yet"}
+            </div>
           )}
         </div>
 
         {/* My Skills Section */}
-        <div className="SkillsSection">
-          <h3 className="SectionHeader">My Skills</h3>
-          <div className="skill-grid">
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3 text-center">My Skills</h3>
+          <div className="flex flex-wrap gap-2 justify-center">
             {userSkills.length === 0 ? (
-              <p>No skills created yet.</p>
+              <p className="text-[#6a7791] dark:text-[#a0a0a0]">No skills created yet.</p>
             ) : (
-              userSkills.map((skill) => (
-                <div
-                  className="skill-item-wrapper"
-                  key={skill._id}
-                >
-                  <div
-                    className="SkillCard"
+              userSkills.map(skill => (
+                <div className="relative" key={skill.skillId || skill.id}>
+                  <div 
+                    className={`inline-flex items-center bg-primary text-white font-medium py-2 px-4 rounded-full ${!isEditing ? 'cursor-pointer hover:bg-primary-hover' : 'cursor-default'} transition-colors`}
                     onClick={() => {
                       if (!isEditing && skill._id) {
                         navigate(`/my-skills/${skill._id}`);
                       }
                     }}
-                    style={{ cursor: isEditing ? 'default' : 'pointer' }}
                   >
                     {skill.name}
                   </div>
                   {isEditing && (
                     <button
-                      className="delete-skill-btn"
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors"
                       onClick={(e) => confirmDelete(skill, e)}
                       aria-label="Delete skill"
                     >
@@ -320,41 +320,38 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Action buttons */}
-        <div className="ActionButtons">
-          <Link to="/saved">
-            <button className="SavedSkillsButton">Saved Skills</button>
+        {/* Action Buttons */}
+        <div className="flex gap-3 mt-12">
+          <Link to="/saved" className="flex-1">
+            <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              Saved Skills
+            </button>
           </Link>
-          <Link to="/upload">
-            <button className="EditProfileButton">Create a Skill</button>
+          <Link to="/upload" className="flex-1">
+            <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              Create a Skill
+            </button>
           </Link>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div
-          className="delete-modal-overlay"
-          onClick={handleDeleteCancel}
-        >
-          <div
-            className="delete-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="delete-modal-title">Delete Skill</h3>
-            <p className="delete-modal-text">
-              Are you sure you want to delete "{skillToDelete?.name}"? This
-              action cannot be undone.
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleDeleteCancel}>
+          <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 max-w-md w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3">Delete Skill</h3>
+            <p className="text-[#313741] dark:text-[#c0c0c0] mb-6">
+              Are you sure you want to delete "{skillToDelete?.name}"? This action cannot be undone.
             </p>
-            <div className="delete-modal-buttons">
-              <button
-                className="delete-modal-btn cancel"
+            <div className="flex gap-3 justify-end">
+              <button 
+                className="bg-[#f5f5f5] dark:bg-[#2b2b2b] hover:bg-[#e8e8e8] dark:hover:bg-[#3a3a3a] text-[#191c1f] dark:text-[#f1f1f1] font-semibold py-2 px-6 rounded-lg transition-colors"
                 onClick={handleDeleteCancel}
               >
                 Cancel
               </button>
-              <button
-                className="delete-modal-btn confirm"
+              <button 
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                 onClick={handleDeleteConfirm}
               >
                 Delete

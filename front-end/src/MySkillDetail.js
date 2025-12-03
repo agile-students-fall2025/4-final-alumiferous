@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './MySkillDetail.css';
 
 export default function MySkillDetail() {
   const { id } = useParams();
@@ -182,10 +181,10 @@ export default function MySkillDetail() {
 
   if (!skill) {
     return (
-      <div className="skill-detail-container">
-        <div className="skill-not-found">
-          <h2>Skill not found</h2>
-          <button onClick={() => navigate('/profile')}>Back to Profile</button>
+      <div className="min-h-screen bg-white dark:bg-[#121212] flex items-center justify-center p-4">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Skill not found</h2>
+          <button onClick={() => navigate('/profile')} className="py-2.5 px-6 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors">Back to Profile</button>
         </div>
       </div>
     );
@@ -193,14 +192,16 @@ export default function MySkillDetail() {
 
   // Parse categories (could be array or comma-separated string)
   let categories = [];
-  if (Array.isArray(skill.categories)) {
-    categories = skill.categories.filter(Boolean);
-  } else if (typeof skill.categories === 'string' && skill.categories.trim()) {
-    categories = skill.categories.split(',').map(c => c.trim()).filter(Boolean);
+  const categoryData = skill.categories || skill.category;
+  
+  if (Array.isArray(categoryData)) {
+    categories = categoryData.filter(Boolean);
+  } else if (typeof categoryData === 'string' && categoryData.trim()) {
+    categories = categoryData.split(',').map(c => c.trim()).filter(Boolean);
   }
   
   console.log('Skill data:', skill);
-  console.log('Categories raw:', skill.categories);
+  console.log('Categories raw:', categoryData);
   console.log('Categories parsed:', categories);
   console.log('Images:', skill.images);
   console.log('Videos:', skill.videos);
@@ -210,189 +211,139 @@ export default function MySkillDetail() {
   const videos = skill.videos || [];
 
   return (
-    <div className="skill-detail-container">
-      <button className="back-button" onClick={() => navigate('/profile')}>
+    <div className="min-h-screen bg-white dark:bg-[#121212] pt-[65px] pb-20">
+      <button className="fixed top-[69px] left-4 flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10" onClick={() => navigate('/profile')}>
         ←
       </button>
       
-      <div className="skill-detail-card">
-        {isEditing ? (
-          <div>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Skill Name:</strong>
-              <input
-                type="text"
-                value={editedSkill?.name || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, name: e.target.value})}
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
-              />
-            </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Brief Description:</strong>
-              <textarea
-                value={editedSkill?.brief || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, brief: e.target.value})}
-                rows={3}
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
-              />
-            </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Detailed Description:</strong>
-              <textarea
-                value={editedSkill?.detail || ''}
-                onChange={(e) => setEditedSkill({...editedSkill, detail: e.target.value})}
-                rows={6}
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
-              />
-            </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Categories:</strong>
-              <div ref={catsRef} style={{ position: 'relative' }}>
-                <button
-                  type="button"
-                  style={{ 
-                    width: '100%', 
-                    padding: '8px', 
-                    marginTop: '5px', 
-                    fontSize: '16px',
-                    textAlign: 'left',
-                    background: 'white',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setCatsOpen((s) => !s)}
-                >
-                  {editedSkill?.categories?.length === 0 || !editedSkill?.categories
-                    ? 'Select categories...'
-                    : editedSkill.categories.join(', ')}
-                </button>
+      <div className="pt-4 px-4 py-6 max-w-2xl mx-auto">
+        <div className="bg-white dark:bg-[#1e1e1e] rounded-lg shadow-md p-6 border border-gray-200 dark:border-[#333]">
+          {isEditing ? (
+            <div>
+              <label className="block mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Skill Name:</strong>
+                <input
+                  type="text"
+                  value={editedSkill?.name || ''}
+                  onChange={(e) => setEditedSkill({...editedSkill, name: e.target.value})}
+                  className="w-full p-2 text-base border border-gray-300 dark:border-[#444] rounded bg-white dark:bg-[#2b2b2b] text-gray-900 dark:text-white focus:outline-none focus:border-gray-300 dark:focus:border-[#444]"
+                />
+              </label>
+              <label className="block mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Brief Description:</strong>
+                <textarea
+                  value={editedSkill?.brief || ''}
+                  onChange={(e) => setEditedSkill({...editedSkill, brief: e.target.value})}
+                  rows={3}
+                  className="w-full p-2 text-base border border-gray-300 dark:border-[#444] rounded bg-white dark:bg-[#2b2b2b] text-gray-900 dark:text-white focus:outline-none focus:border-gray-300 dark:focus:border-[#444]"
+                />
+              </label>
+              <label className="block mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Detailed Description:</strong>
+                <textarea
+                  value={editedSkill?.detail || ''}
+                  onChange={(e) => setEditedSkill({...editedSkill, detail: e.target.value})}
+                  rows={6}
+                  className="w-full p-2 text-base border border-gray-300 dark:border-[#444] rounded bg-white dark:bg-[#2b2b2b] text-gray-900 dark:text-white focus:outline-none focus:border-gray-300 dark:focus:border-[#444]"
+                />
+              </label>
+              <label className="block mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Categories:</strong>
+                <div ref={catsRef} className="relative">
+                  <button
+                    type="button"
+                    className="w-full p-2 text-base text-left bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-[#444] rounded cursor-pointer text-gray-900 dark:text-white focus:outline-none focus:border-gray-300 dark:focus:border-[#444]"
+                    onClick={() => setCatsOpen((s) => !s)}
+                  >
+                    {editedSkill?.categories?.length === 0 || !editedSkill?.categories
+                      ? 'Select categories...'
+                      : editedSkill.categories.join(', ')}
+                  </button>
 
-                {catsOpen && (
-                  <div style={{ 
-                    position: 'absolute', 
-                    zIndex: 40, 
-                    background: 'white', 
-                    border: '1px solid #ddd', 
-                    maxHeight: '220px', 
-                    overflowY: 'auto', 
-                    width: '100%', 
-                    marginTop: '6px', 
-                    padding: '8px',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                  }}>
-                    {availableCategories && availableCategories.length ? availableCategories.map((cat, index) => (
-                      <label key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 4px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={editedSkill?.categories?.includes(cat) || false}
-                          onChange={() => {
-                            const currentCats = editedSkill?.categories || [];
-                            if (currentCats.includes(cat)) {
-                              setEditedSkill({...editedSkill, categories: currentCats.filter(c => c !== cat)});
-                            } else {
-                              setEditedSkill({...editedSkill, categories: [...currentCats, cat]});
-                            }
-                          }}
-                        />
-                        <span>{cat}</span>
-                      </label>
-                    )) : (
-                      <div style={{ padding: '8px', color: '#666' }}>No categories available</div>
-                    )}
-                  </div>
-                )}
+                  {catsOpen && (
+                    <div className="absolute z-40 bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-[#444] max-h-[220px] overflow-y-auto w-full mt-1.5 p-2 rounded shadow-lg">
+                      {availableCategories && availableCategories.length ? availableCategories.map((cat, index) => (
+                        <label key={index} className="flex items-center gap-2 py-1.5 px-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#333] rounded">
+                          <input
+                            type="checkbox"
+                            checked={editedSkill?.categories?.includes(cat) || false}
+                            onChange={() => {
+                              const currentCats = editedSkill?.categories || [];
+                              if (currentCats.includes(cat)) {
+                                setEditedSkill({...editedSkill, categories: currentCats.filter(c => c !== cat)});
+                              } else {
+                                setEditedSkill({...editedSkill, categories: [...currentCats, cat]});
+                              }
+                            }}
+                          />
+                          <span className="text-gray-900 dark:text-white">{cat}</span>
+                        </label>
+                      )) : (
+                        <div className="p-2 text-gray-500">No categories available</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </label>
+              
+              {/* Existing Images */}
+              <div className="mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Current Images:</strong>
+                <div className="flex flex-wrap gap-2.5">
+                  {editedSkill?.images && editedSkill.images.length > 0 ? (
+                    editedSkill.images
+                      .filter(img => !removedImages.includes(img))
+                      .map((img, idx) => (
+                        <div key={idx} className="relative w-[100px] h-[100px]">
+                          <img 
+                            src={img} 
+                            alt={`Current ${idx}`} 
+                            className="w-full h-full object-cover rounded-lg border-2 border-gray-300 dark:border-[#444]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setRemovedImages([...removedImages, img])}
+                            className="absolute -top-2 -right-2 bg-red-600 text-white border-none rounded-full w-7 h-7 cursor-pointer text-lg font-bold flex items-center justify-center shadow-md hover:bg-red-700"
+                            title="Remove image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                  ) : (
+                    <small className="text-gray-500 italic">No images yet</small>
+                  )}
+                </div>
               </div>
-            </label>
-            
-            {/* Existing Images */}
-            <div style={{ marginBottom: '15px' }}>
-              <strong>Current Images:</strong>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
-                {editedSkill?.images && editedSkill.images.length > 0 ? (
-                  editedSkill.images
-                    .filter(img => !removedImages.includes(img))
-                    .map((img, idx) => (
-                      <div key={idx} style={{ position: 'relative', width: '100px', height: '100px' }}>
-                        <img 
-                          src={img} 
-                          alt={`Current ${idx}`} 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setRemovedImages([...removedImages, img])}
-                          style={{
-                            position: 'absolute',
-                            top: '-8px',
-                            right: '-8px',
-                            background: '#e74c3c',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '28px',
-                            height: '28px',
-                            cursor: 'pointer',
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                          }}
-                          title="Remove image"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))
-                ) : (
-                  <small style={{ color: '#666', fontStyle: 'italic' }}>No images yet</small>
-                )}
-              </div>
-            </div>
 
             {/* Add New Images */}
-            <label style={{ display: 'block', marginBottom: '15px' }}>
-              <strong>Add New Images:</strong>
+            <label className="block mb-4">
+              <strong className="block mb-2 text-gray-900 dark:text-white">Add New Images:</strong>
               <input
                 type="file"
                 accept="image/*"
                 multiple
                 onChange={(e) => setNewImages([...newImages, ...Array.from(e.target.files)])}
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+                className="block w-full text-sm text-gray-500 dark:text-gray-400
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-primary file:text-white
+                  hover:file:bg-blue-700 cursor-pointer"
               />
               {newImages.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                <div className="flex flex-wrap gap-2 mt-2">
                   {newImages.map((file, idx) => (
-                    <div key={idx} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                    <div key={idx} className="relative w-24 h-24">
                       <img 
                         src={URL.createObjectURL(file)} 
                         alt={`New ${idx}`} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #4CAF50' }}
+                        className="w-full h-full object-cover rounded-lg"
                       />
                       <button
                         type="button"
                         onClick={() => setNewImages(newImages.filter((_, i) => i !== idx))}
-                        style={{
-                          position: 'absolute',
-                          top: '-8px',
-                          right: '-8px',
-                          background: '#e74c3c',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '28px',
-                          height: '28px',
-                          cursor: 'pointer',
-                          fontSize: '18px',
-                          fontWeight: 'bold',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
+                        className="absolute -top-2 -right-2 bg-red-600 text-white border-none rounded-full w-6 h-6 cursor-pointer text-base font-bold flex items-center justify-center shadow hover:bg-red-700"
                         title="Remove from upload"
                       >
                         ×
@@ -401,96 +352,65 @@ export default function MySkillDetail() {
                   ))}
                 </div>
               )}
-            </label>
-
-            {/* Existing Videos */}
-            <div style={{ marginBottom: '15px' }}>
-              <strong>Current Videos:</strong>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
-                {editedSkill?.videos && editedSkill.videos.length > 0 ? (
-                  editedSkill.videos
-                    .filter(vid => !removedVideos.includes(vid))
-                    .map((vid, idx) => (
-                      <div key={idx} style={{ position: 'relative', width: '160px', height: '100px' }}>
-                        <video 
-                          src={vid} 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
-                          muted
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setRemovedVideos([...removedVideos, vid])}
-                          style={{
-                            position: 'absolute',
-                            top: '-8px',
-                            right: '-8px',
-                            background: '#e74c3c',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '28px',
-                            height: '28px',
-                            cursor: 'pointer',
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                          }}
-                          title="Remove video"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))
-                ) : (
-                  <small style={{ color: '#666', fontStyle: 'italic' }}>No videos yet</small>
-                )}
+            </label>              {/* Existing Videos */}
+              <div className="mb-4">
+                <strong className="block mb-2 text-gray-900 dark:text-white">Current Videos:</strong>
+                <div className="flex flex-wrap gap-2.5">
+                  {editedSkill?.videos && editedSkill.videos.length > 0 ? (
+                    editedSkill.videos
+                      .filter(vid => !removedVideos.includes(vid))
+                      .map((vid, idx) => (
+                        <div key={idx} className="relative w-[160px] h-[100px]">
+                          <video 
+                            src={vid} 
+                            className="w-full h-full object-cover rounded-lg border-2 border-gray-300 dark:border-[#444]"
+                            muted
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setRemovedVideos([...removedVideos, vid])}
+                            className="absolute -top-2 -right-2 bg-red-600 text-white border-none rounded-full w-7 h-7 cursor-pointer text-lg font-bold flex items-center justify-center shadow-md hover:bg-red-700"
+                            title="Remove video"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                  ) : (
+                    <small className="text-gray-500 italic">No videos yet</small>
+                  )}
+                </div>
               </div>
-            </div>
 
             {/* Add New Videos */}
-            <label style={{ display: 'block', marginBottom: '15px' }}>
-              <strong>Add New Videos:</strong>
+            <label className="block mb-4">
+              <strong className="block mb-2 text-gray-900 dark:text-white">Add New Videos:</strong>
               <input
                 type="file"
                 accept="video/*"
                 multiple
                 onChange={(e) => setNewVideos([...newVideos, ...Array.from(e.target.files)])}
-                style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
+                className="block w-full text-sm text-gray-500 dark:text-gray-400
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-primary file:text-white
+                  hover:file:bg-blue-700 cursor-pointer"
               />
               {newVideos.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                <div className="flex flex-wrap gap-2 mt-2">
                   {newVideos.map((file, idx) => (
-                    <div key={idx} style={{ position: 'relative', width: '160px', height: '100px' }}>
+                    <div key={idx} className="relative w-40 h-24">
                       <video 
                         src={URL.createObjectURL(file)} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #4CAF50' }}
+                        className="w-full h-full object-cover rounded-lg"
                         controls
                         muted
                       />
                       <button
                         type="button"
                         onClick={() => setNewVideos(newVideos.filter((_, i) => i !== idx))}
-                        style={{
-                          position: 'absolute',
-                          top: '-8px',
-                          right: '-8px',
-                          background: '#e74c3c',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '28px',
-                          height: '28px',
-                          cursor: 'pointer',
-                          fontSize: '18px',
-                          fontWeight: 'bold',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
+                        className="absolute -top-2 -right-2 bg-red-600 text-white border-none rounded-full w-6 h-6 cursor-pointer text-base font-bold flex items-center justify-center shadow hover:bg-red-700"
                         title="Remove from upload"
                       >
                         ×
@@ -499,103 +419,99 @@ export default function MySkillDetail() {
                   ))}
                 </div>
               )}
-            </label>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
-              <button
-                className="button"
-                onClick={handleSaveEdit}
-                disabled={isSaving}
-                style={{ padding: '10px 20px', fontSize: '16px' }}
-              >
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
-                className="button"
-                onClick={handleCancelEdit}
-                disabled={isSaving}
-                style={{ background: '#666', padding: '10px 20px', fontSize: '16px' }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <h1 className="skill-title">{skill.name}</h1>
-            
-            {/* All Categories */}
-            {categories.length > 0 && (
-              <div className="categories-list">
-                {categories.map((cat, idx) => (
-                  <span key={idx} className="category-badge">{cat}</span>
-                ))}
-              </div>
-            )}
-        
-        <div className="skill-info">
-          {/* Description */}
-          <div className="info-section">
-            <h3>Description</h3>
-            <p>{skill.detail || skill.description || skill.brief || 'No description provided'}</p>
-          </div>
-          
-          {/* Images Gallery */}
-          {images.length > 0 && (
-            <div className="info-section">
-              <h3>Images</h3>
-              <div className="media-gallery">
-                {images.map((img, idx) => (
-                  <img key={idx} src={img} alt={`${skill.name} ${idx + 1}`} className="gallery-image" />
-                ))}
+            </label>              {/* Action Buttons */}
+              <div className="flex gap-2.5 justify-center mt-5">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={isSaving}
+                  className="py-2.5 px-6 text-base bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  disabled={isSaving}
+                  className="py-2.5 px-6 text-base bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
-          )}
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">{skill.name}</h1>
+              
+              {/* All Categories */}
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                  {categories.map((cat, idx) => (
+                    <span key={idx} className="px-3 py-1 rounded-full text-sm font-medium bg-primary text-white">{cat}</span>
+                  ))}
+                </div>
+              )}
           
-          {/* Videos Gallery */}
-          {videos.length > 0 && (
-            <div className="info-section">
-              <h3>Videos</h3>
-              <div className="video-gallery">
-                {videos.map((vid, idx) => (
-                  <div key={idx} className="video-container">
-                    <video controls width="100%">
-                      <source src={vid} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+              <div className="space-y-4">
+                {/* Description */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
+                  <p className="text-gray-700 dark:text-gray-300">{skill.detail || skill.description || skill.brief || 'No description provided'}</p>
+                </div>
+                
+                {/* Images Gallery */}
+                {images.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Images</h3>
+                    <div className="flex flex-col gap-3">
+                      {images.map((img, idx) => (
+                        <img key={idx} src={img} alt={`${skill.name} ${idx + 1}`} className="w-full h-64 object-cover rounded-lg border border-gray-200 dark:border-[#444]" />
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
+                
+                {/* Videos Gallery */}
+                {videos.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Videos</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {videos.map((vid, idx) => (
+                        <div key={idx} className="rounded-lg overflow-hidden border border-gray-200 dark:border-[#444]">
+                          <video controls className="w-full">
+                            <source src={vid} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Fallback single videoUrl */}
+                {!videos.length && skill.videoUrl && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Video</h3>
+                    <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-[#444]">
+                      <video controls className="w-full">
+                        <source src={skill.videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-          
-          {/* Fallback single videoUrl */}
-          {!videos.length && skill.videoUrl && (
-            <div className="info-section">
-              <h3>Video</h3>
-              <div className="video-container">
-                <video controls width="100%">
-                  <source src={skill.videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+              
+              {/* Edit Button */}
+              <div className="text-center mt-5">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="py-2.5 px-6 text-base bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors"
+                >
+                  Edit Skill
+                </button>
               </div>
-            </div>
+            </>
           )}
         </div>
-        
-        {/* Edit Button */}
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button
-            className="button"
-            onClick={() => setIsEditing(true)}
-            style={{ padding: '10px 20px', fontSize: '16px' }}
-          >
-            Edit Skill
-          </button>
-        </div>
-          </>
-        )}
       </div>
     </div>
   );

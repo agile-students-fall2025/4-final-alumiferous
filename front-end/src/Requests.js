@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Requests.css";
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 export default function Requests() {
   const navigate = useNavigate();
@@ -174,47 +174,47 @@ export default function Requests() {
     updateRequestStatus(id, "declined");
   };
 
-  if (loading) return <p className="no-requests">Loading requests…</p>;
-  if (error) return <p className="no-requests">{error}</p>;
+  if (loading) return <p className="text-center text-gray-500 dark:text-gray-400 py-8">Loading requests…</p>;
+  if (error) return <p className="text-center text-danger py-8">{error}</p>;
 
   return (
-    <div className="requests-page">
-      <header className="requests-header">
+    <div className="min-h-screen bg-white dark:bg-[#121212] pt-[65px]">
+      <header className="fixed top-[65px] left-0 right-0 z-10 flex items-center gap-4 px-4 py-3 border-b border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]">
         <button
-          className="back-btn"
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           onClick={() => window.history.back()}
           aria-label="Go back"
         >
           &larr;
         </button>
-        <h2>Incoming Requests</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Incoming Requests</h2>
       </header>
 
-      <div className="requests-content">
+      <div className="px-4 py-6 pt-[72px] pb-20">
         {requests.length === 0 ? (
-          <p className="no-requests">No new requests </p>
+          <p className="text-center text-gray-500 dark:text-gray-400">No new requests </p>
         ) : (
           requests.map((req) => (
-            <div key={req.id} className="request-card">
-              <div className="request-info">
-                <span className="request-name">{req.name}</span>
-                <span className="request-skill">
+            <div key={req.id} className="bg-white dark:bg-[#1e1e1e] rounded-lg shadow-md p-4 mb-4 border border-gray-200 dark:border-[#333]">
+              <div className="mb-4">
+                <span className="block text-lg font-semibold text-gray-900 dark:text-white mb-2">{req.name}</span>
+                <span className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
                   <strong>Wants to learn:</strong> {req.wants}
                 </span>
-                <span className="request-message">
+                <span className="block text-sm text-gray-700 dark:text-gray-300">
                   <strong>Message:</strong> {req.message}
                 </span>
               </div>
 
-              <div className="request-buttons">
+              <div className="flex gap-2">
                 <button
-                  className="accept-btn"
+                  className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white font-medium rounded-lg transition-colors"
                   onClick={() => handleAccept(req.id)}
                 >
                   Accept
                 </button>
                 <button
-                  className="decline-btn"
+                  className="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
                   onClick={() => handleDecline(req.id)}
                 >
                   Decline

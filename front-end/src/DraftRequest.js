@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import "./DraftRequest.css";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 export default function DraftRequest() {
   const [params] = useSearchParams();
@@ -118,34 +118,34 @@ export default function DraftRequest() {
   }
 
   return (
-    <div className="draft-request-page">
-      <header className="draft-request-header">
+    <div className="min-h-screen bg-white dark:bg-[#121212] pt-[65px]">
+      <header className="fixed top-[65px] left-0 right-0 z-10 flex items-center gap-4 px-4 py-3 border-b border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]">
         <button 
-          className="back-btn" 
-          onClick={() => nav(-1)}
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          onClick={() => nav(`/skills/${encodeURIComponent(skillId)}`)}
           aria-label="Back"
         >
-          ← Back
+          <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
         </button>
         <h1 className="draft-request-title">Draft Request</h1>
       </header>
       
-      <div className="draft-request-content">
-        <form onSubmit={handleSubmit} className="draft-request-form">
-          {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+      <div className="px-4 py-6 pt-[72px] pb-20 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <div className="text-danger bg-red-50 dark:bg-red-900/20 p-3 rounded-app">{error}</div>}
           
-          <label className="form-label">
-            To:
-            <div className="skill-display-box">{ownerParam || "Skill owner"}</div>
+          <label className="block">
+            <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">To:</span>
+            <div className="form-input bg-gray-50 dark:bg-gray-800 cursor-default">{ownerParam || "Skill owner"}</div>
           </label>
 
-          <label className="form-label">
-            Interested in skill:
-            <div className="skill-display-box">{skill.name || "(unknown skill)"}</div>
+          <label className="block">
+            <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Interested in skill:</span>
+            <div className="form-input bg-gray-50 dark:bg-gray-800 cursor-default">{skill.name || "(unknown skill)"}</div>
           </label>
 
-          <label className="form-label">
-            Say something about yourself:
+          <label className="block">
+            <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Say something about yourself:</span>
             <textarea
               className="form-input"
               rows={6}
@@ -157,7 +157,7 @@ export default function DraftRequest() {
             />
           </label>
 
-          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+          <button type="submit" className="btn btn-primary w-full" disabled={isSubmitting}>
             {isSubmitting ? "Sending..." : "Send Request"}
           </button>
         </form>

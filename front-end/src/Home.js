@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import "./Home.css";
 import Skill from "./Skill";
 import { SkillsContext } from "./SkillsContext";
 // import { searchSkills } from "./api/skillsApi"; // Uncomment when backend is ready
@@ -61,11 +60,11 @@ const Home = () => {
   //return all list components by looping through the array of skills
 
   return (
-    <div className="home-container">
-      <header className="home-header">
+    <div className="mt-[calc(65px+0.5rem)] p-4 pb-20 bg-[#f8f9fb] dark:bg-[#121212]">
+      <header className="text-center mb-6">
         <input 
           type="text" 
-          className="search-input"
+          className="search-input block mx-auto"
           placeholder="Search a skill (min 3 characters)" 
           value={searchTerm}
           onChange={handleSearchChange}
@@ -74,7 +73,7 @@ const Home = () => {
       </header>
 
       {isSearching && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
+        <div className="text-center p-5">
           <p>Searching...</p>
         </div>
       )}
@@ -82,12 +81,12 @@ const Home = () => {
       {!isSearching &&
         filteredSkills.length === 0 &&
         searchTerm.length >= 3 && (
-          <div style={{ textAlign: "center", padding: "20px" }}>
+          <div className="text-center p-5">
             <p>No skills found matching "{searchTerm}"</p>
           </div>
         )}
 
-      <div className="skill-grid">
+      <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 max-w-full mx-auto">
         {!isSearching &&
           filteredSkills.map((skill, i) => (
             <Skill //pass skill details as attributes to

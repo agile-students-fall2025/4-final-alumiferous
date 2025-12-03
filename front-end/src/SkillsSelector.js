@@ -1,5 +1,4 @@
 import React from "react";
-import "./SkillSelector.css"
 
 //component to render skill selections
 const SkillSelector = ({label, allSkills, selectedskills, setSelectedSkills}) => {
@@ -17,27 +16,27 @@ const SkillSelector = ({label, allSkills, selectedskills, setSelectedSkills}) =>
     
 
     return(
-        <div className="skills-selector">
-            <h3>{label}</h3>
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{label}</h3>
 
             {/*Selected tags */}
-            <div className="selected-skills">
+            <div className="flex flex-wrap gap-2">
                 {selectedskills.map((skill) => (
-                    <div key={skill} className="skill-tag">
+                    <div key={skill} className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary text-white">
                         {skill}
-                        <button onClick={() => handleRemove(skill)} className="remove-btn">×</button>
+                        <button onClick={() => handleRemove(skill)} className="text-lg font-bold hover:opacity-70 transition-opacity">×</button>
                     </div>
                 ))}
             </div>
             {/*skill options */}
-            <div className="skills-options">
+            <div className="flex flex-wrap gap-2">
                  {/*create buttons form arrays of all unselected skills */}
                 {allSkills.filter(skill => !selectedskills.includes(skill)).map(
                     skill => (
                         <button 
                             key={skill}
                             onClick={ () => handleSelect(skill)}
-                            className="skill-option"
+                            className="btn text-sm py-1 px-3"
                         >
                             {skill}
                         </button>

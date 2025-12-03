@@ -9,9 +9,9 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     if (darkMode) {
-      document.body.classList.add("dark-mode");
+      document.documentElement.classList.add("dark");
     } else {
-      document.body.classList.remove("dark-mode");
+      document.documentElement.classList.remove("dark");
     }
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);

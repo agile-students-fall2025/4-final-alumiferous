@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import axios from 'axios';
 import { SkillsContext } from "./SkillsContext";
 import SavedSkillCard from "./SavedSkillCard";
-import "./Savedskills.css";
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 const Savedskills = () => {
   const { handleUnsaveSkill, skills, savedIds } = useContext(SkillsContext);
@@ -97,27 +97,30 @@ const Savedskills = () => {
   }, [searchTerm, savedSkills]);
 
   return (
-    <div className="savedskills-page">
-      <header className="savedskills-header">
-        <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
-        <h2 className="savedskills-title">Saved</h2>
+    <div className="min-h-screen bg-white dark:bg-[#121212] pt-[65px]">
+      <header className="fixed top-[65px] left-0 right-0 z-10 flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]">
+        <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => window.history.back()} aria-label="Back">
+          <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+        </button>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white absolute left-1/2 -translate-x-1/2">Saved</h2>
+        <div className="w-10"></div>
       </header>
 
-      <div className="savedskills-content">
+      <div className="px-4 py-6 pt-[72px] pb-20">
         <input
           type="text"
           placeholder="Search your saved skills (min 3 characters)"
-          className="savedskills-search"
+          className="search-input mb-6"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        {isSearching && <p className="savedskills-status">Searching...</p>}
+        {isSearching && <p className="text-center text-gray-500 dark:text-gray-400">Searching...</p>}
 
         {!isSearching && filteredSaved.length === 0 ? (
-          <p className="savedskills-status">No saved skills found.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">No saved skills found.</p>
         ) : (
-          <div className="savedskills-grid">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredSaved.map((skill, i) => (
               <SavedSkillCard
                 key={i}
@@ -132,7 +135,11 @@ const Savedskills = () => {
 
       {/* Notification toast */}
       {notification.show && (
-        <div className={`notification-toast ${notification.type}`}>
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-app shadow-lg ${
+          notification.type === 'success' ? 'bg-green-500 text-white' :
+          notification.type === 'error' ? 'bg-danger text-white' :
+          'bg-blue-500 text-white'
+        }`}>
           {notification.message}
         </div>
       )}
