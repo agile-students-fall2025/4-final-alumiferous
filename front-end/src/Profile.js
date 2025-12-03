@@ -14,15 +14,26 @@ const Profile = () => {
   const [skillToDelete, setSkillToDelete] = useState(null);
   const { skills } = useContext(SkillsContext);
 
-  useEffect(() => {
-    fetch('/api/profile/691d0ed8081ddc1c4a66116d')
-      .then(res => res.json())
-      .then(data => {
-        setUser(data);
-        setFormState({ ...data });
-        setPhotoFile(null);
-      });
-  }, []);
+useEffect(() => {
+  const storedUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
+  if (!storedUserId) {
+    // optionally redirect to login if no user
+    navigate('/login');
+    return;
+  }
+
+  fetch(`/api/profile/${storedUserId}`)
+    .then(res => res.json())
+    .then(data => {
+      setUser(data);
+      setFormState({ ...data });
+      setPhotoFile(null);
+    })
+    .catch(err => {
+      console.error('Error loading profile:', err);
+    });
+}, [navigate]);
+
 
   // Restore edit mode after reload
   useEffect(() => {
