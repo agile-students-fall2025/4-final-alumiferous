@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 export default function Requests() {

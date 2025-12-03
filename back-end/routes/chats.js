@@ -12,16 +12,16 @@ router.get('/', async (req, res) => {
     if (userId) {
       query = { $or: [ { userId }, { friendId: userId } ] };
     }
-    const chats = await Chats.find(query).populate('userId', 'username email').populate('friendId', 'username email');
+    const chats = await Chats.find(query).populate('userId', 'username email photo').populate('friendId', 'username email photo');
     // For each chat, calculate lastMessage and unread from messages
     const Message = (await import('../models/Message.js')).default;
     const chatData = await Promise.all(chats.map(async chat => {
       // Find last message
       const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
-      // Count unread messages (example: all messages not sent by userId)
+      // Count unread messages (messages not sent by userId and not read)
       let unreadCount = 0;
       if (req.query.userId) {
-        unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId } });
+        unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId }, read: false });
       }
       return {
         ...chat.toObject(),
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 
 // POST /api/chats - create a new chat
 router.post('/', async (req, res) => {
-  const { userId, friendId, online } = req.body;
+  const { userId, friendId } = req.body;
   if (!userId || !friendId) {
     return res.status(400).json({ success: false, message: 'userId and friendId are required' });
   }
@@ -47,7 +47,6 @@ router.post('/', async (req, res) => {
     const chat = new Chats({
       userId,
       friendId,
-      online: online || false,
     });
     await chat.save();
     res.status(201).json(chat);
@@ -72,21 +71,20 @@ router.post('/find-or-create', async (req, res) => {
         { userId: userId, friendId: friendId },
         { userId: friendId, friendId: userId }
       ]
-    }).populate('userId', 'username email firstName lastName').populate('friendId', 'username email firstName lastName');
+    }).populate('userId', 'username email firstName lastName photo').populate('friendId', 'username email firstName lastName photo');
     
     // If chat doesn't exist, create a new one
     if (!chat) {
       chat = new Chats({
         userId,
         friendId,
-        online: false,
       });
       await chat.save();
       
       // Populate the user fields after saving
       chat = await Chats.findById(chat._id)
-        .populate('userId', 'username email firstName lastName')
-        .populate('friendId', 'username email firstName lastName');
+        .populate('userId', 'username email firstName lastName photo')
+        .populate('friendId', 'username email firstName lastName photo');
     }
     
     // Get last message and unread count
@@ -94,7 +92,7 @@ router.post('/find-or-create', async (req, res) => {
     const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
     let unreadCount = 0;
     if (userId) {
-      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: userId } });
+      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: userId }, read: false });
     }
     
     const chatObj = {
@@ -127,7 +125,7 @@ router.delete('/:id', async (req, res) => {
 
 // PUT /api/chats/:id - update a chat
 router.put('/:id', async (req, res) => {
-  const { lastMessage, unread, online } = req.body;
+  const { lastMessage, unread } = req.body;
   try {
     const chat = await Chats.findById(req.params.id);
     if (!chat) {
@@ -135,7 +133,6 @@ router.put('/:id', async (req, res) => {
     }
     if (lastMessage !== undefined) chat.lastMessage = lastMessage;
     if (unread !== undefined) chat.unread = unread;
-    if (online !== undefined) chat.online = online;
     await chat.save();
     res.json(chat);
   } catch (err) {
@@ -148,8 +145,8 @@ router.put('/:id', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const chat = await Chats.findById(req.params.id)
-      .populate('userId', 'username email')
-      .populate('friendId', 'username email');
+      .populate('userId', 'username email photo')
+      .populate('friendId', 'username email photo');
     if (!chat) {
       return res.status(404).json({ success: false, message: 'Chat not found' });
     }
@@ -158,7 +155,7 @@ router.get('/:id', async (req, res) => {
     const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
     let unreadCount = 0;
     if (req.query.userId) {
-      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId } });
+      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId }, read: false });
     }
     const chatObj = {
       ...chat.toObject(),

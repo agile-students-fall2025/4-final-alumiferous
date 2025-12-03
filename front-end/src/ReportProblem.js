@@ -31,7 +31,7 @@ const ReportProblem = () => {
         <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => navigate("/settings")}>
           <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
         </button>
-        <h1 className="text-2xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 text-center">Report a Problem</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 text-center">Report a Problem</h1>
         <div className="w-8"></div>
       </header>
 

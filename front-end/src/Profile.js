@@ -147,20 +147,33 @@ useEffect(() => {
   const userSkills = allUserSkills;
 
   return (
-    <main>
-      <div className="flex flex-col items-center justify-center min-h-screen w-screen max-w-[600px] bg-white dark:bg-[#121212] overflow-hidden p-0 pt-[65px] mt-2.5 mb-4 mx-auto md:pt-[calc(65px+62px)] md:pb-[120px] md:scroll-smooth">
-        <div className="fixed top-[65px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen shrink-0 md:px-3 md:py-3">
-          <h1 className="text-2xl md:text-xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis" onClick={() => navigate("/Profile")}>Profile</h1>
-          <button
-            className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center"
-            onClick={isEditing ? handleSave : handleEditToggle}
-            title={isEditing ? "Save Profile" : "Edit Profile"}
-          >
-            {isEditing ? "Save" : <PencilSquareIcon className="w-[22px] h-[22px]" />}
-          </button>
+    <main className="min-h-screen bg-white dark:bg-[#121212] pt-20 pb-24">
+      {/* Header */}
+      <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
+        <h1 
+          className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 cursor-pointer"
+          onClick={() => navigate("/Profile")}
+        >
+          Profile
+        </h1>
+        <button
+          className="flex items-center justify-center gap-1.5 bg-transparent hover:bg-gray-100 dark:hover:bg-[#2b2b2b] text-gray-900 dark:text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          onClick={isEditing ? handleSave : handleEditToggle}
+          title={isEditing ? "Save Profile" : "Edit Profile"}
+        >
+          {isEditing ? "Save" : <PencilSquareIcon className="w-5 h-5" />}
+        </button>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-6 mt-[72px]">
+        {/* Header with Profile Title and Edit/Save Button */}
+        <div className="flex justify-between items-center mb-6">
         </div>
+
+        {/* Profile Photo */}
+        <div className="text-center mb-6">
           <img
-            className="w-[104px] h-[104px] md:w-[72px] md:h-[72px] rounded-full object-cover shadow-[0_2px_12px_rgba(33,89,135,0.11)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] border-4 border-[#e6f0ff] dark:border-[#2b2b2b] mt-2 mb-1 block mx-auto"
+            className="w-[104px] h-[104px] rounded-full object-cover shadow-lg border-4 border-[#e6f0ff] dark:border-[#2b2b2b] mx-auto"
             src={
               isEditing && photoFile
                 ? URL.createObjectURL(photoFile)
@@ -179,86 +192,90 @@ useEffect(() => {
               />
               <label
                 htmlFor="profile-photo-upload"
-                className="cursor-pointer inline-block mt-2.5 bg-primary text-white border-none rounded-app py-3 px-6 font-semibold hover:bg-primary-hover transition-colors"
+                className="cursor-pointer inline-block mt-3 bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 px-6 rounded-lg transition-colors"
                 tabIndex={0}
               >
                 Upload/Change Photo
               </label>
             </>
           )}
-        <div className="text-center mb-4 flex flex-col items-center">
+        </div>
+
+        {/* User Info (Name and Username) */}
+        <div className="text-center mb-6">
           {isEditing ? (
-            <>
-            <input
-              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
-              value={formState.firstName || ""}
-              onChange={e => handleChange("firstName", e.target.value)}
-              placeholder="First Name"
-            />
-            <input
-              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7] mt-2"
-              value={formState.lastName || ""}
-              onChange={e => handleChange("lastName", e.target.value)}
-              placeholder="Last Name"
-            />
-            <input
-              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7] mt-2"
-              value={formState.username || ""}
-              onChange={e => handleChange("username", e.target.value)}
-              placeholder="Username"
-            />
-            </>
+            <div className="flex flex-col items-center gap-2 max-w-md mx-auto">
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.firstName || ""}
+                onChange={e => handleChange("firstName", e.target.value)}
+                placeholder="First Name"
+              />
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.lastName || ""}
+                onChange={e => handleChange("lastName", e.target.value)}
+                placeholder="Last Name"
+              />
+              <input
+                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                value={formState.username || ""}
+                onChange={e => handleChange("username", e.target.value)}
+                placeholder="Username"
+              />
+            </div>
           ) : (
             <>
-              <h2 className="m-0 mb-0.5 text-[22px] font-normal text-[#191c1f] dark:text-[#f1f1f1] text-center tracking-[-0.01em]">
+              <h2 className="text-2xl font-semibold text-[#191c1f] dark:text-[#f1f1f1] mb-1">
                 {user.firstName} {user.lastName}
               </h2>
-              <div className="text-[#6a7791] dark:text-[#a0a0a0] text-[15px] text-center font-medium mb-1 tracking-[0.01em]">
+              <div className="text-[#6a7791] dark:text-[#a0a0a0] text-base font-medium">
                 @{user.username}
               </div>
             </>
           )}
         </div>
 
-        <div className="w-1/2 md:w-[92vw] max-w-[540px] my-2 mx-auto flex flex-col items-center md:px-3">
-          <div className="text-[1.16rem] font-bold text-black dark:text-[#f1f1f1] mb-0.5 text-center">About</div>
+        {/* About Section */}
+        <div className="mb-6">
+          <div className="text-lg font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3 text-center">About</div>
           {isEditing ? (
             <textarea
               value={formState.bio || ""}
               onChange={e => handleChange("bio", e.target.value)}
-              className="w-[96%] max-w-[520px] min-h-[80px] py-4 px-4 rounded-[13px] bg-white dark:bg-[#2b2b2b] border-[1.5px] border-black dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-[1.13rem] shadow-[0_1px_5px_rgba(255,255,255,0.06)] dark:shadow-[0_1px_5px_rgba(0,0,0,0.3)] mx-auto resize-y focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+              className="w-full min-h-[100px] py-3 px-4 rounded-lg bg-white dark:bg-[#2b2b2b] border-2 border-[#cbcbcb] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-base text-center resize-y focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+              placeholder="Tell us about yourself..."
             />
           ) : (
-            <div className="w-[90%] min-h-[50px] py-4 px-4 rounded-[13px] bg-white dark:bg-[#1e1e1e] border-[1.5px] border-[#e0e0e0] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-[1.13rem] shadow-[0_1px_5px_rgba(37,100,230,0.06)] dark:shadow-[0_1px_5px_rgba(0,0,0,0.3)] mx-auto text-left break-words">
-              {user.bio}
+            <div className="w-full min-h-[80px] py-4 px-4 rounded-lg bg-white dark:bg-[#1e1e1e] border border-[#e0e0e0] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-base text-center shadow-sm">
+              {user.bio || "No bio added yet"}
             </div>
           )}
         </div>
 
         {/* My Skills Section */}
-        <div className="w-full max-w-[540px] mt-[18px] mx-auto mb-0 flex flex-col items-center">
-          <h3 className="text-lg font-bold text-black dark:text-[#f1f1f1] mb-2 text-center">My Skills</h3>
-          <div className="w-full flex flex-col items-center gap-3.5 mb-[18px]">
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3 text-center">My Skills</h3>
+          <div className="flex flex-wrap gap-2 justify-center">
             {userSkills.length === 0 ? (
-              <p className="text-center text-[#666] dark:text-[#a0a0a0] text-[15px]">No skills created yet.</p>
+              <p className="text-[#6a7791] dark:text-[#a0a0a0]">No skills created yet.</p>
             ) : (
               userSkills.map(skill => (
-                <div className="flex flex-row items-center gap-2 flex-nowrap w-auto" key={skill.skillId || skill.id}>
+                <div className="relative" key={skill.skillId || skill.id}>
                   <div 
-                    className="py-3 px-[17px] rounded-[18px] bg-primary dark:bg-primary text-white font-semibold shadow-[0_2.5px_13px_rgba(40,120,220,0.10)] dark:shadow-[0_2.5px_13px_rgba(77,171,247,0.2)] cursor-pointer text-[15px] tracking-[0.01em] inline-block whitespace-nowrap min-w-[90px] hover:bg-primary-hover"
+                    className={`inline-flex items-center bg-primary text-white font-medium py-2 px-4 rounded-full ${!isEditing ? 'cursor-pointer hover:bg-primary-hover' : 'cursor-default'} transition-colors`}
                     onClick={() => {
                       if (!isEditing) {
                         const skillId = skill.skillId || skill.id || skill._id;
                         navigate(`/my-skills/${skillId}`);
                       }
                     }}
-                    style={{ cursor: isEditing ? 'default' : 'pointer' }}
                   >
                     {skill.name}
                   </div>
                   {isEditing && (
                     <button
-                      className="w-5 h-5 min-w-[20px] min-h-[20px] rounded-full bg-[#dc3545] text-white border-none text-sm font-bold cursor-pointer inline-flex items-center justify-center leading-none p-0 transition-all duration-200 shadow-[0_2px_4px_rgba(0,0,0,0.15)] shrink-0 align-middle hover:bg-[#c82333] hover:scale-110 active:scale-95"
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors"
                       onClick={(e) => confirmDelete(skill, e)}
                       aria-label="Delete skill"
                     >×</button>
@@ -269,30 +286,40 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Action buttons including Saved Skills */}
-        <div className="flex flex-row justify-center items-center gap-2.5 mt-2">
-          <Link to="/saved">
-            <button className="btn btn-primary">Saved Skills</button>
+        {/* Action Buttons */}
+        <div className="flex gap-3 mt-12">
+          <Link to="/saved" className="flex-1">
+            <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              Saved Skills
+            </button>
           </Link>
-          <Link to="/upload">
-            <button className="btn btn-primary">Create a Skill</button>
+          <Link to="/upload" className="flex-1">
+            <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              Create a Skill
+            </button>
           </Link>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center z-[1000]" onClick={handleDeleteCancel}>
-          <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl max-w-[400px] w-[90%] shadow-[0_4px_20px_rgba(0,0,0,0.3)]" onClick={(e) => e.stopPropagation()}>
-            <h3 className="m-0 mb-3 ml-0 mr-0 text-xl font-semibold text-[#333] dark:text-[#f1f1f1]">Delete Skill</h3>
-            <p className="m-0 mb-6 text-[15px] text-[#666] dark:text-[#a0a0a0] leading-[1.5]">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleDeleteCancel}>
+          <div className="bg-white dark:bg-[#1e1e1e] rounded-lg p-6 max-w-md w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3">Delete Skill</h3>
+            <p className="text-[#313741] dark:text-[#c0c0c0] mb-6">
               Are you sure you want to delete "{skillToDelete?.name}"? This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
-              <button className="btn" onClick={handleDeleteCancel}>
+              <button 
+                className="bg-[#f5f5f5] dark:bg-[#2b2b2b] hover:bg-[#e8e8e8] dark:hover:bg-[#3a3a3a] text-[#191c1f] dark:text-[#f1f1f1] font-semibold py-2 px-6 rounded-lg transition-colors"
+                onClick={handleDeleteCancel}
+              >
                 Cancel
               </button>
-              <button className="btn bg-danger hover:bg-red-700 text-white" onClick={handleDeleteConfirm}>
+              <button 
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+                onClick={handleDeleteConfirm}
+              >
                 Delete
               </button>
             </div>

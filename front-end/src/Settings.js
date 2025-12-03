@@ -33,7 +33,7 @@ const Settings = () => {
   return (
     <main className="flex flex-col min-h-screen pt-[65px] bg-white dark:bg-[#121212] box-border transition-colors duration-300">
       <header className="fixed top-[65px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#2c2c2c] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-full shrink-0">
-        <h1 className="text-2xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Settings</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Settings</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto pt-[72px] pb-[calc(80px+env(safe-area-inset-bottom))] px-5 py-4">

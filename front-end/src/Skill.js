@@ -40,13 +40,13 @@ const Skill = ({ skillId, name, brief, image, ImgHeight }) => {
 
   return (
     <div className="inline-block w-full mb-4 break-inside-avoid rounded-xl overflow-hidden bg-transparent">
-      <div className="relative w-full overflow-hidden rounded-xl min-h-[180px]">
+      <div className="relative w-full overflow-hidden rounded-xl h-[180px]">
         <Link to={`/skills/${encodeURIComponent(skillId)}`}>
           {image ? (
-            <img src={image} alt={name} className="w-full block rounded-xl object-cover transition-transform duration-300 min-h-[180px]" />
+            <img src={image} alt={name} className="w-full h-full block rounded-xl object-cover transition-transform duration-300" />
           ) : (
             // If no image is provided by the backend, render nothing (per product decision)
-            <div className="w-full block rounded-xl object-cover min-h-[180px]" />
+            <div className="w-full h-full block rounded-xl object-cover" />
           )}
         </Link>
       </div>

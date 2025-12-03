@@ -14,6 +14,8 @@ export default function UploadSkill() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [catsOpen, setCatsOpen] = useState(false);
   const catsRef = React.useRef(null);
+  const [skillsOpen, setSkillsOpen] = useState(false);
+  const skillsRef = React.useRef(null);
   const [description, setDescription] = useState("");
   // allow multiple images and multiple videos
   const [images, setImages] = useState([]);
@@ -51,10 +53,13 @@ export default function UploadSkill() {
         if (possibleGeneral.length) setGeneralOptions(possibleGeneral);
       }
     })();
-    // click-away: close categories dropdown when clicking outside
+    // click-away: close dropdowns when clicking outside
     function onDocClick(e){
       if (catsRef.current && !catsRef.current.contains(e.target)) {
         setCatsOpen(false);
+      }
+      if (skillsRef.current && !skillsRef.current.contains(e.target)) {
+        setSkillsOpen(false);
       }
     }
     document.addEventListener('click', onDocClick);
@@ -172,17 +177,37 @@ export default function UploadSkill() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* General skill selection (canonical grouping) */}
             <label htmlFor="generalSkill" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Skill (general)</label>
-            <select
-              id="generalSkill"
-              value={generalSkill}
-              onChange={(e) => setGeneralSkill(e.target.value)}
-              className="form-input"
-            >
-              <option value="">-- Choose a skill --</option>
-              {(generalOptions.length ? generalOptions : (skills && skills.length ? [...new Set(skills.map(s => s.generalSkill || s.category || s.name).filter(Boolean))] : [])).map((g, i) => (
-                <option key={i} value={g}>{g}</option>
-              ))}
-            </select>
+            <div className="multi-select" ref={skillsRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="form-input text-left"
+                onClick={() => setSkillsOpen((s) => !s)}
+                aria-haspopup="listbox"
+                aria-expanded={skillsOpen}
+              >
+                {generalSkill || '-- Choose a skill --'}
+              </button>
+
+              {skillsOpen && (
+                <div className="absolute z-40 bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-[#333] rounded-app shadow-lg max-h-56 overflow-y-auto w-full mt-1.5 p-2" style={{ maxHeight: 220 }}>
+                  {(generalOptions.length ? generalOptions : (skills && skills.length ? [...new Set(skills.map(s => s.generalSkill || s.category || s.name).filter(Boolean))] : [])).map((g, i) => (
+                    <div
+                      key={i}
+                      className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-gray-700 dark:text-gray-300"
+                      onClick={() => {
+                        setGeneralSkill(g);
+                        setSkillsOpen(false);
+                      }}
+                    >
+                      {g}
+                    </div>
+                  ))}
+                  {generalOptions.length === 0 && (!skills || skills.length === 0) && (
+                    <div className="p-2 text-sm text-gray-500 dark:text-gray-400">No skills available</div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Categories multi-select dropdown (checkboxes) */}
             <label htmlFor="categories" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Categories (select one or more)</label>

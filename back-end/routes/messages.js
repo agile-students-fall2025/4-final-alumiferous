@@ -34,11 +34,31 @@ router.post('/', async (req, res) => {
       content,
       senderId,
       sentAt: sentAt || new Date(),
+      read: false,
     });
     await message.save();
     res.status(201).json(message);
   } catch (err) {
     console.error('Error creating message:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /api/messages/mark-read - mark messages as read
+router.put('/mark-read', async (req, res) => {
+  const { chatId, userId } = req.body;
+  if (!chatId || !userId) {
+    return res.status(400).json({ success: false, message: 'chatId and userId are required' });
+  }
+  try {
+    // Mark all messages in this chat that were NOT sent by userId as read
+    const result = await Message.updateMany(
+      { chatId, senderId: { $ne: userId }, read: false },
+      { $set: { read: true } }
+    );
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error('Error marking messages as read:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });

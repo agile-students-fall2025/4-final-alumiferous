@@ -11,9 +11,6 @@ const Chat = props => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // Helper to generate stable Picsum avatar URLs per user
-    const avatarUrl = (seed, size = 50) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`
-
     // Load chat list from backend API
     useEffect(() => {
         let isMounted = true
@@ -35,13 +32,16 @@ const Chat = props => {
                 const normalized = (Array.isArray(data) ? data : [data]).map((item) => {
             
                     let name = 'Unknown';
+                    let photo = '/images/avatar-default.png';
        
                     if (item.userId && item.friendId) {
                         // If logged-in user is userId, show friendId's name
                         if (item.userId._id === userId && typeof item.friendId === 'object') {
                             name = item.friendId.username || item.friendId.email || 'Unknown';
+                            photo = item.friendId.photo || '/images/avatar-default.png';
                         } else if (item.friendId._id === userId && typeof item.userId === 'object') {
                             name = item.userId.username || item.userId.email || 'Unknown';
+                            photo = item.userId.photo || '/images/avatar-default.png';
                         }
                     }
                     let time = '';
@@ -52,11 +52,10 @@ const Chat = props => {
                     return {
                         id: item._id,
                         name,
-                        photo: avatarUrl(name),
+                        photo,
                         last_message: item.lastMessage || '',
                         timestamp: time,
                         unread: item.unread || 0,
-                        online: item.online || false,
                     };
                 });
                 if (isMounted) setChatList(normalized);
@@ -83,7 +82,7 @@ const Chat = props => {
         <div className="flex flex-col items-stretch h-screen w-screen bg-white dark:bg-[#121212] box-border overflow-hidden m-0">
             {/* Header */}
             <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen shrink-0">
-                <h1 className="text-2xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Chat</h1>
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Chat</h1>
                 <div className="flex gap-3">
                     <button
                         className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center"
@@ -125,7 +124,6 @@ const Chat = props => {
                             last_message={chat.last_message}
                             timestamp={chat.timestamp}
                             unread={chat.unread}
-                            online={chat.online}
                         />
                     ))
                 ) : (
@@ -168,7 +166,7 @@ const ProfileImage = ({ photo, name }) => {
 }
 
 //chatitem component 
-const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) => {
+const ChatItem = ({ id, name, photo, last_message, timestamp, unread }) => {
     const navigate = useNavigate()
     const handleChatClick = () => {
         navigate(`/chat/${id}`)
@@ -179,7 +177,6 @@ const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) 
             <div className="relative shrink-0">
                 <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
                     <ProfileImage photo={photo} name={name} />
-                    {online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#28a745] border-2 border-white dark:border-[#121212] rounded-full"></div>}
                 </div>
             </div>
             

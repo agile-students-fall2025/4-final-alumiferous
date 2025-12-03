@@ -4,11 +4,8 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 // Constants
 const API_BASE = 'http://localhost:3000/api';
-const AVATAR_SIZE = 40;
 
-// Helper avatar from Picsum
-// const avatarUrl = (seed, size = AVATAR_SIZE) =>
-//   `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}/${size}`;
+
 
 // Format timestamp to HH:MM
 const formatTime = (dateString) => {
@@ -93,7 +90,6 @@ const Messages = () => {
     if (!userId) return;
 
     let isMounted = true;
-    let chatDataCache = null;
 
     const fetchChatInfo = async () => {
       try {
@@ -101,7 +97,6 @@ const Messages = () => {
         if (!res.ok) throw new Error('Failed to fetch chat');
 
         const chatData = await res.json();
-        chatDataCache = chatData;
         let name = 'Unknown';
 
         if (chatData?.userId && chatData?.friendId) {
@@ -141,10 +136,23 @@ const Messages = () => {
       }
     };
 
+    const markMessagesAsRead = async () => {
+      try {
+        await fetch(`${API_BASE}/messages/mark-read`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chatId: id, userId }),
+        });
+      } catch (err) {
+        console.error('Failed to mark messages as read:', err);
+      }
+    };
+
     const loadData = async () => {
       setLoading(true);
       const chatData = await fetchChatInfo();
       await fetchMessages(chatData);
+      await markMessagesAsRead();
     };
 
     loadData();
