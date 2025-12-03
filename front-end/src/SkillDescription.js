@@ -429,7 +429,7 @@ export default function SkillDescription() {
                 type="file"
                 accept="image/*"
                 multiple
-                onChange={(e) => setNewImages(Array.from(e.target.files))}
+                onChange={(e) => setNewImages([...newImages, ...Array.from(e.target.files)])}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
               {newImages.length > 0 && (
@@ -526,7 +526,7 @@ export default function SkillDescription() {
                 type="file"
                 accept="video/*"
                 multiple
-                onChange={(e) => setNewVideos(Array.from(e.target.files))}
+                onChange={(e) => setNewVideos([...newVideos, ...Array.from(e.target.files)])}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
               {newVideos.length > 0 && (
