@@ -179,6 +179,21 @@ router.get("/", async (req, res) => {
   return res.status(503).json({ error: 'Skills not available at this time' });
 });
 
+// DELETE /api/skills/:id  -> delete a single skill
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await SkillOffering.findByIdAndDelete(id).exec();
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: "Skill not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting skill:", err);
+    res.status(500).json({ success: false, message: "Failed to delete skill" });
+  }
+});
+
 /**
  * POST /api/skills
  * Creates a new skill that matches the Mockaroo schema:
@@ -396,6 +411,7 @@ router.post(
     return res.status(201).json(newSkill);
   }
 );
+
 
 
 export default router;

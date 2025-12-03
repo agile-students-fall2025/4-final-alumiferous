@@ -17,7 +17,7 @@ const Profile = () => {
 useEffect(() => {
   const storedUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
   if (!storedUserId) {
-    // optionally redirect to login if no user
+    //  redirect to login if no user
     navigate('/login');
     return;
   }
@@ -81,34 +81,38 @@ useEffect(() => {
     }
   };
 
-  const handleDeleteSkill = async (skillId) => {
-    try {
-      // Delete from userSkills (uploaded skills)
-      const userSkillsCache = JSON.parse(localStorage.getItem('userSkills') || '[]');
-      const updatedUserSkills = userSkillsCache.filter(s => {
-        const sId = s.skillId || s.id;
-        return String(sId) !== String(skillId);
-      });
-      localStorage.setItem('userSkills', JSON.stringify(updatedUserSkills));
-      
-      // Also delete from skills cache if it exists there
-      const cachedSkills = JSON.parse(localStorage.getItem('skills') || '[]');
-      const updatedSkills = cachedSkills.filter(s => {
-        const sId = s.skillId || s.id;
-        return String(sId) !== String(skillId);
-      });
-      localStorage.setItem('skills', JSON.stringify(updatedSkills));
-      
-      // Keep edit mode active
-      sessionStorage.setItem('profileEditMode', 'true');
-      
-      // Reload to update the UI but stay in edit mode
-      window.location.reload();
-    } catch (err) {
-      console.error('Error deleting skill:', err);
-      alert(`Error deleting skill: ${err.message}`);
+const handleDeleteSkill = async (skillId) => {
+  try {
+    // 1) delete on server
+    const res = await fetch(`/api/skills/${skillId}`, { method: "DELETE" });
+    if (!res.ok) {
+      throw new Error("Server failed to delete skill");
     }
-  };
+
+    // 2) update local storage caches
+    const userSkillsCache = JSON.parse(localStorage.getItem("userSkills") || "[]");
+    const updatedUserSkills = userSkillsCache.filter((s) => {
+      const sId = s.skillId || s.id || s._id;
+      return String(sId) !== String(skillId);
+    });
+    localStorage.setItem("userSkills", JSON.stringify(updatedUserSkills));
+
+    const cachedSkills = JSON.parse(localStorage.getItem("skills") || "[]");
+    const updatedSkills = cachedSkills.filter((s) => {
+      const sId = s.skillId || s.id || s._id;
+      return String(sId) !== String(skillId);
+    });
+    localStorage.setItem("skills", JSON.stringify(updatedSkills));
+
+    // 3) stay in edit mode and refresh UI
+    sessionStorage.setItem("profileEditMode", "true");
+    window.location.reload();
+  } catch (err) {
+    console.error("Error deleting skill:", err);
+    alert(`Error deleting skill: ${err.message}`);
+  }
+};
+
 
   const confirmDelete = (skill, e) => {
     e.stopPropagation();
@@ -137,7 +141,7 @@ useEffect(() => {
   // Also filter from context if needed
   const contextUserSkills = skills.filter(skill => String(skill.userId) === String(user._id));
   
-  // Combine both sources, removing duplicates by id
+  //  removing duplicates by id
   const allUserSkills = [...userCreatedSkills];
   contextUserSkills.forEach(skill => {
     if (!allUserSkills.find(s => s.id === skill.id || s.skillId === skill.skillId)) {
