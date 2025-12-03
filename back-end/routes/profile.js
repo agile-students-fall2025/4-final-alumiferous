@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import mongoose from "mongoose";
 import User from "../models/User.js";
-import cloudinaryProfile from "../config/cloudinaryProfile.js";
+import cloudinary from "../config/cloudinary.js";
 dotenv.config();
 
 const router = express.Router();
@@ -66,7 +66,7 @@ router.put("/:id", imageUpload.single("profilePhoto"), async (req, res) => {
       const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString(
         "base64"
       )}`;
-      const result = await cloudinaryProfile.uploader.upload(dataUri, {
+      const result = await cloudinary.uploader.upload(dataUri, {
         folder: "instaskill/avatars",
         resource_type: "image",
       });
