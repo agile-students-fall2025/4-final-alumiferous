@@ -15,6 +15,13 @@ export default function SkillDescription() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [requestExists, setRequestExists] = useState(false);
   const [checkingRequest, setCheckingRequest] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Get current user ID
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    setCurrentUserId(userId);
+  }, []);
 
   // Find the skill by id
   const skill = useMemo(() => {
@@ -24,15 +31,15 @@ export default function SkillDescription() {
   // Check if user already sent a request for this skill
   useEffect(() => {
     const checkExistingRequest = async () => {
-      const currentUserId = localStorage.getItem('userId');
+      const userId = localStorage.getItem('userId');
       
-      if (!currentUserId || !id) {
+      if (!userId || !id) {
         setCheckingRequest(false);
         return;
       }
 
       try {
-        const response = await fetch(`/api/requests/check?skillId=${id}&requesterId=${currentUserId}`);
+        const response = await fetch(`/api/requests/check?skillId=${id}&requesterId=${userId}`);
         if (response.ok) {
           const data = await response.json();
           setRequestExists(data.exists);
@@ -169,7 +176,15 @@ export default function SkillDescription() {
           </p>
         </div>
 
-        {checkingRequest ? (
+        {/* Show Edit button if user owns this skill, otherwise show Draft Request */}
+        {currentUserId && currentUserId === skill.userId ? (
+          <button
+            className="button"
+            onClick={() => nav(`/upload?edit=${skill.skillId}`)}
+          >
+            Edit Skill
+          </button>
+        ) : checkingRequest ? (
           <button className="button" disabled>
             Checking...
           </button>
