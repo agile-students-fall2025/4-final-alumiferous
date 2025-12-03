@@ -22,6 +22,8 @@ export default function SkillDescription() {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [newVideos, setNewVideos] = useState([]);
+  const [catsOpen, setCatsOpen] = useState(false);
+  const catsRef = React.useRef(null);
 
   // Fetch available categories
   useEffect(() => {
@@ -37,6 +39,15 @@ export default function SkillDescription() {
         console.error('Error fetching categories:', e);
       }
     })();
+
+    // Click-away handler for categories dropdown
+    function onDocClick(e){
+      if (catsRef.current && !catsRef.current.contains(e.target)) {
+        setCatsOpen(false);
+      }
+    }
+    document.addEventListener('click', onDocClick);
+    return () => { document.removeEventListener('click', onDocClick); };
   }, []);
 
   // Get current user ID
@@ -139,6 +150,7 @@ export default function SkillDescription() {
     setEditedSkill(null);
     setNewImages([]);
     setNewVideos([]);
+    setCatsOpen(false);
   };
 
   // ---- loading state ----
@@ -269,25 +281,62 @@ export default function SkillDescription() {
             </label>
             <label style={{ display: 'block', marginBottom: '10px' }}>
               <strong>Categories:</strong>
-              <div style={{ marginTop: '5px', maxHeight: '150px', overflowY: 'auto', border: '1px solid #ccc', padding: '8px', borderRadius: '4px' }}>
-                {availableCategories.map((cat) => (
-                  <label key={cat} style={{ display: 'block', marginBottom: '5px' }}>
-                    <input
-                      type="checkbox"
-                      checked={editedSkill?.categories?.includes(cat) || false}
-                      onChange={(e) => {
-                        const currentCats = editedSkill?.categories || [];
-                        if (e.target.checked) {
-                          setEditedSkill({...editedSkill, categories: [...currentCats, cat]});
-                        } else {
-                          setEditedSkill({...editedSkill, categories: currentCats.filter(c => c !== cat)});
-                        }
-                      }}
-                      style={{ marginRight: '8px' }}
-                    />
-                    {cat}
-                  </label>
-                ))}
+              <div ref={catsRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  style={{ 
+                    width: '100%', 
+                    padding: '8px', 
+                    marginTop: '5px', 
+                    fontSize: '16px',
+                    textAlign: 'left',
+                    background: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setCatsOpen((s) => !s)}
+                >
+                  {editedSkill?.categories?.length === 0 || !editedSkill?.categories
+                    ? 'Select categories...'
+                    : editedSkill.categories.join(', ')}
+                </button>
+
+                {catsOpen && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    zIndex: 40, 
+                    background: 'white', 
+                    border: '1px solid #ddd', 
+                    maxHeight: '220px', 
+                    overflowY: 'auto', 
+                    width: '100%', 
+                    marginTop: '6px', 
+                    padding: '8px',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}>
+                    {availableCategories && availableCategories.length ? availableCategories.map((cat, index) => (
+                      <label key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 4px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={editedSkill?.categories?.includes(cat) || false}
+                          onChange={() => {
+                            const currentCats = editedSkill?.categories || [];
+                            if (currentCats.includes(cat)) {
+                              setEditedSkill({...editedSkill, categories: currentCats.filter(c => c !== cat)});
+                            } else {
+                              setEditedSkill({...editedSkill, categories: [...currentCats, cat]});
+                            }
+                          }}
+                        />
+                        <span>{cat}</span>
+                      </label>
+                    )) : (
+                      <div style={{ padding: '8px', color: '#666' }}>No categories available</div>
+                    )}
+                  </div>
+                )}
               </div>
             </label>
             <label style={{ display: 'block', marginBottom: '10px' }}>

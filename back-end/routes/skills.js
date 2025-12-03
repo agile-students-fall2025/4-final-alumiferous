@@ -405,25 +405,73 @@ router.post(
 );
 
 // ===== UPDATE SKILL =====
-router.put('/:skillId', async (req, res) => {
+router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), async (req, res) => {
   try {
     const { skillId } = req.params;
-    const { name, brief, detail, categories, images, videos } = req.body;
+    const { name, brief, detail, categories } = req.body;
 
-    // Find and update in MongoDB
+    // Find skill in MongoDB
     const skillOffering = await SkillOffering.findOne({ skillId: parseInt(skillId) });
     
     if (!skillOffering) {
       return res.status(404).json({ error: 'Skill not found' });
     }
 
-    // Update fields
+    // Update text fields
     if (name !== undefined) skillOffering.name = name;
     if (brief !== undefined) skillOffering.brief = brief;
     if (detail !== undefined) skillOffering.detail = detail;
-    if (categories !== undefined) skillOffering.categories = categories;
-    if (images !== undefined) skillOffering.images = images;
-    if (videos !== undefined) skillOffering.videos = videos;
+    
+    // Handle categories - can be comma-separated string or array
+    if (categories !== undefined) {
+      if (typeof categories === 'string') {
+        skillOffering.categories = categories.split(',').map(c => c.trim()).filter(c => c);
+      } else if (Array.isArray(categories)) {
+        skillOffering.categories = categories;
+      }
+    }
+
+    // Handle new image uploads
+    if (req.files && req.files.images) {
+      const imageUrls = [];
+      for (const file of req.files.images) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'skills/images', resource_type: 'image' },
+              (error, result) => error ? reject(error) : resolve(result)
+            );
+            uploadStream.end(file.buffer);
+          });
+          imageUrls.push(result.secure_url);
+        } catch (err) {
+          console.error('Error uploading image to Cloudinary:', err);
+        }
+      }
+      // Append new images to existing ones
+      skillOffering.images = [...(skillOffering.images || []), ...imageUrls];
+    }
+
+    // Handle new video uploads
+    if (req.files && req.files.videos) {
+      const videoUrls = [];
+      for (const file of req.files.videos) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'skills/videos', resource_type: 'video' },
+              (error, result) => error ? reject(error) : resolve(result)
+            );
+            uploadStream.end(file.buffer);
+          });
+          videoUrls.push(result.secure_url);
+        } catch (err) {
+          console.error('Error uploading video to Cloudinary:', err);
+        }
+      }
+      // Append new videos to existing ones
+      skillOffering.videos = [...(skillOffering.videos || []), ...videoUrls];
+    }
 
     await skillOffering.save();
 
@@ -445,7 +493,7 @@ router.put('/:skillId', async (req, res) => {
     res.json({ message: 'Skill updated successfully', skill: skillOffering });
   } catch (error) {
     console.error('Error updating skill:', error);
-    res.status(500).json({ error: 'Failed to update skill' });
+    res.status(500).json({ error: 'Failed to update skill', details: error.message });
   }
 });
 
