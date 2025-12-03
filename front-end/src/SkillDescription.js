@@ -16,9 +16,8 @@ export default function SkillDescription() {
   const [requestExists, setRequestExists] = useState(false);
   const [checkingRequest, setCheckingRequest] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing] = useState(false);
   const [editedSkill, setEditedSkill] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [availableCategories, setAvailableCategories] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [newVideos, setNewVideos] = useState([]);
@@ -90,7 +89,6 @@ export default function SkillDescription() {
   }, [id]);
 
   // Check if the skill belongs to the current user
-  const currentUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
   const isOwnSkill = skill && currentUserId && String(skill.userId) === String(currentUserId);
 
   // ---- loading state ----
@@ -499,16 +497,16 @@ export default function SkillDescription() {
                       </span>
                     ))}
                   </span>
-                ))}
-              </span>
-            ) : (
-              "—"
-            )}
-          </p>
-          <p>
-            <strong>Posted by:</strong> {isOwnSkill ? "You" : (skill.username || "Unknown User")}
-          </p>
-        </div>
+                ) : (
+                  "—"
+                )}
+              </p>
+              <p>
+                <strong>Posted by:</strong> {isOwnSkill ? "You" : (skill.username || "Unknown User")}
+              </p>
+            </div>
+          </>
+        )}
 
         {/* Only show Draft Request button if it's NOT the user's own skill */}
         {!isOwnSkill && (
