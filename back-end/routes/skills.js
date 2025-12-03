@@ -408,14 +408,29 @@ router.post(
 router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), async (req, res) => {
   try {
     const { skillId } = req.params;
-    const { name, brief, detail, categories } = req.body;
+    const { name, brief, detail, categories, removedImages, removedVideos } = req.body;
 
-    // Find skill in MongoDB
-    const skillOffering = await SkillOffering.findOne({ skillId: parseInt(skillId) });
+    console.log('PUT /api/skills/:skillId received:', { skillId, name, brief, detail, categories, removedImages, removedVideos });
+
+    // Find skill in MongoDB - handle both ObjectId and numeric skillId
+    let skillOffering;
+    
+    // Check if it's a MongoDB ObjectId (24 hex characters)
+    if (skillId.match(/^[0-9a-fA-F]{24}$/)) {
+      console.log('Searching by MongoDB _id:', skillId);
+      skillOffering = await SkillOffering.findById(skillId);
+    } else {
+      // Otherwise treat it as numeric skillId
+      console.log('Searching by numeric skillId:', parseInt(skillId));
+      skillOffering = await SkillOffering.findOne({ skillId: parseInt(skillId) });
+    }
     
     if (!skillOffering) {
+      console.log('Skill not found for skillId:', skillId);
       return res.status(404).json({ error: 'Skill not found' });
     }
+
+    console.log('Found skill offering:', skillOffering._id);
 
     // Update text fields
     if (name !== undefined) skillOffering.name = name;
@@ -428,6 +443,34 @@ router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { 
         skillOffering.categories = categories.split(',').map(c => c.trim()).filter(c => c);
       } else if (Array.isArray(categories)) {
         skillOffering.categories = categories;
+      }
+    }
+
+    // Handle removed images
+    if (removedImages) {
+      const toRemove = typeof removedImages === 'string' 
+        ? removedImages.split(',').map(url => url.trim()).filter(url => url)
+        : (Array.isArray(removedImages) ? removedImages : []);
+      
+      if (toRemove.length > 0) {
+        console.log('Removing images:', toRemove);
+        console.log('Before removal - skillOffering.images:', skillOffering.images);
+        skillOffering.images = (skillOffering.images || []).filter(img => !toRemove.includes(img));
+        console.log('After removal - skillOffering.images:', skillOffering.images);
+      }
+    }
+
+    // Handle removed videos
+    if (removedVideos) {
+      const toRemove = typeof removedVideos === 'string'
+        ? removedVideos.split(',').map(url => url.trim()).filter(url => url)
+        : (Array.isArray(removedVideos) ? removedVideos : []);
+      
+      if (toRemove.length > 0) {
+        console.log('Removing videos:', toRemove);
+        console.log('Before removal - skillOffering.videos:', skillOffering.videos);
+        skillOffering.videos = (skillOffering.videos || []).filter(vid => !toRemove.includes(vid));
+        console.log('After removal - skillOffering.videos:', skillOffering.videos);
       }
     }
 
@@ -474,9 +517,10 @@ router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { 
     }
 
     await skillOffering.save();
+    console.log('Skill offering saved successfully');
 
     // Also update the Skill model if it exists
-    await Skill.updateMany(
+    const updateResult = await Skill.updateMany(
       { offeringSlug: skillOffering.offeringSlug },
       {
         $set: {
@@ -489,10 +533,12 @@ router.put('/:skillId', mediaUpload.fields([{ name: 'images', maxCount: 10 }, { 
         }
       }
     );
+    console.log('Skill model update result:', updateResult);
 
     res.json({ message: 'Skill updated successfully', skill: skillOffering });
   } catch (error) {
     console.error('Error updating skill:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to update skill', details: error.message });
   }
 });

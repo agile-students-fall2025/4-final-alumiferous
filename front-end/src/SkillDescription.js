@@ -22,6 +22,8 @@ export default function SkillDescription() {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [newVideos, setNewVideos] = useState([]);
+  const [removedImages, setRemovedImages] = useState([]);
+  const [removedVideos, setRemovedVideos] = useState([]);
   const [catsOpen, setCatsOpen] = useState(false);
   const catsRef = React.useRef(null);
 
@@ -90,13 +92,17 @@ export default function SkillDescription() {
   // Initialize edited skill when entering edit mode
   useEffect(() => {
     if (isEditing && skill) {
+      // Deduplicate images and videos arrays
+      const uniqueImages = skill.images ? [...new Set(skill.images)] : [];
+      const uniqueVideos = skill.videos ? [...new Set(skill.videos)] : [];
+      
       setEditedSkill({
         name: skill.name || '',
         brief: skill.brief || '',
         detail: skill.detail || '',
         categories: skill.categories || [],
-        images: skill.images || [],
-        videos: skill.videos || []
+        images: uniqueImages,
+        videos: uniqueVideos
       });
     }
   }, [isEditing, skill]);
@@ -128,6 +134,14 @@ export default function SkillDescription() {
       if (newVideos && newVideos.length) {
         newVideos.forEach(file => formData.append('videos', file));
       }
+      
+      // Send list of removed media URLs
+      if (removedImages.length > 0) {
+        formData.append('removedImages', removedImages.join(','));
+      }
+      if (removedVideos.length > 0) {
+        formData.append('removedVideos', removedVideos.join(','));
+      }
 
       console.log('Sending PUT request to:', `${apiUrl}/api/skills/${id}`);
       
@@ -136,15 +150,19 @@ export default function SkillDescription() {
         body: formData
       });
 
-      console.log('Response status:', response.status);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         console.error('Update failed:', response.status, errorData);
         throw new Error(errorData.error || `Failed to update skill (${response.status})`);
       }
 
-      // Refresh the page to show updated data
+      const responseData = await response.json();
+      console.log('Update successful! Response data:', responseData);
+
+      // Clear skills cache to force fresh data on reload
+      localStorage.removeItem('skills');
+      
+      // Reload the page to show updated data
       window.location.reload();
     } catch (error) {
       console.error('Error updating skill:', error);
@@ -159,6 +177,8 @@ export default function SkillDescription() {
     setEditedSkill(null);
     setNewImages([]);
     setNewVideos([]);
+    setRemovedImages([]);
+    setRemovedVideos([]);
     setCatsOpen(false);
   };
 
@@ -187,13 +207,19 @@ export default function SkillDescription() {
   // Use the image provided by the backend when available. Per product decision,
   // do NOT use external placeholder images; if `skill.image` is missing, omit the hero image.
   // Combine all media (images and videos) into a slideshow
-  const images = Array.isArray(skill.images) && skill.images.length > 0 ? skill.images : (skill.image ? [skill.image] : []);
+  
+  // Only use skill.images array, ignore skill.image to prevent duplication
+  const images = Array.isArray(skill.images) && skill.images.length > 0 ? skill.images : [];
   const videos = Array.isArray(skill.videos) ? skill.videos : [];
+  
+  // Deduplicate to avoid showing the same media multiple times
+  const uniqueImages = [...new Set(images.filter(Boolean))];
+  const uniqueVideos = [...new Set(videos.filter(Boolean))];
   
   // Combine images and videos into one media array
   const allMedia = [
-    ...images.map(img => ({ type: 'image', src: img })),
-    ...videos.map(vid => ({ type: 'video', src: vid }))
+    ...uniqueImages.map(img => ({ type: 'image', src: img })),
+    ...uniqueVideos.map(vid => ({ type: 'video', src: vid }))
   ];
 
   const nextSlide = () => {
@@ -348,8 +374,57 @@ export default function SkillDescription() {
                 )}
               </div>
             </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Add Images:</strong>
+            
+            {/* Existing Images */}
+            <div style={{ marginBottom: '15px' }}>
+              <strong>Current Images:</strong>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
+                {editedSkill?.images && editedSkill.images.length > 0 ? (
+                  editedSkill.images
+                    .filter(img => !removedImages.includes(img))
+                    .map((img, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                        <img 
+                          src={img} 
+                          alt={`Current ${idx}`} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setRemovedImages([...removedImages, img])}
+                          style={{
+                            position: 'absolute',
+                            top: '-8px',
+                            right: '-8px',
+                            background: '#e74c3c',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '28px',
+                            height: '28px',
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          }}
+                          title="Remove image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))
+                ) : (
+                  <small style={{ color: '#666', fontStyle: 'italic' }}>No images yet</small>
+                )}
+              </div>
+            </div>
+
+            {/* Add New Images */}
+            <label style={{ display: 'block', marginBottom: '15px' }}>
+              <strong>Add New Images:</strong>
               <input
                 type="file"
                 accept="image/*"
@@ -357,10 +432,96 @@ export default function SkillDescription() {
                 onChange={(e) => setNewImages(Array.from(e.target.files))}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
-              {newImages.length > 0 && <small>{newImages.length} image(s) selected</small>}
+              {newImages.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                  {newImages.map((file, idx) => (
+                    <div key={idx} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                      <img 
+                        src={URL.createObjectURL(file)} 
+                        alt={`New ${idx}`} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #4CAF50' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewImages(newImages.filter((_, i) => i !== idx))}
+                        style={{
+                          position: 'absolute',
+                          top: '-8px',
+                          right: '-8px',
+                          background: '#e74c3c',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          cursor: 'pointer',
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                        title="Remove from upload"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </label>
-            <label style={{ display: 'block', marginBottom: '10px' }}>
-              <strong>Add Videos:</strong>
+
+            {/* Existing Videos */}
+            <div style={{ marginBottom: '15px' }}>
+              <strong>Current Videos:</strong>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
+                {editedSkill?.videos && editedSkill.videos.length > 0 ? (
+                  editedSkill.videos
+                    .filter(vid => !removedVideos.includes(vid))
+                    .map((vid, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '160px', height: '100px' }}>
+                        <video 
+                          src={vid} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
+                          muted
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setRemovedVideos([...removedVideos, vid])}
+                          style={{
+                            position: 'absolute',
+                            top: '-8px',
+                            right: '-8px',
+                            background: '#e74c3c',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '28px',
+                            height: '28px',
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          }}
+                          title="Remove video"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))
+                ) : (
+                  <small style={{ color: '#666', fontStyle: 'italic' }}>No videos yet</small>
+                )}
+              </div>
+            </div>
+
+            {/* Add New Videos */}
+            <label style={{ display: 'block', marginBottom: '15px' }}>
+              <strong>Add New Videos:</strong>
               <input
                 type="file"
                 accept="video/*"
@@ -368,7 +529,45 @@ export default function SkillDescription() {
                 onChange={(e) => setNewVideos(Array.from(e.target.files))}
                 style={{ width: '100%', padding: '8px', marginTop: '5px', fontSize: '16px' }}
               />
-              {newVideos.length > 0 && <small>{newVideos.length} video(s) selected</small>}
+              {newVideos.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                  {newVideos.map((file, idx) => (
+                    <div key={idx} style={{ position: 'relative', width: '160px', height: '100px' }}>
+                      <video 
+                        src={URL.createObjectURL(file)} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '2px solid #4CAF50' }}
+                        controls
+                        muted
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewVideos(newVideos.filter((_, i) => i !== idx))}
+                        style={{
+                          position: 'absolute',
+                          top: '-8px',
+                          right: '-8px',
+                          background: '#e74c3c',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '28px',
+                          height: '28px',
+                          cursor: 'pointer',
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                        title="Remove from upload"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </label>
           </div>
         ) : (
