@@ -1,7 +1,6 @@
 //import needed modules
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Chat.css'
 import { BellIcon,} from "@heroicons/react/24/outline";
 
 //MAIN chat component
@@ -81,24 +80,24 @@ const Chat = props => {
     )
 
     return (
-        <div className="chat-page">
+        <div className="flex flex-col items-stretch h-screen w-screen bg-white dark:bg-[#121212] box-border overflow-hidden m-0">
             {/* Header */}
-            <div className="chat-header">
-                <h1 className="chat-title">Chat</h1>
-                <div className="header-actions">
+            <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen shrink-0">
+                <h1 className="text-2xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">Chat</h1>
+                <div className="flex gap-3">
                     <button
-                        className="requests-btn"
+                        className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center"
                         aria-label="Requests"
                         title="Requests"
                         onClick={() => navigate('/requests')}
                     >
-                        <BellIcon aria-hidden="true" />
+                        <BellIcon className="w-6 h-6 block" aria-hidden="true" />
                     </button>
                 </div>
             </div>
 
             {/* Search Bar */}
-            <div className="search-container">
+            <div className="fixed top-[calc(64px+62px)] left-0 right-0 z-[9] text-center py-4 px-0 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333]">
                 <input
                     type="text"
                     placeholder="Search conversations..."
@@ -109,12 +108,12 @@ const Chat = props => {
             </div>
 
             {/* Chat List */}
-            <div className="chat-list">
+            <div className="flex-1 overflow-y-auto bg-white dark:bg-[#121212] pt-[calc(64px+135px)] pb-[calc(200px+env(safe-area-inset-bottom))] -webkit-overflow-scrolling-touch">
                 {loading && (
-                    <div className="no-results"><p>Loading conversations…</p></div>
+                    <div className="text-center py-12"><p className="text-[#888] dark:text-[#aaa]">Loading conversations…</p></div>
                 )}
                 {!loading && error && (
-                    <div className="no-results"><p>{error}</p></div>
+                    <div className="text-center py-12"><p className="text-[#888] dark:text-[#aaa]">{error}</p></div>
                 )}
                 {!loading && !error && filteredChats.length > 0 ? (
                     filteredChats.map(chat => (
@@ -131,8 +130,8 @@ const Chat = props => {
                     ))
                 ) : (
                     !loading && !error && (
-                        <div className="no-results">
-                            <p>No conversations found</p>
+                        <div className="text-center py-12">
+                            <p className="text-[#888] dark:text-[#aaa]">No conversations found</p>
                         </div>
                     )
                 )}
@@ -152,7 +151,7 @@ const ProfileImage = ({ photo, name }) => {
 
     if (imageError) {
         return (
-            <div className="profile-fallback">
+            <div className="w-full h-full flex items-center justify-center bg-[#6c757d] text-white text-base font-semibold rounded-full">
                 {initial}
             </div>
         )
@@ -163,6 +162,7 @@ const ProfileImage = ({ photo, name }) => {
             src={photo} 
             alt={name} 
             onError={handleImageError}
+            className="w-full h-full object-cover"
         />
     )
 }
@@ -175,23 +175,23 @@ const ChatItem = ({ id, name, photo, last_message, timestamp, unread, online }) 
     }
 
     return (
-        <div className="chat-item" onClick={handleChatClick}>
-            <div className="profile-section">
-                <div className="profile-picture">
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-[#f0f0f0] dark:border-[#2c2c2c] cursor-pointer transition-colors hover:bg-[#f8f9fa] dark:hover:bg-[#1e1e1e] active:bg-[#e9ecef] dark:active:bg-[#2a2a2a]" onClick={handleChatClick}>
+            <div className="relative shrink-0">
+                <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
                     <ProfileImage photo={photo} name={name} />
-                    {online && <div className="online-indicator"></div>}
+                    {online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#28a745] border-2 border-white dark:border-[#121212] rounded-full"></div>}
                 </div>
             </div>
             
-            <div className="chat-content">
-                <div className="chat-header-row">
-                    <span className="contact-name">{name}</span>
-                    <span className="message-time">{timestamp}</span>
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-[15px] text-[#212529] dark:text-[#f1f1f1] truncate">{name}</span>
+                    <span className="text-xs text-[#6c757d] dark:text-[#aaa] whitespace-nowrap ml-2">{timestamp}</span>
                 </div>
-                <div className="message-preview">
-                    <span className="last-message">{last_message}</span>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#6c757d] dark:text-[#aaa] truncate flex-1">{last_message}</span>
                     {unread > 0 && (
-                        <div className="unread-badge">
+                        <div className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-primary text-white text-xs font-semibold rounded-full ml-2">
                             {unread}
                         </div>
                     )}

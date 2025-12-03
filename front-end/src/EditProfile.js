@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './EditProfile.css';
-import './Messages.css';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 const blankProfile = {
   userId: 1,
@@ -13,7 +12,6 @@ const blankProfile = {
 
 // Skill List Editor component ...
 function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
-  // (Unchanged)
   const [showAdd, setShowAdd] = useState(false);
   const [newSkill, setNewSkill] = useState('');
   const handleAdd = () => {
@@ -24,14 +22,18 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
     }
   };
   return (
-    <div className="SkillsEditor">
-      <h4 className="SkillsLabel">{label}</h4>
-      <div className="SkillsTags">
+    <div className="mb-6">
+      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</h4>
+      <div className="flex flex-wrap gap-2 mb-3">
         {skills.map((skill, i) => (
           <span
             tabIndex={0}
             key={i}
-            className={`SkillTag ${tagExtraClass}`}
+            className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-all ${
+              tagExtraClass === 'wanted' 
+                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800' 
+                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
+            }`}
             title="Click to remove"
             onClick={() => {
               if (window.confirm(`Remove "${skill}"?`)) onRemove(skill);
@@ -48,31 +50,31 @@ function SkillsEditor({ skills, onAdd, onRemove, label, tagExtraClass = '' }) {
       </div>
       {showAdd ? (
         <form
-          className="AddSkillForm"
+          className="flex gap-2"
           onSubmit={e => {
             e.preventDefault();
             handleAdd();
           }}
         >
           <input
-            className="AddSkillInput"
+            className="form-input flex-1"
             value={newSkill}
             onChange={e => setNewSkill(e.target.value)}
             placeholder="Type new skill"
             autoFocus
             aria-label="New Skill"
           />
-          <button type="submit" className="AddSkillButton">Add</button>
+          <button type="submit" className="btn btn-primary">Add</button>
           <button
             type="button"
-            className="AddSkillButton"
+            className="btn"
             onClick={() => setShowAdd(false)}
           >Cancel</button>
         </form>
       ) : (
         <button
           type="button"
-          className="AddSkillButton"
+          className="btn"
           onClick={() => setShowAdd(true)}
         >Add Skill +</button>
       )}
@@ -161,64 +163,68 @@ const EditProfile = () => {
   if (!profile) return <div>Loading...</div>;
 
   return (
-    <main className="edit-profile-page">
-      <header className="messages-header">
-        <button className="back-btn" onClick={() => window.history.back()} aria-label="Back">←</button>
+    <main className="min-h-screen bg-white dark:bg-[#121212] pt-[65px]">
+      <header className="fixed top-[65px] left-0 right-0 z-10 flex items-center gap-4 px-4 py-3 border-b border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]">
+        <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => window.history.back()} aria-label="Back">
+          <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Profile</h1>
       </header>
-      <div className="edit-profile-content">
-        <div className="ProfilePhotoSection">
-  <img
-    className="Avatar"
-    src={
-      photoFile
-        ? URL.createObjectURL(photoFile)
-        : profile.profilePhoto || blankProfile.profilePhoto
-    }
-    alt="Profile"
-  />
-  <input
-    type="file"
-    accept="image/*"
-    id="profile-photo-upload"
-    style={{ display: "none" }}
-    onChange={handlePhotoChange}
-  />
-  {/* Use styled label as the button, NOT a <button> */}
-  <label
-    htmlFor="profile-photo-upload"
-    className="UploadButton"
-    tabIndex={0}
-    style={{ cursor: "pointer", display: "inline-block", marginTop: 10 }}
-  >
-    Upload/Change Photo
-  </label>
-</div>
-        <div className="AboutSection">
-          <label htmlFor="about">About Me:</label>
-          <textarea
-            id="about"
-            className="form-input"
-            maxLength={500}
-            value={profile.about}
-            onChange={e => handleChange('about', e.target.value)}
-          />
+      <div className="px-4 py-6 pt-[72px] pb-20 max-w-2xl mx-auto">
+        <div className="card mb-6">
+          <div className="flex flex-col items-center mb-6">
+            <img
+              className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-gray-200 dark:border-gray-700"
+              src={
+                photoFile
+                  ? URL.createObjectURL(photoFile)
+                  : profile.profilePhoto || blankProfile.profilePhoto
+              }
+              alt="Profile"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              id="profile-photo-upload"
+              style={{ display: "none" }}
+              onChange={handlePhotoChange}
+            />
+            <label
+              htmlFor="profile-photo-upload"
+              className="btn btn-primary cursor-pointer"
+              tabIndex={0}
+            >
+              Upload/Change Photo
+            </label>
+          </div>
+          <div className="mb-6">
+            <label htmlFor="about" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">About Me:</label>
+            <textarea
+              id="about"
+              className="form-input min-h-[120px]"
+              maxLength={500}
+              value={profile.about}
+              onChange={e => handleChange('about', e.target.value)}
+              placeholder="Tell us about yourself..."
+            />
+          </div>
+          <div className="mb-6">
+            <SkillsEditor
+              skills={profile.skillsAcquired}
+              onAdd={skill => addSkill('skillsAcquired', skill)}
+              onRemove={skill => removeSkill('skillsAcquired', skill)}
+              label="Skills Offered:"
+            />
+            <SkillsEditor
+              skills={profile.skillsWanted}
+              onAdd={skill => addSkill('skillsWanted', skill)}
+              onRemove={skill => removeSkill('skillsWanted', skill)}
+              label="Skills Wanted:"
+              tagExtraClass="wanted"
+            />
+          </div>
+          <button className="btn btn-primary w-full" onClick={handleSave}>Save Changes</button>
         </div>
-        <div className="SkillsSection">
-          <SkillsEditor
-            skills={profile.skillsAcquired}
-            onAdd={skill => addSkill('skillsAcquired', skill)}
-            onRemove={skill => removeSkill('skillsAcquired', skill)}
-            label="Skills Offered:"
-          />
-          <SkillsEditor
-            skills={profile.skillsWanted}
-            onAdd={skill => addSkill('skillsWanted', skill)}
-            onRemove={skill => removeSkill('skillsWanted', skill)}
-            label="Skills Wanted:"
-            tagExtraClass="wanted"
-          />
-        </div>
-        <button className="SaveButton" onClick={handleSave}>Save Changes</button>
       </div>
     </main>
   );

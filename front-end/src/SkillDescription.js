@@ -1,7 +1,6 @@
 import React, { useContext, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SkillsContext } from "./SkillsContext";
-import "./SkillDescription.css";
 
 export default function SkillDescription() {
   // URL like /skills/5 → we read "5"
@@ -22,9 +21,9 @@ export default function SkillDescription() {
   // ---- loading state ----
   if (!skills || skills.length === 0) {
     return (
-      <div className="page">
+      <div className="min-h-screen bg-white dark:bg-[#121212] flex items-center justify-center p-4">
         <div className="card">
-          <p>Loading skill...</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">Loading skill...</p>
         </div>
       </div>
     );
@@ -33,9 +32,9 @@ export default function SkillDescription() {
   // ---- not found / bad id ----
   if (!skill) {
     return (
-      <div className="page">
+      <div className="min-h-screen bg-white dark:bg-[#121212] flex items-center justify-center p-4">
         <div className="card">
-          <p>Skill not found.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400">Skill not found.</p>
         </div>
       </div>
     );
@@ -62,23 +61,23 @@ export default function SkillDescription() {
   };
 
   return (
-    <div className="page">
-      <div className="card">
+    <div className="min-h-screen bg-white dark:bg-[#121212] px-4 py-6 pt-[77px] pb-20">
+      <div className="card max-w-3xl mx-auto">
         {/* Skill name (from offering) */}
-        <h1 className="title">{skill.name}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{skill.name}</h1>
 
         {/* Slideshow for images and videos */}
         {allMedia.length > 0 && (
-          <div className="slideshow">
-            <div className="slideshow-container">
+          <div className="relative mb-6">
+            <div className="rounded-app overflow-hidden bg-gray-100 dark:bg-gray-800">
               {allMedia[currentIndex].type === 'image' ? (
                 <img
                   src={allMedia[currentIndex].src}
                   alt={`${skill.name} ${currentIndex + 1}`}
-                  className="slide-image"
+                  className="w-full h-auto max-h-96 object-cover"
                 />
               ) : (
-                <video controls className="slide-video" key={currentIndex}>
+                <video controls className="w-full h-auto max-h-96" key={currentIndex}>
                   <source src={allMedia[currentIndex].src} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -88,21 +87,23 @@ export default function SkillDescription() {
             {/* Navigation buttons - only show if more than 1 item */}
             {allMedia.length > 1 && (
               <>
-                <button className="slide-btn prev" onClick={prevSlide}>❮</button>
-                <button className="slide-btn next" onClick={nextSlide}>❯</button>
+                <button className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors" onClick={prevSlide}>❮</button>
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors" onClick={nextSlide}>❯</button>
                 
                 {/* Thumbnail gallery */}
-                <div className="thumbnail-gallery">
+                <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
                   {allMedia.map((media, idx) => (
                     <div
                       key={idx}
-                      className={`thumbnail ${idx === currentIndex ? 'active' : ''}`}
+                      className={`flex-shrink-0 w-16 h-16 rounded-app overflow-hidden cursor-pointer border-2 transition-all ${
+                        idx === currentIndex ? 'border-primary' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                      }`}
                       onClick={() => setCurrentIndex(idx)}
                     >
                       {media.type === 'image' ? (
-                        <img src={media.src} alt={`Thumbnail ${idx + 1}`} />
+                        <img src={media.src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="video-thumbnail">
+                        <div className="w-full h-full bg-gray-800 flex items-center justify-center text-white text-2xl">
                           <span>▶</span>
                         </div>
                       )}
@@ -116,18 +117,18 @@ export default function SkillDescription() {
 
         {/* Long description (detail from offering).
             If detail is empty for that row, fall back to brief. */}
-        <p className="description">
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
           {skill.detail || skill.brief || "No description provided yet."}
         </p>
 
         {/* Extra metadata */}
-        <div className="meta">
-          <p>
-            <strong>Categories:</strong>{" "}
+        <div className="space-y-2 mb-6">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            <strong className="font-semibold">Categories:</strong>{" "}
             {skill.categories && skill.categories.length > 0 ? (
-              <span className="categories-list">
+              <span className="inline-flex flex-wrap gap-2 ml-2">
                 {skill.categories.map((cat, idx) => (
-                  <span key={idx} className="category-tag">
+                  <span key={idx} className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                     {cat}
                   </span>
                 ))}
@@ -136,13 +137,13 @@ export default function SkillDescription() {
               "—"
             )}
           </p>
-          <p>
-            <strong>Posted by:</strong> {skill.username || "anonymous"}
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            <strong className="font-semibold">Posted by:</strong> {skill.username || "anonymous"}
           </p>
         </div>
 
         <button
-          className="button"
+          className="btn btn-primary w-full"
           onClick={() =>
             nav(
               `/requests/new?skillId=${encodeURIComponent(

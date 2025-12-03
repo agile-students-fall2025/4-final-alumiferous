@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './Messages.css';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 // Constants
 const API_BASE = 'http://localhost:3000/api';
@@ -18,23 +18,36 @@ const formatTime = (dateString) => {
 };
 
 // Normalize message data from API
-const normalizeMessage = (item, userId) => ({
+const normalizeMessage = (item, userId, chatData = null) => ({
   id: item._id,
   chatId: String(item.chatId),
   content: item.content || '',
   timestamp: formatTime(item.sentAt || item.timestamp),
   is_me: item.senderId === userId,
+  sender_name: item.senderName || 'User',
+  sender_photo: item.senderPhoto || (chatData ? getSenderPhoto(item.senderId, chatData, userId) : '/images/avatar-default.png'),
 });
+
+// Helper to get sender photo from chat data
+const getSenderPhoto = (senderId, chatData, currentUserId) => {
+  if (!chatData?.userId || !chatData?.friendId) return '/images/avatar-default.png';
+  
+  const isCurrentUserFirst = chatData.userId._id === currentUserId;
+  const currentUserData = isCurrentUserFirst ? chatData.userId : chatData.friendId;
+  const otherUserData = isCurrentUserFirst ? chatData.friendId : chatData.userId;
+  
+  // If sender is current user, use current user's photo, otherwise use other user's photo
+  const senderData = senderId === currentUserId ? currentUserData : otherUserData;
+  return senderData?.profilePhoto || '/images/avatar-default.png';
+};
 
 const MessageItem = ({ sender_name, sender_photo, content, timestamp, is_me }) => {
   return (
-    <div className={`message-item ${is_me ? 'mine' : 'theirs'}`}>
-      {!is_me && <img className="avatar" src={sender_photo} alt={sender_name} />}
-      <div className="bubble">
-        <div className="content">{content}</div>
-        {timestamp && <div className="meta">{timestamp}</div>}
+    <div className={`flex gap-2 mb-4 ${is_me ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`max-w-[70%] ${is_me ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-[#2b2b2b] text-gray-900 dark:text-white'} rounded-2xl px-4 py-2`}>
+        <div className="text-base">{content}</div>
+        {timestamp && <div className="text-xs opacity-70 mt-1">{timestamp}</div>}
       </div>
-      {is_me && <img className="avatar" src={sender_photo} alt={sender_name} />}
     </div>
   );
 };
@@ -51,6 +64,7 @@ const Messages = () => {
   const [chatSenderName, setChatSenderName] = useState('');
   const [userId, setUserId] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [chatData, setChatData] = useState(null);
 
   // Scroll to bottom when messages change
   const scrollToBottom = useCallback(() => {
@@ -79,6 +93,7 @@ const Messages = () => {
     if (!userId) return;
 
     let isMounted = true;
+    let chatDataCache = null;
 
     const fetchChatInfo = async () => {
       try {
@@ -86,6 +101,7 @@ const Messages = () => {
         if (!res.ok) throw new Error('Failed to fetch chat');
 
         const chatData = await res.json();
+        chatDataCache = chatData;
         let name = 'Unknown';
 
         if (chatData?.userId && chatData?.friendId) {
@@ -94,16 +110,19 @@ const Messages = () => {
           name = otherUser?.username || otherUser?.email || 'Unknown';
         }
 
-        if (isMounted) setChatSenderName(name);
-        return name;
+        if (isMounted) {
+          setChatSenderName(name);
+          setChatData(chatData);
+        }
+        return chatData;
       } catch (err) {
         console.error('Failed to load chat info:', err);
         if (isMounted) setError('Failed to load chat info');
-        return 'Unknown';
+        return null;
       }
     };
 
-    const fetchMessages = async () => {
+    const fetchMessages = async (chatData) => {
       try {
         const url = `${API_BASE}/messages?chat_id=${encodeURIComponent(id)}`;
         const res = await fetch(url);
@@ -111,7 +130,7 @@ const Messages = () => {
 
         const data = await res.json();
         const messagesArray = Array.isArray(data) ? data : [data];
-        const normalized = messagesArray.map(item => normalizeMessage(item, userId));
+        const normalized = messagesArray.map(item => normalizeMessage(item, userId, chatData));
 
         if (isMounted) setMessages(normalized);
       } catch (err) {
@@ -124,8 +143,8 @@ const Messages = () => {
 
     const loadData = async () => {
       setLoading(true);
-      await fetchChatInfo();
-      await fetchMessages();
+      const chatData = await fetchChatInfo();
+      await fetchMessages(chatData);
     };
 
     loadData();
@@ -157,12 +176,20 @@ const Messages = () => {
       if (!res.ok) throw new Error('Failed to send message');
 
       const newMsg = await res.json();
+      
+      // Get current user's photo for the new message
+      const currentUserPhoto = chatData && chatData.userId && chatData.friendId
+        ? (chatData.userId._id === userId ? chatData.userId.profilePhoto : chatData.friendId.profilePhoto)
+        : '/images/avatar-default.png';
+      
       setMessages(prev => [...prev, {
         id: newMsg._id,
         chatId: newMsg.chatId,
         content: newMsg.content,
         timestamp: formatTime(newMsg.sentAt || newMsg.timestamp),
         is_me: true,
+        sender_name: 'You',
+        sender_photo: currentUserPhoto || '/images/avatar-default.png',
       }]);
 
       setDraft('');
@@ -175,18 +202,20 @@ const Messages = () => {
   };
 
   return (
-    <div className="messages-page">
-      <div className="messages-header">
-        <button className="back-btn" onClick={() => navigate('/chat')}>←</button>
-        <h1 className="title">{chatSenderName}</h1>
+    <div className="flex flex-col h-screen bg-white dark:bg-[#121212]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]">
+        <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => navigate('/chat')}>
+          <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{chatSenderName}</h1>
         <div style={{ width: 32 }} />
       </div>
 
-      <div className="messages-list">
-        {loading && <div className="messages-empty">Loading messages…</div>}
-        {!loading && error && <div className="messages-empty">{error}</div>}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        {loading && <div className="text-center text-gray-500 dark:text-gray-400 py-8">Loading messages…</div>}
+        {!loading && error && <div className="text-center text-danger py-8">{error}</div>}
         {!loading && !error && messages.length === 0 && (
-          <div className="messages-empty">No messages yet</div>
+          <div className="text-center text-gray-500 dark:text-gray-400 py-8">No messages yet</div>
         )}
         {!loading && !error && messages.map(m => (
           <MessageItem key={m.id} {...m} />
@@ -194,7 +223,7 @@ const Messages = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <form className="composer" onSubmit={onSend}>
+      <form className="flex items-center gap-2 px-4 py-3 border-t border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]" onSubmit={onSend}>
         <input
           type="text"
           className="form-input"
@@ -203,7 +232,7 @@ const Messages = () => {
           onChange={e => setDraft(e.target.value)}
           disabled={isSending}
         />
-        <button type="submit" aria-label="Send" disabled={isSending}>
+        <button type="submit" aria-label="Send" disabled={isSending} className="text-2xl text-primary hover:text-blue-700 dark:hover:text-blue-400 transition-colors disabled:opacity-50">
           {isSending ? '⏳' : '➤'}
         </button>
       </form>

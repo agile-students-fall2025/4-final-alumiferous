@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
-import './Login.css'
 
 const Login = props => {
   let [urlSearchParams] = useSearchParams() // Get query params
@@ -90,70 +89,96 @@ const Login = props => {
   // Show combined login/signup form
   if (!status.success)
     return (
-      <div className="Login">
-        <h1 className="logo">InstaSkill</h1>
-        
-        {/* Toggle buttons */}
-        <div className="form-toggle">
-          <button 
-            type="button"
-            className={isLogin ? 'active' : ''}
-            onClick={() => {
-              setIsLogin(true)
-              setErrorMessage('')
-            }}
-          >
-            Log In
-          </button>
-          <button 
-            type="button"
-            className={!isLogin ? 'active' : ''}
-            onClick={() => {
-              setIsLogin(false)
-              setErrorMessage('')
-            }}
-          >
-            Sign Up
-          </button>
-        </div>
+      <div className="w-screen h-screen m-0 px-5 py-6 md:px-8 md:py-8 bg-white dark:bg-[#121212] text-[#222] dark:text-[#f1f1f1] flex flex-col justify-center items-stretch md:items-center">
+        <div className="w-full max-w-[450px]">
+          <h1 className="text-center mb-5 font-semibold font-fantasy text-[1.8em]">InstaSkill</h1>
+          
+          {/* Toggle buttons */}
+          <div className="flex mb-6 border-2 border-[#a8a8a8] dark:border-[#333] rounded-[25px] overflow-hidden bg-white dark:bg-[#121212]">
+            <button 
+              type="button"
+              className={`flex-1 py-4 px-5 border-none font-medium text-base cursor-pointer transition-all duration-300 ${
+                isLogin 
+                  ? 'bg-primary dark:bg-primary text-white' 
+                  : 'bg-transparent text-[#666] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-white'
+              }`}
+              onClick={() => {
+                setIsLogin(true)
+                setErrorMessage('')
+              }}
+            >
+              Log In
+            </button>
+            <button 
+              type="button"
+              className={`flex-1 py-4 px-5 border-none font-medium text-base cursor-pointer transition-all duration-300 ${
+                !isLogin 
+                  ? 'bg-primary dark:bg-primary text-white' 
+                  : 'bg-transparent text-[#666] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-white'
+              }`}
+              onClick={() => {
+                setIsLogin(false)
+                setErrorMessage('')
+              }}
+            >
+              Sign Up
+            </button>
+          </div>
 
-        {errorMessage ? <p className="error">{errorMessage}</p> : ''} 
-        
-        <section className="main-content">
-          <form onSubmit={handleSubmit}>
-            {/* Email field (for both login and signup) */}
-            <input type="email" name="email" className="form-input" placeholder="Email" required />
-            
-            {/* Name fields (only for signup) */}
-            <div className={`name-row ${!isLogin ? 'show' : ''}`}>
-              <input
-                type="text"
-                name="firstName"
-                className="form-input"
-                placeholder="First Name"
-                required={!isLogin}
+          {errorMessage ? (
+            <p className="text-[#d32f2f] dark:text-[#ffcdd2] bg-[#ffeaea] dark:bg-[#5c1f1f] py-2 px-2 rounded-md mb-3 text-center text-[0.95em]">
+              {errorMessage}
+            </p>
+          ) : ''} 
+          
+          <section className="mt-2.5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              {/* Email field (for both login and signup) */}
+              <input 
+                type="email" 
+                name="email" 
+                className="w-full py-3 px-4 border border-[#ddd] dark:border-[#444] rounded-app text-base outline-none transition-all shadow-sm dark:bg-[#2b2b2b] dark:text-white placeholder:text-[#999] dark:placeholder:text-[#aaa] focus:border-primary focus:shadow-[0_2px_8px_rgba(25,118,210,0.15)]" 
+                placeholder="Email" 
+                required 
               />
+              
+              {/* Name fields (only for signup) */}
+              <div className={`flex flex-col sm:flex-row gap-4 sm:gap-3 transition-all duration-400 ${
+                !isLogin ? 'max-h-[200px] opacity-100 mb-0' : 'max-h-0 opacity-0 overflow-hidden mb-0'
+              }`}>
+                <input
+                  type="text"
+                  name="firstName"
+                  className="flex-1 w-full py-3 px-4 border border-[#ddd] dark:border-[#444] rounded-app text-base outline-none transition-all shadow-sm dark:bg-[#2b2b2b] dark:text-white placeholder:text-[#999] dark:placeholder:text-[#aaa] focus:border-primary focus:shadow-[0_2px_8px_rgba(25,118,210,0.15)]"
+                  placeholder="First Name"
+                  required={!isLogin}
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  className="flex-1 w-full py-3 px-4 border border-[#ddd] dark:border-[#444] rounded-app text-base outline-none transition-all shadow-sm dark:bg-[#2b2b2b] dark:text-white placeholder:text-[#999] dark:placeholder:text-[#aaa] focus:border-primary focus:shadow-[0_2px_8px_rgba(25,118,210,0.15)]"
+                  placeholder="Last Name"
+                  required={!isLogin}
+                />
+              </div>
+              
+              {/* Password field */}
               <input
-                type="text"
-                name="lastName"
-                className="form-input"
-                placeholder="Last Name"
-                required={!isLogin}
+                type="password"
+                name="password"
+                className="w-full py-3 px-4 border border-[#ddd] dark:border-[#444] rounded-app text-base outline-none transition-all shadow-sm dark:bg-[#2b2b2b] dark:text-white placeholder:text-[#999] dark:placeholder:text-[#aaa] focus:border-primary focus:shadow-[0_2px_8px_rgba(25,118,210,0.15)]"
+                placeholder="Password"
+                required
               />
-            </div>
-            
-            {/* Password field */}
-            <input
-              type="password"
-              name="password"
-              className="form-input"
-              placeholder="Password"
-              required
-            />
-            
-            <input type="submit" value={isLogin ? 'Log In' : 'Sign Up'} />
-          </form>
-        </section>
+              
+              <input 
+                type="submit" 
+                value={isLogin ? 'Log In' : 'Sign Up'} 
+                className="bg-primary dark:bg-primary text-white border-none rounded-lg py-[18px] px-6 text-base font-semibold cursor-pointer mt-5 transition-all duration-200 w-full hover:bg-primary-hover dark:hover:bg-primary-hover hover:-translate-y-0.5"
+              />
+            </form>
+          </section>
+        </div>
       </div>
     )
 

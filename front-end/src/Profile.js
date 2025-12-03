@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SkillsContext } from './SkillsContext';
-import './Profile.css';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 const Profile = () => {
@@ -138,20 +137,19 @@ const Profile = () => {
 
   return (
     <main>
-      <div className="ProfileContent">
-        <div className="ProfileHeader">
-          <h1 className="ProfileTitle" onClick={() => navigate("/Profile")}>Profile</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen w-screen max-w-[600px] bg-white dark:bg-[#121212] overflow-hidden p-0 pt-[65px] mt-2.5 mb-4 mx-auto md:pt-[calc(65px+62px)] md:pb-[120px] md:scroll-smooth">
+        <div className="fixed top-[65px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen shrink-0 md:px-3 md:py-3">
+          <h1 className="text-2xl md:text-xl font-semibold text-[#333] dark:text-[#f1f1f1] m-0 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis" onClick={() => navigate("/Profile")}>Profile</h1>
           <button
-            className="EditButton"
+            className="bg-transparent border-none text-xl text-[#333] dark:text-white rounded-full p-1.5 mr-1.5 shadow-none outline-none transition-colors duration-200 flex items-center justify-center"
             onClick={isEditing ? handleSave : handleEditToggle}
             title={isEditing ? "Save Profile" : "Edit Profile"}
-            // style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
           >
-            {isEditing ? "Save" : <PencilSquareIcon style={{ width: 22, height: 22 }} />}
+            {isEditing ? "Save" : <PencilSquareIcon className="w-[22px] h-[22px]" />}
           </button>
         </div>
           <img
-            className="Avatar"
+            className="w-[104px] h-[104px] md:w-[72px] md:h-[72px] rounded-full object-cover shadow-[0_2px_12px_rgba(33,89,135,0.11)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] border-4 border-[#e6f0ff] dark:border-[#2b2b2b] mt-2 mb-1 block mx-auto"
             src={
               isEditing && photoFile
                 ? URL.createObjectURL(photoFile)
@@ -165,81 +163,78 @@ const Profile = () => {
                 type="file"
                 accept="image/*"
                 id="profile-photo-upload"
-                style={{ display: "none" }}
+                className="hidden"
                 onChange={handlePhotoChange}
               />
               <label
                 htmlFor="profile-photo-upload"
-                className="UploadButton"
+                className="cursor-pointer inline-block mt-2.5 bg-primary text-white border-none rounded-app py-3 px-6 font-semibold hover:bg-primary-hover transition-colors"
                 tabIndex={0}
-                style={{ cursor: "pointer", display: "inline-block", marginTop: 10 }}
               >
                 Upload/Change Photo
               </label>
             </>
           )}
-        <div className="UserInfo">
+        <div className="text-center mb-4 flex flex-col items-center">
           {isEditing ? (
             <>
             <input
-              className="ProfileUsernameInput form-input"
+              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
               value={formState.firstName || ""}
               onChange={e => handleChange("firstName", e.target.value)}
               placeholder="First Name"
             />
             <input
-              className="ProfileUsernameInput form-input"
+              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7] mt-2"
               value={formState.lastName || ""}
               onChange={e => handleChange("lastName", e.target.value)}
               placeholder="Last Name"
-              style={{ marginTop: 8 }}
             />
             <input
-              className="ProfileUsernameInput form-input"
+              className="w-full max-w-[520px] text-xl font-normal py-2.5 px-4 rounded-[13px] border-2 border-[#cbcbcb] dark:border-[#444] text-center block bg-white dark:bg-[#2b2b2b] mx-auto mb-2 dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7] mt-2"
               value={formState.username || ""}
               onChange={e => handleChange("username", e.target.value)}
               placeholder="Username"
-              style={{ marginTop: 8 }}
             />
             </>
           ) : (
             <>
-              <h2 className="ProfileFullName">
+              <h2 className="m-0 mb-0.5 text-[22px] font-normal text-[#191c1f] dark:text-[#f1f1f1] text-center tracking-[-0.01em]">
                 {user.firstName} {user.lastName}
               </h2>
-              <div className="ProfileUsername">
+              <div className="text-[#6a7791] dark:text-[#a0a0a0] text-[15px] text-center font-medium mb-1 tracking-[0.01em]">
                 @{user.username}
               </div>
             </>
           )}
         </div>
 
-        <div className="AboutSection">
-          <div className="AboutLabel">About</div>
+        <div className="w-1/2 md:w-[92vw] max-w-[540px] my-2 mx-auto flex flex-col items-center md:px-3">
+          <div className="text-[1.16rem] font-bold text-black dark:text-[#f1f1f1] mb-0.5 text-center">About</div>
           {isEditing ? (
             <textarea
               value={formState.bio || ""}
               onChange={e => handleChange("bio", e.target.value)}
-              className="ProfileBioInput form-input"
+              className="w-[96%] max-w-[520px] min-h-[80px] py-4 px-4 rounded-[13px] bg-white dark:bg-[#2b2b2b] border-[1.5px] border-black dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-[1.13rem] shadow-[0_1px_5px_rgba(255,255,255,0.06)] dark:shadow-[0_1px_5px_rgba(0,0,0,0.3)] mx-auto resize-y focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
             />
           ) : (
-            <div className="BioBox">
+            <div className="w-[90%] min-h-[50px] py-4 px-4 rounded-[13px] bg-white dark:bg-[#1e1e1e] border-[1.5px] border-[#e0e0e0] dark:border-[#444] text-[#313741] dark:text-[#f1f1f1] text-[1.13rem] shadow-[0_1px_5px_rgba(37,100,230,0.06)] dark:shadow-[0_1px_5px_rgba(0,0,0,0.3)] mx-auto text-left break-words">
               {user.bio}
             </div>
           )}
         </div>
 
         {/* My Skills Section */}
-        <div className="SkillsSection">
-          <h3 className="SectionHeader">My Skills</h3>
-          <div className="skill-grid">
+        <div className="w-full max-w-[540px] mt-[18px] mx-auto mb-0 flex flex-col items-center">
+          <h3 className="text-lg font-bold text-black dark:text-[#f1f1f1] mb-2 text-center">My Skills</h3>
+          <div className="w-full flex flex-col items-center gap-3.5 mb-[18px]">
             {userSkills.length === 0 ? (
-              <p>No skills created yet.</p>
+              <p className="text-center text-[#666] dark:text-[#a0a0a0] text-[15px]">No skills created yet.</p>
             ) : (
               userSkills.map(skill => (
-                <div className="skill-item-wrapper" key={skill.skillId || skill.id}>
+                <div className="flex flex-row items-center gap-2 flex-nowrap w-auto" key={skill.skillId || skill.id}>
                   <div 
-                    className="SkillCard"
+                    className="py-3 px-[17px] rounded-[18px] bg-primary dark:bg-primary text-white font-semibold shadow-[0_2.5px_13px_rgba(40,120,220,0.10)] dark:shadow-[0_2.5px_13px_rgba(77,171,247,0.2)] cursor-pointer text-[15px] tracking-[0.01em] inline-block whitespace-nowrap min-w-[90px] hover:bg-primary-hover"
                     onClick={() => {
                       if (!isEditing) {
                         const skillId = skill.skillId || skill.id || skill._id;
@@ -252,7 +247,7 @@ const Profile = () => {
                   </div>
                   {isEditing && (
                     <button
-                      className="delete-skill-btn"
+                      className="w-5 h-5 min-w-[20px] min-h-[20px] rounded-full bg-[#dc3545] text-white border-none text-sm font-bold cursor-pointer inline-flex items-center justify-center leading-none p-0 transition-all duration-200 shadow-[0_2px_4px_rgba(0,0,0,0.15)] shrink-0 align-middle hover:bg-[#c82333] hover:scale-110 active:scale-95"
                       onClick={(e) => confirmDelete(skill, e)}
                       aria-label="Delete skill"
                     >×</button>
@@ -264,29 +259,29 @@ const Profile = () => {
         </div>
 
         {/* Action buttons including Saved Skills */}
-        <div className="ActionButtons">
+        <div className="flex flex-row justify-center items-center gap-2.5 mt-2">
           <Link to="/saved">
-            <button className="SavedSkillsButton">Saved Skills</button>
+            <button className="btn btn-primary">Saved Skills</button>
           </Link>
           <Link to="/upload">
-            <button className="EditProfileButton">Create a Skill</button>
+            <button className="btn btn-primary">Create a Skill</button>
           </Link>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="delete-modal-overlay" onClick={handleDeleteCancel}>
-          <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
-            <h3 className="delete-modal-title">Delete Skill</h3>
-            <p className="delete-modal-text">
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center z-[1000]" onClick={handleDeleteCancel}>
+          <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl max-w-[400px] w-[90%] shadow-[0_4px_20px_rgba(0,0,0,0.3)]" onClick={(e) => e.stopPropagation()}>
+            <h3 className="m-0 mb-3 ml-0 mr-0 text-xl font-semibold text-[#333] dark:text-[#f1f1f1]">Delete Skill</h3>
+            <p className="m-0 mb-6 text-[15px] text-[#666] dark:text-[#a0a0a0] leading-[1.5]">
               Are you sure you want to delete "{skillToDelete?.name}"? This action cannot be undone.
             </p>
-            <div className="delete-modal-buttons">
-              <button className="delete-modal-btn cancel" onClick={handleDeleteCancel}>
+            <div className="flex gap-3 justify-end">
+              <button className="btn" onClick={handleDeleteCancel}>
                 Cancel
               </button>
-              <button className="delete-modal-btn confirm" onClick={handleDeleteConfirm}>
+              <button className="btn bg-danger hover:bg-red-700 text-white" onClick={handleDeleteConfirm}>
                 Delete
               </button>
             </div>

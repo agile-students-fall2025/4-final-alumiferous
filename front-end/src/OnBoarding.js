@@ -1,5 +1,4 @@
 import React, { useState, useContext, useMemo, useEffect } from "react";
-import "./OnBoarding.css";
 import SkillSelector from "./SkillsSelector";
 import { useNavigate } from "react-router-dom";
 import { SkillsContext } from "./SkillsContext";
@@ -236,18 +235,18 @@ const OnBoarding = () => {
   }, [skills, fixedNames]);
 
   return (
-    <div className="onboarding-container">
-      <form onSubmit={handleSubmit} className="onboarding-form">
+    <div className="min-h-screen bg-white dark:bg-[#121212] flex items-center justify-center px-4 py-8">
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
 
         {networkError && (
-          <p className="form-network-error">{networkError}</p>
+          <p className="text-center text-danger bg-red-50 dark:bg-red-900/20 p-3 rounded-app">{networkError}</p>
         )}
 
         {/* STEP 1: Username */}
         {step === 1 && (
-          <div className="onboarding-step">
-            <h1>Welcome to InstaSkill</h1>
-            <h2>Choose a username</h2>
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white">Welcome to InstaSkill</h1>
+            <h2 className="text-xl text-center text-gray-700 dark:text-gray-300">Choose a username</h2>
 
             <input
               type="text"
@@ -259,28 +258,29 @@ const OnBoarding = () => {
               disabled={isSubmitting}
             />
 
-            <div className="status-row">
-              {usernameChecking && <span className="status-muted">Checking username…</span>}
+            <div className="text-sm text-center min-h-6">
+              {usernameChecking && <span className="text-gray-500 dark:text-gray-400">Checking username…</span>}
               {!usernameChecking && usernameAvailable === false && formData.username && String(formData.username).trim().length < 4 && (
-                <span className="status-danger">Username must be at least 4 characters</span>
+                <span className="text-danger">Username must be at least 4 characters</span>
               )}
               {!usernameChecking && usernameAvailable === false && formData.username && String(formData.username).trim().length >= 4 && (
-                <span className="status-danger">Username already taken</span>
+                <span className="text-danger">Username already taken</span>
               )}
               {!usernameChecking && usernameAvailable === true && (
-                <span className="status-success">Username available</span>
+                <span className="text-green-600 dark:text-green-400">✓ Username available</span>
               )}
             </div>
 
             {errors.username && (
-              <div className="field-error">{errors.username}</div>
+              <div className="text-sm text-danger text-center">{errors.username}</div>
             )}
 
-            <div className="button-row">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => validateStep() ? nextStep() : setErrors(prev => ({ ...prev, username: 'Please enter a valid and available username.' }))}
                 disabled={isSubmitting || usernameChecking || usernameAvailable !== true}
+                className="btn btn-primary w-full"
               >
                 Next
               </button>
@@ -290,8 +290,8 @@ const OnBoarding = () => {
 
         {/* STEP 2: Needed skills */}
         {step === 2 && (
-          <div className="onboarding-step">
-            <h1>What do you want to learn?</h1>
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">What do you want to learn?</h1>
 
             <SkillSelector
               label="Select the skill(s) you need"
@@ -305,37 +305,48 @@ const OnBoarding = () => {
             />
 
             {errors.skillsWanted && (
-              <div className="field-error">{errors.skillsWanted}</div>
+              <div className="text-sm text-danger text-center">{errors.skillsWanted}</div>
             )}
 
-            <div className="button-row">
-              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
-              <button type="button" onClick={() => validateStep() ? nextStep() : setErrors(prev => ({ ...prev, skillsWanted: 'Please select at least one skill.' }))} disabled={isSubmitting}>Next</button>
+            <div className="flex gap-2">
+              <button type="button" onClick={prevStep} disabled={isSubmitting} className="btn flex-1">Back</button>
+              <button type="button" onClick={() => validateStep() ? nextStep() : setErrors(prev => ({ ...prev, skillsWanted: 'Please select at least one skill.' }))} disabled={isSubmitting} className="btn btn-primary flex-1">Next</button>
             </div>
           </div>
         )}
 
         {/* STEP 3: Profile photo upload */}
         {step === 3 && (
-          <div className="onboarding-step">
-            <h1>Upload a profile photo</h1>
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Upload a profile photo</h1>
 
-            <input type="file" accept="image/*" onChange={handlePhotoChange} disabled={isSubmitting} />
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handlePhotoChange} 
+              disabled={isSubmitting}
+              className="block w-full text-sm text-gray-500 dark:text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-app file:border-0
+                file:text-sm file:font-semibold
+                file:bg-primary file:text-white
+                hover:file:bg-blue-700 cursor-pointer"
+            />
             {photoPreview && (
-              <img src={photoPreview} alt="preview" className="photo-preview" />
+              <img src={photoPreview} alt="preview" className="w-32 h-32 rounded-full object-cover mx-auto" />
             )}
 
-            <div className="button-row">
-              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
-              <button type="button" onClick={() => nextStep()} disabled={isSubmitting}>Next</button>
+            <div className="flex gap-2">
+              <button type="button" onClick={prevStep} disabled={isSubmitting} className="btn flex-1">Back</button>
+              <button type="button" onClick={() => nextStep()} disabled={isSubmitting} className="btn btn-primary flex-1">Next</button>
             </div>
           </div>
         )}
 
         {/* STEP 4: Bio and final submit */}
         {step === 4 && (
-          <div className="onboarding-step">
-            <h1>Tell us about yourself</h1>
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Tell us about yourself</h1>
 
             <textarea
               name="bio"
@@ -348,13 +359,13 @@ const OnBoarding = () => {
             />
 
             {isSubmitting && (
-              <div className="upload-progress">
-                <div>Uploading: {uploadProgress}%</div>
+              <div className="text-center">
+                <div className="text-sm text-primary font-medium">Uploading: {uploadProgress}%</div>
               </div>
             )}
 
-            <div className="button-row">
-              <button type="button" onClick={prevStep} disabled={isSubmitting}>Back</button>
+            <div className="flex gap-2">
+              <button type="button" onClick={prevStep} disabled={isSubmitting} className="btn flex-1">Back</button>
               <button
                 type="submit"
                 onClick={(e) => {
@@ -365,6 +376,7 @@ const OnBoarding = () => {
                   }
                 }}
                 disabled={isSubmitting}
+                className="btn btn-primary flex-1"
               >
                 Finish
               </button>
