@@ -18,10 +18,14 @@ router.get('/', async (req, res) => {
     const chatData = await Promise.all(chats.map(async chat => {
       // Find last message
       const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
-      // Count unread messages (messages not sent by userId and not read)
+      // Count unread messages (messages not sent by userId AND not in readBy array)
       let unreadCount = 0;
       if (req.query.userId) {
-        unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId }, read: false });
+        unreadCount = await Message.countDocuments({ 
+          chatId: chat._id, 
+          senderId: { $ne: req.query.userId },
+          readBy: { $ne: req.query.userId } // Not marked as read by this user
+        });
       }
       return {
         ...chat.toObject(),
@@ -155,7 +159,11 @@ router.get('/:id', async (req, res) => {
     const lastMsg = await Message.findOne({ chatId: chat._id }).sort({ sentAt: -1 });
     let unreadCount = 0;
     if (req.query.userId) {
-      unreadCount = await Message.countDocuments({ chatId: chat._id, senderId: { $ne: req.query.userId }, read: false });
+      unreadCount = await Message.countDocuments({ 
+        chatId: chat._id, 
+        senderId: { $ne: req.query.userId },
+        readBy: { $ne: req.query.userId } // Not marked as read
+      });
     }
     const chatObj = {
       ...chat.toObject(),
@@ -166,6 +174,40 @@ router.get('/:id', async (req, res) => {
     res.json(chatObj);
   } catch (err) {
     console.error('Error fetching chat:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/chats/:id/mark-read - mark all messages in a chat as read for a user
+router.post('/:id/mark-read', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+    
+    const Message = (await import('../models/Message.js')).default;
+    
+    // Update all messages in this chat that were NOT sent by userId to mark them as read
+    // We'll add a 'readBy' array field to messages to track who has read them
+    const result = await Message.updateMany(
+      { 
+        chatId: req.params.id, 
+        senderId: { $ne: userId },
+        readBy: { $ne: userId } // Only update if not already marked as read by this user
+      },
+      { 
+        $addToSet: { readBy: userId } // Add userId to readBy array
+      }
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'Messages marked as read',
+      modifiedCount: result.modifiedCount 
+    });
+  } catch (err) {
+    console.error('Error marking messages as read:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });

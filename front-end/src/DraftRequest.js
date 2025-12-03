@@ -50,8 +50,6 @@ export default function DraftRequest() {
     } else {
       setCurrentUsername('User');
     }
-    
-    console.log('Current user ID:', userId, 'Username:', currentUsername);
   }, []);
 
   const skill = { id: skillId, name: skillName };
@@ -66,6 +64,13 @@ export default function DraftRequest() {
       setError("Please log in to send a request");
       setIsSubmitting(false);
       setTimeout(() => nav('/login'), 2000);
+      return;
+    }
+
+    // Check if user is trying to request their own skill
+    if (currentUser === ownerIdParam) {
+      setError("You cannot request your own skill");
+      setIsSubmitting(false);
       return;
     }
 
@@ -122,6 +127,7 @@ export default function DraftRequest() {
         >
           <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
         </button>
+        <h1 className="draft-request-title">Draft Request</h1>
       </header>
       
       <div className="px-4 py-6 pt-[72px] pb-20 max-w-2xl mx-auto">

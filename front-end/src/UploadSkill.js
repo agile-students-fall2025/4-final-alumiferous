@@ -94,8 +94,13 @@ export default function UploadSkill() {
       }
       formData.append("brief", briefText);
       formData.append("detail", description);
-      formData.append("userId", 1);          // temp values
-      formData.append("username", "demo");   // temp values
+      
+      // Get actual logged-in user's ID and username from localStorage
+      const userId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
+      const username = localStorage.getItem('username') || 'anonymous';
+      
+      formData.append("userId", userId);
+      formData.append("username", username);
       // Attach images and videos (if any) under `images`/`videos` keys
       if (images && images.length) {
         images.forEach((f) => formData.append('images', f));
@@ -155,11 +160,23 @@ export default function UploadSkill() {
   };
 
   const handleImagesChange = (e) => {
-    setImages(Array.from(e.target.files || []));
+    const newFiles = Array.from(e.target.files || []);
+    setImages(prev => [...prev, ...newFiles]); // Append new images to existing ones
+    e.target.value = ''; // Reset input so same file can be selected again
+  };
+
+  const removeImage = (indexToRemove) => {
+    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handleVideosChange = (e) => {
-    setVideos(Array.from(e.target.files || []));
+    const newFiles = Array.from(e.target.files || []);
+    setVideos(prev => [...prev, ...newFiles]); // Append new videos to existing ones
+    e.target.value = ''; // Reset input so same file can be selected again
+  };
+
+  const removeVideo = (indexToRemove) => {
+    setVideos(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   return (
@@ -286,7 +303,17 @@ export default function UploadSkill() {
             {images && images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {images.map((f, idx) => (
-                  <img key={idx} src={URL.createObjectURL(f)} alt={`preview-${idx}`} className="w-20 h-20 object-cover rounded-app" />
+                  <div key={idx} className="preview-item">
+                    <img src={URL.createObjectURL(f)} alt={`preview-${idx}`} className="preview-thumb" />
+                    <button 
+                      type="button" 
+                      className="remove-preview-btn" 
+                      onClick={() => removeImage(idx)}
+                      aria-label="Remove image"
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -310,7 +337,17 @@ export default function UploadSkill() {
             {videos && videos.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {videos.map((f, idx) => (
-                  <video key={idx} controls className="w-40 h-40 rounded-app" src={URL.createObjectURL(f)} />
+                  <div key={idx} className="preview-item">
+                    <video controls className="preview-video" src={URL.createObjectURL(f)} />
+                    <button 
+                      type="button" 
+                      className="remove-preview-btn" 
+                      onClick={() => removeVideo(idx)}
+                      aria-label="Remove video"
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
             )}

@@ -13,26 +13,27 @@ const Profile = () => {
   const [skillToDelete, setSkillToDelete] = useState(null);
   const { skills } = useContext(SkillsContext);
 
-useEffect(() => {
-  const storedUserId = localStorage.getItem('userId') || localStorage.getItem('currentUserId');
-  if (!storedUserId) {
-    // optionally redirect to login if no user
-    navigate('/login');
-    return;
-  }
+  // Load logged‑in user's profile
+  useEffect(() => {
+    const storedUserId =
+      localStorage.getItem('userId') || localStorage.getItem('currentUserId');
 
-  fetch(`/api/profile/${storedUserId}`)
-    .then(res => res.json())
-    .then(data => {
-      setUser(data);
-      setFormState({ ...data });
-      setPhotoFile(null);
-    })
-    .catch(err => {
-      console.error('Error loading profile:', err);
-    });
-}, [navigate]);
+    if (!storedUserId) {
+      navigate('/login');
+      return;
+    }
 
+    fetch(`/api/profile/${storedUserId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data);
+        setFormState({ ...data });
+        setPhotoFile(null);
+      })
+      .catch((err) => {
+        console.error('Error loading profile:', err);
+      });
+  }, [navigate]);
 
   // Restore edit mode after reload
   useEffect(() => {
@@ -43,10 +44,10 @@ useEffect(() => {
     }
   }, []);
 
-  const handleEditToggle = () => setIsEditing(prev => !prev);
+  const handleEditToggle = () => setIsEditing((prev) => !prev);
 
   const handleChange = (field, value) =>
-    setFormState(s => ({ ...s, [field]: value }));
+    setFormState((s) => ({ ...s, [field]: value }));
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -59,18 +60,27 @@ useEffect(() => {
     formData.append('firstName', formState.firstName || '');
     formData.append('lastName', formState.lastName || '');
     formData.append('bio', formState.bio || '');
-    formData.append('skillsOffered', JSON.stringify(formState.skillsOffered || []));
-    formData.append('skillsWanted', JSON.stringify(formState.skillsWanted || []));
+    formData.append(
+      'skillsOffered',
+      JSON.stringify(formState.skillsOffered || [])
+    );
+    formData.append(
+      'skillsWanted',
+      JSON.stringify(formState.skillsWanted || [])
+    );
     if (photoFile) {
       formData.append('profilePhoto', photoFile);
     }
+
     const res = await fetch(`/api/profile/${user._id}`, {
       method: 'PUT',
-      body: formData
+      body: formData,
     });
+
     if (res.ok) {
-      // After saving, refetch for fresh data
-      const updated = await fetch(`/api/profile/${user._id}`).then(r => r.json());
+      const updated = await fetch(`/api/profile/${user._id}`).then((r) =>
+        r.json()
+      );
       setUser(updated);
       setFormState(updated);
       setPhotoFile(null);
@@ -82,26 +92,33 @@ useEffect(() => {
 
   const handleDeleteSkill = async (skillId) => {
     try {
-      // Delete from userSkills (uploaded skills)
-      const userSkillsCache = JSON.parse(localStorage.getItem('userSkills') || '[]');
-      const updatedUserSkills = userSkillsCache.filter(s => {
-        const sId = s.skillId || s.id;
+      // delete on server
+      const res = await fetch(`/api/skills/${skillId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error('Server failed to delete skill');
+      }
+
+      // update localStorage caches
+      const userSkillsCache = JSON.parse(
+        localStorage.getItem('userSkills') || '[]'
+      );
+      const updatedUserSkills = userSkillsCache.filter((s) => {
+        const sId = s._id || s.skillId || s.id;
         return String(sId) !== String(skillId);
       });
       localStorage.setItem('userSkills', JSON.stringify(updatedUserSkills));
-      
-      // Also delete from skills cache if it exists there
-      const cachedSkills = JSON.parse(localStorage.getItem('skills') || '[]');
-      const updatedSkills = cachedSkills.filter(s => {
-        const sId = s.skillId || s.id;
+
+      const cachedSkills = JSON.parse(
+        localStorage.getItem('skills') || '[]'
+      );
+      const updatedSkills = cachedSkills.filter((s) => {
+        const sId = s._id || s.skillId || s.id;
         return String(sId) !== String(skillId);
       });
       localStorage.setItem('skills', JSON.stringify(updatedSkills));
-      
-      // Keep edit mode active
+
+      // keep edit mode and refresh UI
       sessionStorage.setItem('profileEditMode', 'true');
-      
-      // Reload to update the UI but stay in edit mode
       window.location.reload();
     } catch (err) {
       console.error('Error deleting skill:', err);
@@ -117,7 +134,8 @@ useEffect(() => {
 
   const handleDeleteConfirm = () => {
     if (skillToDelete) {
-      handleDeleteSkill(skillToDelete.skillId || skillToDelete.id);
+      const id = skillToDelete._id || skillToDelete.skillId || skillToDelete.id;
+      handleDeleteSkill(id);
       setShowDeleteModal(false);
       setSkillToDelete(null);
     }
@@ -131,20 +149,35 @@ useEffect(() => {
   if (!user) return <main>Loading...</main>;
 
   // Get user skills from localStorage (skills created by this user)
-  const userCreatedSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');
-  
+  const userCreatedSkills = JSON.parse(
+    localStorage.getItem('userSkills') || '[]'
+  );
+
   // Also filter from context if needed
-  const contextUserSkills = skills.filter(skill => String(skill.userId) === String(user._id));
-  
-  // Combine both sources, removing duplicates by id
-  const allUserSkills = [...userCreatedSkills];
-  contextUserSkills.forEach(skill => {
-    if (!allUserSkills.find(s => s.id === skill.id || s.skillId === skill.skillId)) {
-      allUserSkills.push(skill);
+  const contextUserSkills = skills.filter(
+    (skill) => String(skill.userId) === String(user._id)
+  );
+
+  // Merge and remove duplicates
+  const mergedSkills = [...userCreatedSkills];
+  contextUserSkills.forEach((skill) => {
+    if (
+      !mergedSkills.find(
+        (s) =>
+          s._id === skill._id ||
+          s.skillId === skill.skillId ||
+          s.id === skill.id
+      )
+    ) {
+      mergedSkills.push(skill);
     }
   });
-  
-  const userSkills = allUserSkills;
+
+  // Ensure every skill has a consistent _id for routing
+  const userSkills = mergedSkills.map((s) => {
+    const id = s._id || s.skillId || s.id;
+    return { ...s, _id: id };
+  });
 
   return (
     <main className="min-h-screen bg-white dark:bg-[#121212] pt-20 pb-24">
@@ -265,9 +298,8 @@ useEffect(() => {
                   <div 
                     className={`inline-flex items-center bg-primary text-white font-medium py-2 px-4 rounded-full ${!isEditing ? 'cursor-pointer hover:bg-primary-hover' : 'cursor-default'} transition-colors`}
                     onClick={() => {
-                      if (!isEditing) {
-                        const skillId = skill.skillId || skill.id || skill._id;
-                        navigate(`/my-skills/${skillId}`);
+                      if (!isEditing && skill._id) {
+                        navigate(`/my-skills/${skill._id}`);
                       }
                     }}
                   >
@@ -278,7 +310,9 @@ useEffect(() => {
                       className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors"
                       onClick={(e) => confirmDelete(skill, e)}
                       aria-label="Delete skill"
-                    >×</button>
+                    >
+                      ×
+                    </button>
                   )}
                 </div>
               ))
@@ -331,6 +365,7 @@ useEffect(() => {
 };
 
 export default Profile;
+
 
 
 
