@@ -1,11 +1,12 @@
 import React, { useContext, useMemo, useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { SkillsContext } from "./SkillsContext";
 
 export default function SkillDescription() {
   // URL like /skills/5 → we read "5"
   const { id } = useParams();
   const nav = useNavigate();
+  const location = useLocation();
 
   // Get skills from context
   const { skills } = useContext(SkillsContext);
@@ -30,10 +31,14 @@ export default function SkillDescription() {
         return;
       }
 
+      setCheckingRequest(true);
+      console.log('Checking for existing request...', { skillId: id, userId: currentUserId });
+      
       try {
         const response = await fetch(`/api/requests/check?skillId=${id}&requesterId=${currentUserId}`);
         if (response.ok) {
           const data = await response.json();
+          console.log('Request check result:', data);
           setRequestExists(data.exists);
         }
       } catch (error) {
@@ -44,7 +49,7 @@ export default function SkillDescription() {
     };
 
     checkExistingRequest();
-  }, [id]);
+  }, [id, location.key]); // Re-run when id OR navigation key changes
 
   // ---- loading state ----
   if (!skills || skills.length === 0) {
@@ -180,30 +185,55 @@ export default function SkillDescription() {
             )}
           </p>
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">Posted by:</strong> {skill.username || "anonymous"}
+            <strong className="font-semibold">Posted by:</strong>{" "}
+            {(() => {
+              const currentUserId = localStorage.getItem('userId');
+              const isOwnSkill = String(currentUserId) === String(skill.userId);
+              return isOwnSkill ? "You" : (skill.username || "anonymous");
+            })()}
           </p>
         </div>
 
-        <button
-          className="btn btn-primary w-full"
-          onClick={() =>
-            nav(
-              `/requests/new?skillId=${encodeURIComponent(
-                skill.skillId
-              )}&skillName=${encodeURIComponent(
-                skill.name
-              )}&owner=${encodeURIComponent(
-                skill.username || ""
-              )}&ownerId=${encodeURIComponent(
-                skill.userId || ""
-              )}&category=${encodeURIComponent(
-                skill.category || ""
-              )}`
-            )
+        {/* Check if this is the user's own skill */}
+        {(() => {
+          const currentUserId = localStorage.getItem('userId');
+          const isOwnSkill = String(currentUserId) === String(skill.userId);
+          
+          if (isOwnSkill) {
+            return null; // Don't show button for own skills
           }
-        >
-          Draft Request
-        </button>
+          
+          return (
+            <>
+              <button
+                className="btn btn-primary w-full"
+                disabled={checkingRequest || requestExists}
+                onClick={() =>
+                  nav(
+                    `/requests/new?skillId=${encodeURIComponent(
+                      skill.skillId
+                    )}&skillName=${encodeURIComponent(
+                      skill.name
+                    )}&owner=${encodeURIComponent(
+                      skill.username || ""
+                    )}&ownerId=${encodeURIComponent(
+                      skill.userId || ""
+                    )}&category=${encodeURIComponent(
+                      skill.category || ""
+                    )}`
+                  )
+                }
+              >
+                {checkingRequest ? 'Checking...' : (requestExists ? 'Request Already Sent' : 'Draft Request')}
+              </button>
+              {requestExists && (
+                <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-2">
+                  You have already sent a request for this skill
+                </p>
+              )}
+            </>
+          );
+        })()}
       </div>
     </div>
   );
