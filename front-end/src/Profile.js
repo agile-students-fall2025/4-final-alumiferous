@@ -329,7 +329,7 @@ const Profile = () => {
           </Link>
           <Link to="/upload" className="flex-1">
             <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              Create a Skill
+              Offer a Skill
             </button>
           </Link>
         </div>
