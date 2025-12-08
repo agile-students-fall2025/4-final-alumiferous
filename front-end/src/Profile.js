@@ -237,26 +237,68 @@ const Profile = () => {
         {/* User Info (Name and Username) */}
         <div className="text-center mb-6">
           {isEditing ? (
-            <div className="flex flex-col items-center gap-2 max-w-md mx-auto">
-              <input
-                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
-                value={formState.firstName || ""}
-                onChange={e => handleChange("firstName", e.target.value)}
-                placeholder="First Name"
-              />
-              <input
-                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
-                value={formState.lastName || ""}
-                onChange={e => handleChange("lastName", e.target.value)}
-                placeholder="Last Name"
-              />
-              <input
-                className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] dark:border-[#444] text-center bg-white dark:bg-[#2b2b2b] text-[#191c1f] dark:text-[#f1f1f1] focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
-                value={formState.username || ""}
-                onChange={e => handleChange("username", e.target.value)}
-                placeholder="Username"
-              />
+            <div className="flex flex-col items-center gap-4 max-w-md mx-auto w-full">
+              {/* First name */}
+              <div className="w-full text-left">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  First name
+                </label>
+                <input
+                  id="firstName"
+                  className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] 
+                            dark:border-[#444] bg-white dark:bg-[#2b2b2b]
+                            text-[#191c1f] dark:text-[#f1f1f1]
+                            focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                  value={formState.firstName || ""}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  placeholder="First name"
+                />
+              </div>
+
+              {/* Last name */}
+              <div className="w-full text-left">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Last name
+                </label>
+                <input
+                  id="lastName"
+                  className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] 
+                            dark:border-[#444] bg-white dark:bg-[#2b2b2b]
+                            text-[#191c1f] dark:text-[#f1f1f1]
+                            focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                  value={formState.lastName || ""}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  placeholder="Last name"
+                />
+              </div>
+
+              {/* Username */}
+              <div className="w-full text-left">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Username
+                </label>
+                <input
+                  id="username"
+                  className="w-full text-base py-2 px-3 rounded-lg border-2 border-[#cbcbcb] 
+                            dark:border-[#444] bg-white dark:bg-[#2b2b2b]
+                            text-[#191c1f] dark:text-[#f1f1f1]
+                            focus:outline-none focus:border-primary dark:focus:border-[#4dabf7]"
+                  value={formState.username || ""}
+                  onChange={(e) => handleChange("username", e.target.value)}
+                  placeholder="Username"
+                />
+              </div>
             </div>
+
           ) : (
             <>
               <h2 className="text-2xl font-semibold text-[#191c1f] dark:text-[#f1f1f1] mb-1">
@@ -329,7 +371,7 @@ const Profile = () => {
           </Link>
           <Link to="/upload" className="flex-1">
             <button className="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              Create a Skill
+              Offer a Skill
             </button>
           </Link>
         </div>
