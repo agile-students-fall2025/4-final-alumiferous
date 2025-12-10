@@ -130,7 +130,7 @@ export default function DraftRequest() {
         >
           <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
         </button>
-        <h1 className="draft-request-title">Draft Request</h1>
+        <h1 className="draft-request-title">Send Request</h1>
       </header>
       
       <div className="px-4 py-6 pt-[72px] pb-20 max-w-2xl mx-auto">
