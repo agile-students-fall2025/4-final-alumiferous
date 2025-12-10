@@ -11,6 +11,7 @@ const Profile = () => {
   const [photoFile, setPhotoFile] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState(null);
+  const [userCreatedSkills, setUserCreatedSkills] = useState([]);
   const { skills } = useContext(SkillsContext);
 
   // Load logged‑in user's profile
@@ -146,12 +147,15 @@ const Profile = () => {
     setSkillToDelete(null);
   };
 
-  if (!user) return <main>Loading...</main>;
+  // Load user skills from localStorage and context
+  useEffect(() => {
+    if (!user) return;
+    
+    const localSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');
+    setUserCreatedSkills(localSkills);
+  }, [user, skills]); // Re-run when user or skills context changes
 
-  // Get user skills from localStorage (skills created by this user)
-  const userCreatedSkills = JSON.parse(
-    localStorage.getItem('userSkills') || '[]'
-  );
+  if (!user) return <main>Loading...</main>;
 
   // Also filter from context if needed
   const contextUserSkills = skills.filter(
@@ -331,7 +335,7 @@ const Profile = () => {
         {/* My Skills Section */}
         <div className="mb-6">
           <h3 className="text-lg font-bold text-[#191c1f] dark:text-[#f1f1f1] mb-3 text-center">My Skills</h3>
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-col gap-2 items-center">
             {userSkills.length === 0 ? (
               <p className="text-[#6a7791] dark:text-[#a0a0a0]">No skills created yet.</p>
             ) : (
