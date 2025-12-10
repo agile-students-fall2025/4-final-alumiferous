@@ -19,7 +19,8 @@ const Settings = () => {
   const handleLogoutConfirm = async () => {
     setShowLogoutConfirm(false);
     try {
-      await fetch("http://localhost:4000/api/auth/logout", {
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000';
+      await fetch(`${apiUrl}/api/auth/logout`, {
         method: "POST",
         credentials: "include"
       });

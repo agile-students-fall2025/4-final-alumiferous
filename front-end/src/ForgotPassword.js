@@ -28,7 +28,8 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/forgot-password', {
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000';
+      const response = await fetch(`${apiUrl}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

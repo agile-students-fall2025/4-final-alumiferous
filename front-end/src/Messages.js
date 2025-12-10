@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 // Constants
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api`.replace(':4000', ':3000') : 'http://localhost:3000/api';
 
 
 

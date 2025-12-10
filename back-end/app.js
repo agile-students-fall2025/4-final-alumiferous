@@ -31,9 +31,13 @@ mongoose.connect(process.env.MONGODB_URI)
 const app = express();
 
 // Enable CORS for frontend on localhost:3000
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ["http://localhost:3000", "http://192.168.0.177:3000"];
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://192.168.0.177:3000"], // your React dev server
+    origin: allowedOrigins, // your React dev server
     credentials: true
   })
 );
