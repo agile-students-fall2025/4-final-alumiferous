@@ -224,7 +224,7 @@ export default function SkillDescription() {
                   )
                 }
               >
-                {checkingRequest ? 'Checking...' : (requestExists ? 'Request Already Sent' : 'Send Request')}
+                {checkingRequest ? 'Checking...' : (requestExists ? 'Request Already Sent' : 'Draft Request')}
               </button>
               {requestExists && (
                 <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-2">

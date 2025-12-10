@@ -213,6 +213,72 @@ router.post('/change-password', async (req, res) => {
   }
 });
 
+// Delete Account (hard delete): DELETE /auth/delete-account
+router.delete('/delete-account', async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required.' });
+  }
+  
+  try {
+    // Find user by username or email
+    const user = await User.findOne({ 
+      $or: [{ username }, { email: username }] 
+    }).exec();
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    
+    // Verify password
+    if (!user.validPassword(password)) {
+      return res.status(401).json({ success: false, message: 'Incorrect password.' });
+    }
+    
+    const userId = user._id;
+    console.log(`Deleting account for user: ${user.username || user.email} (ID: ${userId})`);
+    
+    // Import models needed for cascade deletion
+    const SkillOffering = (await import('../models/SkillOffering.js')).default;
+    const Request = (await import('../models/Request.js')).default;
+    const Chat = (await import('../models/Chat.js')).default;
+    const Message = (await import('../models/Message.js')).default;
+    
+    // Delete all user's skill offerings
+    const deletedSkills = await SkillOffering.deleteMany({ userId }).exec();
+    console.log(`Deleted ${deletedSkills.deletedCount} skill offerings`);
+    
+    // Delete all requests sent by or to this user
+    const deletedRequests = await Request.deleteMany({ 
+      $or: [{ requesterId: userId }, { ownerId: userId }] 
+    }).exec();
+    console.log(`Deleted ${deletedRequests.deletedCount} requests`);
+    
+    // Delete all chats involving this user
+    const deletedChats = await Chat.deleteMany({ 
+      participants: userId 
+    }).exec();
+    console.log(`Deleted ${deletedChats.deletedCount} chats`);
+    
+    // Delete all messages sent by this user
+    const deletedMessages = await Message.deleteMany({ senderId: userId }).exec();
+    console.log(`Deleted ${deletedMessages.deletedCount} messages`);
+    
+    // Finally, delete the user account
+    await User.findByIdAndDelete(userId).exec();
+    console.log(`User account deleted successfully`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Account and all associated data deleted successfully.' 
+    });
+  } catch (err) {
+    console.error('Delete account error:', err);
+    res.status(500).json({ success: false, message: 'Error deleting account.', error: err.message });
+  }
+});
+
 // Error handling middleware
 router.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
