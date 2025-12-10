@@ -39,6 +39,39 @@
   font-size: 1rem;
   width: 100%;
   text-align: center;
+  background: #fff;
+  color: #000;
+}
+
+.onboarding-form input:-webkit-autofill,
+.onboarding-form input:-webkit-autofill:hover,
+.onboarding-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Dark mode using :is() for Tailwind dark mode compatibility */
+:is(.dark .onboarding-form input),
+:is(.dark .onboarding-form select) {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+:is(.dark .onboarding-form input::placeholder) {
+  color: #888 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #888 !important;
+}
+
+:is(.dark .onboarding-form input:-webkit-autofill),
+:is(.dark .onboarding-form input:-webkit-autofill:hover),
+:is(.dark .onboarding-form input:-webkit-autofill:focus) {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* === Buttons === */
@@ -137,12 +170,29 @@ body.dark-mode .onboarding-form select {
   background: #1a1a1a !important;
   color: #ffffff !important;
   border: 1px solid #444 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.dark-mode .onboarding-form input::placeholder {
+  color: #888 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #888 !important;
 }
 
 body.dark-mode .onboarding-form input:focus,
 body.dark-mode .onboarding-form select:focus {
   border-color: #4dabf7 !important;
   outline: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.dark-mode .onboarding-form input:-webkit-autofill,
+body.dark-mode .onboarding-form input:-webkit-autofill:hover,
+body.dark-mode .onboarding-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 body.dark-mode .onboarding-form button[type="button"] {

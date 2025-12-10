@@ -251,7 +251,7 @@ const OnBoarding = () => {
             <input
               type="text"
               name="username"
-              className="form-input"
+              className="form-input dark:!bg-[#1a1a1a] dark:!text-white dark:!border-[#444]"
               placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
