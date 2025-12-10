@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { SkillsContext } from "./SkillsContext";
 
 export default function SkillDescription() {
@@ -93,9 +94,27 @@ export default function SkillDescription() {
     setCurrentIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
   };
 
+  const handleBack = () => {
+    // Check if we came from a specific page via location state
+    if (location.state?.from) {
+      nav(location.state.from);
+    } else {
+      // Default to home to avoid loops
+      nav('/home');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#121212] px-4 py-6 pt-[77px] pb-20">
       <div className="card max-w-3xl mx-auto">
+        {/* Back button */}
+        <button
+          onClick={handleBack}
+          className="flex items-center mb-4 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+        </button>
+
         {/* Skill name (from offering) */}
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{skill.name}</h1>
 
