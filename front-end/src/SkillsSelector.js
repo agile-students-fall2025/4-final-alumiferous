@@ -32,7 +32,6 @@ const SkillSelector = ({label, allSkills, selectedskills, setSelectedSkills}) =>
                                     : 'bg-white dark:bg-[#2b2b2b] text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-primary dark:hover:border-primary'
                             }`}
                         >
-                            {isSelected && <span className="mr-1">✓</span>}
                             {skill}
                         </button>
                     );
