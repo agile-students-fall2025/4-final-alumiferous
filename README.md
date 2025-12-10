@@ -1,20 +1,24 @@
 # InstaSkill
 
+# Deployment
+
+Find InstaSkill here: [Link](http://146.190.147.159)
+
 ## Product Vision Statement
 
-InstaSkill is a collaborative skill exchange platform where users can teach what they know and learn what they want, without the use of money. The idea behind InstaSkill is to create a trusted community where knowledge, time, and experience act as the true currency.
+InstaSkill is a collaborative skill‑exchange platform where people can share what they know and learn the skills they want, all without using money. It is designed to foster a trusted community in which knowledge, time, and experience function as the true currency, allowing members to grow together through teaching and learning.
 
 ## Project Description
 
-The platform connects individuals based on the skills they offer and the ones they wish to gain. By providing features such as matching, scheduling, and feedback, InstaSkill encourages meaningful, peer-to-peer learning interactions. Our team designed and planned the system using Agile principles, focusing on addressing the real-world challenge of making learning affordable and accessible.
+The platform connects individuals based on the skills they can offer and those they wish to acquire. By providing features such as skill creation, direct messaging, and skill requests, InstaSkill facilitates meaningful, peer‑to‑peer learning interactions. The system was designed and planned by our team using Agile principles, with a focus on addressing the real‑world challenge of making learning both affordable and accessible.
 
 ## Team Members
 
-- Alisha Atif (aa10699@nyu.edu)
-- Godbless Osei (gmo6996@nyu.edu)
-- Bernard Gharbin (bg2696@nyu.edu)
-- Bismark Buernortey Buer (bb3621@nyu.edu)
-- Ajok Thon (at4933@nyu.edu)
+- Alisha Atif - [Github](https://github.com/aa10699Alisha)
+- Godbless Osei - [Github](https://github.com/GodblessOsei)
+- Bernard Gharbin - [Github](https://github.com/GharbinBern)
+- Bismark Buernortey Buer - [Github](https://github.com/Buernortey67)
+- Ajok Thon - [Github](https://github.com/ajokt123)
 
 ## Project Background and Target Users
 
@@ -27,29 +31,23 @@ InstaSkill is designed for anyone interested in learning or teaching through col
 ### User Profiles
 
 - Secure account creation and login
-- Personal bio and list of offered and wanted skills
-- Editable profile with progress tracking
+- Personal bio and list of offered skills
+- Editable profile
 
 ### Skill Matching
 
 - Search or filter by category (languages, art, music, coding, sports, etc.)
-- Matching system that recommends suitable partners based on skills and interests
+- Filter by most popular skills
 
-### Session Scheduling
+### Skill Request Sessions
 
-- Request and accept skill-swap sessions
-- Calendar view for managing upcoming and completed sessions
-- Notifications and reminders for confirmed swaps
+- Send requests for skills to other users
+- Accept or decline incoming skill requests
 
-### Messaging and Reviews
+### Messaging and Notifications
 
-- Direct communication between users
-- Option to leave reviews and ratings after each session
-
-### Dashboard
-
-- Overview of user activity, completed sessions, and ratings
-- Track ongoing learning or teaching progress
+- Direct, real‑time communication between users for coordinating skill exchanges
+- Get notified when someone requests a skill from you
 
 ## Technology Stack
 
@@ -74,7 +72,17 @@ InstaSkill is designed for anyone interested in learning or teaching through col
 
 ## Development Progress
 
-### Sprint 1
+### Sprint 0: Prototyping
+
+- Product Owner: Ajok Thon
+- Scrum Master: Bismark Buernortey Buer
+
+Created a clickable mobile prototype of the InstaSkill app in Figma using the existing wireframes, linking all key screens and navigation flows so that core use cases can be tested end‑to‑end before development.
+
+### Sprint 1: Frontend
+
+- Product Owner: Godbless Osei
+- Scrum Master: Bernard Gharbin
 
 The front-end application has been developed using React. The following components and features have been implemented:
 
@@ -89,7 +97,10 @@ The front-end application has been developed using React. The following componen
 - Global skills state management via SkillsContext
 - API integration setup in the api folder
 
-### Sprint 2
+### Sprint 2: Backend
+
+- Product Owner: Bismark Buernortey Buer
+- Scrum Master: Ajok Thon
 
 Backend API integration, testing, and enhanced features have been implemented:
 
@@ -131,6 +142,20 @@ Backend API integration, testing, and enhanced features have been implemented:
 - Profile photo upload and management
 - Improved UI with hamburger menus and navigation
 - Enhanced error messages and user feedback
+
+## Sprint 3: Database Integration
+
+- Product Owner: Bernard Gharbin
+- Scrum Master: Alisha Atif
+
+Integrated a hosted MongoDB Atlas database into the Express.js backend using Mongoose, added server‑side validation for incoming data, and secured all connection credentials with environment variables and JWT‑based authentication for protected routes.
+
+## Sprint 4: Deployment
+
+- Product Owner: Alisha Atif
+- Scrum Master: Godbless Osei
+
+Deployed the full-stack InstaSkill application to a DigitalOcean Droplet, configuring the Node/Express backend and React frontend to run in a production environment.
 
 ## How to Run the Application
 
