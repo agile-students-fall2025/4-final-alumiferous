@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import Skill from "./Skill";
 import { SkillsContext } from "./SkillsContext";
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
 // import { searchSkills } from "./api/skillsApi"; // Uncomment when backend is ready
 
 const Home = () => {
@@ -16,9 +15,15 @@ const Home = () => {
   // State for category filter
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All Skills");
+  const [categoryOpen, setCategoryOpen] = useState(false);
   
   // State for sort option
   const [sortBy, setSortBy] = useState("recent"); // recent, popular, az
+  const [sortOpen, setSortOpen] = useState(false);
+  
+  // Refs for click-away
+  const categoryRef = useRef(null);
+  const sortRef = useRef(null);
 
   // Fetch categories from backend
   useEffect(() => {
@@ -35,6 +40,20 @@ const Home = () => {
       }
     };
     fetchCategories();
+    
+    // Click-away listener for dropdowns
+    function onDocClick(e) {
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
+        setCategoryOpen(false);
+      }
+      if (sortRef.current && !sortRef.current.contains(e.target)) {
+        setSortOpen(false);
+      }
+    }
+    document.addEventListener('click', onDocClick);
+    return () => {
+      document.removeEventListener('click', onDocClick);
+    };
   }, []);
 
   // Filter out hidden skills and initialize filteredSkills
@@ -134,32 +153,85 @@ const Home = () => {
         {/* Filter and Sort Dropdowns */}
         <div className="flex gap-3 justify-center max-w-md mx-auto">
           {/* Category Filter */}
-          <div className="relative flex-1">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full appearance-none px-4 py-2.5 pr-10 bg-white dark:bg-[#1e1e1e] border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 cursor-pointer hover:border-primary dark:hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          <div className="relative flex-1" ref={categoryRef}>
+            <button
+              type="button"
+              className="form-input w-full text-left"
+              onClick={() => setCategoryOpen(!categoryOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={categoryOpen}
             >
-              <option value="All Skills">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
+              {selectedCategory}
+            </button>
+            {categoryOpen && (
+              <div className="absolute z-40 bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-[#333] rounded-app shadow-lg max-h-56 overflow-y-auto w-full mt-1.5 p-2" style={{ maxHeight: 220 }}>
+                <div
+                  className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-left text-gray-700 dark:text-gray-300"
+                  onClick={() => {
+                    setSelectedCategory("All Skills");
+                    setCategoryOpen(false);
+                  }}
+                >
+                  All Categories
+                </div>
+                {categories.map((cat) => (
+                  <div
+                    key={cat}
+                    className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-left text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setCategoryOpen(false);
+                    }}
+                  >
+                    {cat}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           
           {/* Sort Filter */}
-          <div className="relative flex-1">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full appearance-none px-4 py-2.5 pr-10 bg-white dark:bg-[#1e1e1e] border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 cursor-pointer hover:border-primary dark:hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          <div className="relative flex-1" ref={sortRef}>
+            <button
+              type="button"
+              className="form-input w-full text-left"
+              onClick={() => setSortOpen(!sortOpen)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
             >
-              <option value="recent">Recently Added</option>
-              <option value="popular">Most Popular</option>
-              <option value="az">A-Z</option>
-            </select>
-            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
+              {sortBy === "recent" ? "Recently Added" : sortBy === "popular" ? "Most Popular" : "A-Z"}
+            </button>
+            {sortOpen && (
+              <div className="absolute z-40 bg-white dark:bg-[#2b2b2b] border border-gray-300 dark:border-[#333] rounded-app shadow-lg max-h-56 overflow-y-auto w-full mt-1.5 p-2" style={{ maxHeight: 220 }}>
+                <div
+                  className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-left text-gray-700 dark:text-gray-300"
+                  onClick={() => {
+                    setSortBy("recent");
+                    setSortOpen(false);
+                  }}
+                >
+                  Recently Added
+                </div>
+                <div
+                  className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-left text-gray-700 dark:text-gray-300"
+                  onClick={() => {
+                    setSortBy("popular");
+                    setSortOpen(false);
+                  }}
+                >
+                  Most Popular
+                </div>
+                <div
+                  className="py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer text-sm text-left text-gray-700 dark:text-gray-300"
+                  onClick={() => {
+                    setSortBy("az");
+                    setSortOpen(false);
+                  }}
+                >
+                  A-Z
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
