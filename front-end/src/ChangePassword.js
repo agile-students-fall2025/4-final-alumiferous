@@ -1,23 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
-import './ResetPassword.css';
 
-const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+const ChangePassword = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!token) {
-      setError("Invalid or missing reset token. Please request a new password reset link.");
-    }
-  }, [token]);
 
   // Password validation checks
   const hasMinLength = newPassword.length >= 6;
@@ -32,12 +24,7 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
 
-    if (!token) {
-      setError("Invalid reset token. Please request a new password reset link.");
-      return;
-    }
-
-    if (!newPassword || !confirmPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       setError("Please fill out all fields.");
       return;
     }
@@ -50,13 +37,24 @@ const ResetPassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/reset-password', {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      if (!userId || !token) {
+        setError("Please log in to change your password.");
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch('http://localhost:4000/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          token,
+          userId,
+          currentPassword,
           newPassword
         }),
       });
@@ -65,18 +63,19 @@ const ResetPassword = () => {
 
       if (response.ok && data.success) {
         setSubmitted(true);
+        setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
         
         setTimeout(() => {
           setSubmitted(false);
-          navigate("/login");
+          navigate("/settings");
         }, 2000);
       } else {
-        setError(data.message || "Failed to reset password. Please try again.");
+        setError(data.message || "Failed to change password. Please try again.");
       }
     } catch (err) {
-      console.error('Reset password error:', err);
+      console.error('Change password error:', err);
       setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -86,10 +85,10 @@ const ResetPassword = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-white dark:bg-[#121212] box-border overflow-hidden">
       <header className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)] w-screen">
-        <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => navigate("/login")}>
+        <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onClick={() => navigate("/settings")}>
           <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-200" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 text-center">Reset Password</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 text-center">Change Password</h1>
         <div className="w-10"></div>
       </header>
 
@@ -99,19 +98,25 @@ const ResetPassword = () => {
             <input
               type="password"
               className="form-input"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              disabled={!token}
+              placeholder="Current Password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
             />
 
             <input
               type="password"
               className="form-input"
-              placeholder="Confirm Password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+
+            <input
+              type="password"
+              className="form-input"
+              placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={!token}
             />
 
             {newPassword && (
@@ -148,15 +153,15 @@ const ResetPassword = () => {
             <button 
               type="submit" 
               className="btn btn-primary w-full"
-              disabled={isLoading || !allRequirementsMet || !token}
+              disabled={isLoading || !allRequirementsMet}
             >
-              {isLoading ? 'Resetting...' : 'Reset Password'}
+              {isLoading ? 'Changing...' : 'Change Password'}
             </button>
           </form>
 
           {submitted ? (
             <p className="text-[#2e7d32] dark:text-[#a5d6a7] bg-[#e8f5e9] dark:bg-[#1b5e20] py-2 px-2 rounded-md mb-3 text-center text-[0.95em]">
-              Your password has been reset successfully! Redirecting to login...
+              Your password has been changed successfully!
             </p>
           ) : ''}
         </div>
@@ -165,4 +170,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ChangePassword;

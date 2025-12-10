@@ -50,9 +50,9 @@ const Settings = () => {
           <div className="bg-white dark:bg-[#1e1e1e] border-b border-[#e6e6e6] dark:border-[#2c2c2c] overflow-hidden">
             <button
               className="flex justify-between items-center w-full px-[18px] py-4 border-none bg-transparent text-base font-normal text-[#333] dark:text-[#f1f1f1] cursor-pointer transition-colors duration-200 text-left min-h-[56px] hover:bg-[#f8f8f8] dark:hover:bg-[#2a2a2a] active:bg-[#e9ecef] dark:active:bg-[#333]"
-              onClick={() => navigate("/reset-password")}
+              onClick={() => navigate("/change-password")}
             >
-              <span>Reset Password</span>
+              <span>Change Password</span>
               <span className="text-[#ccc] dark:text-[#555] text-2xl font-light">›</span>
             </button>
           </div>

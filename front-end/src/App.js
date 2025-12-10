@@ -22,6 +22,8 @@ import MySkillDetail from "./MySkillDetail";
 // Settings / account
 import Settings from "./Settings";
 import ResetPassword from "./ResetPassword";
+import ForgotPassword from "./ForgotPassword";
+import ChangePassword from "./ChangePassword";
 import ReportProblem from "./ReportProblem";
 import DeleteAccount from "./DeleteAccount";
 
@@ -47,6 +49,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Navigate to="/login" replace />} />
             <Route path="/onboarding" element={<OnBoarding />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Main pages */}
             <Route
@@ -149,10 +152,15 @@ export default function App() {
 
             <Route
               path="/reset-password"
+              element={<ResetPassword />}
+            />
+
+            <Route
+              path="/change-password"
               element={
                 <>
                   <Header />
-                  <ResetPassword />
+                  <ChangePassword />
                   <Footer />
                 </>
               }
