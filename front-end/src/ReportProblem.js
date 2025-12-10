@@ -43,14 +43,14 @@ const ReportProblem = () => {
               placeholder="What would you like to report?"
               value={issueType}
               onChange={(e) => setIssueType(e.target.value)}
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
             />
 
             <textarea
               placeholder="Briefly describe the issue you're encountering..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="form-input min-h-[120px] resize-y"
+              className="form-input min-h-[120px] resize-y dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
             />
 
             <button type="submit" className="btn btn-primary w-full">

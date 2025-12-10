@@ -268,7 +268,7 @@ export default function UploadSkill() {
             <input
               id="skillName"
               type="text"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="e.g. Graphic Design"
               value={skillName}
               onChange={(e) => setSkillName(e.target.value)}
@@ -278,7 +278,7 @@ export default function UploadSkill() {
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description / Expertise</label>
             <textarea
               id="description"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="Describe your experience, projects, or strengths in this skill..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
