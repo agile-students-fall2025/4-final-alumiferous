@@ -109,7 +109,7 @@ const Savedskills = () => {
       <div className="px-4 py-6 pt-[72px] pb-20">
         <input
           type="text"
-          placeholder="Search your saved skills (min 3 characters)"
+          placeholder="Search saved skills..."
           className="search-input mb-6"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

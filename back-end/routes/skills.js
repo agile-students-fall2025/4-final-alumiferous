@@ -161,6 +161,8 @@ router.get("/", async (req, res) => {
           username: username,
           category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
           categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
+          createdAt: off.createdAt || null,
+          updatedAt: off.updatedAt || null,
           width: Math.floor(Math.random() * 80) + 150,
           height: Math.floor(Math.random() * 100) + 200,
           hidden: false,
@@ -236,6 +238,8 @@ router.get("/:id", async (req, res) => {
       username: username,
       category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || skill.category || 'General',
       categories: off.categories || skill.categories || (skill.category ? [skill.category] : ['General']),
+      createdAt: off.createdAt || null,
+      updatedAt: off.updatedAt || null,
     };
     
     res.json(normalizedSkill);
