@@ -41,7 +41,7 @@ const Login = props => {
 
       console.log(`Sending ${isLogin ? 'login' : 'signup'} request to backend...`)
       
-      const response = await axios.post(`http://localhost:4000${endpoint}`, payload)
+      const response = await axios.post(endpoint, payload)
       const data = response.data
       console.log('Login response data:', data)
 

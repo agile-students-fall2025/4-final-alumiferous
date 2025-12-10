@@ -107,7 +107,7 @@ export default function MySkillDetail() {
   const handleSaveEdit = async () => {
     setIsSaving(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || "";
       
       console.log('Saving skill with ID:', id);
       console.log('Edited skill data:', editedSkill);

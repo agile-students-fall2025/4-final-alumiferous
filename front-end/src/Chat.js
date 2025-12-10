@@ -24,7 +24,7 @@ const Chat = props => {
                 if (!userId) {
                     throw new Error('No userId found in localStorage. Please log in.');
                 }
-                const res = await fetch(`http://localhost:3000/api/chats?userId=${userId}`);
+                const res = await fetch(`/api/chats?userId=${userId}`);
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`);
                 const data = await res.json();
                 // Normalize records to the shape used by the UI
