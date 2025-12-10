@@ -189,7 +189,23 @@ export default function SkillDescription() {
             {(() => {
               const currentUserId = localStorage.getItem('userId');
               const isOwnSkill = String(currentUserId) === String(skill.userId);
-              return isOwnSkill ? "You" : (skill.username || "anonymous");
+              if (isOwnSkill) {
+                return <span className="font-medium">You</span>;
+              }
+              if (skill.userId) {
+                return (
+                  <button
+                    className="inline-flex items-center px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      nav(`/users/${skill.userId}`);
+                    }}
+                  >
+                    {skill.username || "anonymous"}
+                  </button>
+                );
+              }
+              return skill.username || "anonymous";
             })()}
           </p>
         </div>

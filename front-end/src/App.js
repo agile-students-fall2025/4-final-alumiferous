@@ -12,6 +12,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Profile from "./Profile";
 import EditProfile from "./EditProfile";
+import PublicProfile from "./PublicProfile";
 
 // Feature pages
 import SkillDescription from "./SkillDescription";
@@ -77,6 +78,17 @@ export default function App() {
                 <>
                   <Header />
                   <Profile />
+                  <Footer />
+                </>
+              }
+            />
+
+            <Route
+              path="/users/:userId"
+              element={
+                <>
+                  <Header />
+                  <PublicProfile />
                   <Footer />
                 </>
               }

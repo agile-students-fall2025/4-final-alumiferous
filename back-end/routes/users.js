@@ -8,6 +8,7 @@ const router = express.Router();
 
 // GET /api/users/check-username?username=foo
 // Returns { available: true } when the username is not present in the DB.
+// MUST BE BEFORE /:id route to avoid matching "check-username" as an id
 router.get('/check-username', async (req, res) => {
   const username = (req.query.username || '').toString().trim();
   if (!username) return res.status(400).json({ error: 'username query parameter is required' });
@@ -24,6 +25,65 @@ router.get('/check-username', async (req, res) => {
   } catch (err) {
     console.error('Error checking username availability:', err && err.message ? err.message : err);
     return res.status(500).json({ error: 'failed to check username' });
+  }
+});
+
+// GET /api/users/:id - get public profile data for a user
+router.get('/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'invalid user id' });
+    }
+
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({ error: 'user not found' });
+    }
+
+    // Get user's skill offerings
+    const skillOfferings = await SkillOffering.find({ userId })
+      .populate('skillId')
+      .lean();
+
+    const skills = skillOfferings.map(off => {
+      const skill = off.skillId || {};
+      const detail = Array.isArray(off.description) ? off.description.join('\n') : off.detail || off.description || '';
+      const brief = off.brief || (detail.length > 120 ? detail.slice(0, 117) + '...' : detail);
+      const image = (Array.isArray(off.images) && off.images[0]) || off.image || user.photo || '';
+      
+      return {
+        skillId: String(off._id),
+        id: String(off._id),
+        name: skill.name || off.offeringSlug || 'Unknown Skill',
+        brief,
+        detail,
+        image,
+        images: off.images || [],
+        videos: off.videos || [],
+        categories: off.categories || skill.categories || [],
+        category: (off.categories && off.categories[0]) || (skill.categories && skill.categories[0]) || 'General',
+      };
+    });
+
+    // Return public profile data
+    const publicProfile = {
+      _id: user._id,
+      userId: user._id,
+      username: user.username || 'User',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      photo: user.photo || '',
+      bio: user.bio || '',
+      skills,
+      skillCount: skills.length,
+    };
+
+    return res.json(publicProfile);
+  } catch (err) {
+    console.error('Error fetching user public profile:', err);
+    return res.status(500).json({ error: 'failed to fetch user profile' });
   }
 });
 
