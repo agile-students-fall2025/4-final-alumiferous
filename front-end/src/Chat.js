@@ -174,6 +174,31 @@ const Chat = props => {
 }
 
 //profile image component with fallback
+const ProfileImage = ({ photo, name }) => {
+    const [imageError, setImageError] = useState(false)
+    const initial = name && name.length > 0 ? name[0].toUpperCase() : '?'
+
+    const handleImageError = () => {
+        setImageError(true)
+    }
+
+    if (imageError) {
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-[#6c757d] text-white text-base font-semibold rounded-full">
+                {initial}
+            </div>
+        )
+    }
+
+    return (
+        <img 
+            src={photo} 
+            alt={name} 
+            onError={handleImageError}
+            className="w-full h-full object-cover"
+        />
+    )
+}
 
 //chatitem component 
 const ChatItem = ({ id, name, photo, last_message, timestamp, unread, friendUserId }) => {
