@@ -195,7 +195,7 @@ export default function SkillDescription() {
               if (skill.userId) {
                 return (
                   <button
-                    className="inline-flex items-center px-3 py-1 bg-primary/10 dark:bg-primary-dark/20 text-primary dark:text-primary-dark hover:bg-primary/20 dark:hover:bg-primary-dark/30 rounded-full text-sm font-semibold transition-all border border-primary/30 dark:border-primary-dark/40 cursor-pointer"
+                    className="inline-flex items-center px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();
                       nav(`/users/${skill.userId}`);
