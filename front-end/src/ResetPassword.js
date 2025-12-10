@@ -8,6 +8,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Password validation checks
@@ -19,7 +20,7 @@ const ResetPassword = () => {
 
   const allRequirementsMet = hasMinLength && hasUpperCase && hasLowerCase && hasSpecialChar && passwordsMatch;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -33,14 +34,41 @@ const ResetPassword = () => {
       return;
     }
 
-    setSubmitted(true);
-    setEmail("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setTimeout(() => {
-      setSubmitted(false);
-      navigate("/settings");
-    }, 1000);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:4000/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          newPassword
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitted(true);
+        setEmail("");
+        setNewPassword("");
+        setConfirmPassword("");
+        
+        setTimeout(() => {
+          setSubmitted(false);
+          navigate("/login");
+        }, 2000);
+      } else {
+        setError(data.message || "Failed to reset password. Please try again.");
+      }
+    } catch (err) {
+      console.error('Reset password error:', err);
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -105,19 +133,26 @@ const ResetPassword = () => {
               </div>
             )}
 
+            {error ? (
+              <p className="text-[#d32f2f] dark:text-[#ffcdd2] bg-[#ffeaea] dark:bg-[#5c1f1f] py-2 px-2 rounded-md mb-3 text-center text-[0.95em]">
+                {error}
+              </p>
+            ) : ''}
+
             <button 
               type="submit" 
               className="btn btn-primary w-full"
+              disabled={isLoading || !allRequirementsMet}
             >
-              Reset Password
+              {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
 
-          {submitted && (
-            <div className="reset-popup">
-              Your password has been reset successfully!
-            </div>
-          )}
+          {submitted ? (
+            <p className="text-[#2e7d32] dark:text-[#a5d6a7] bg-[#e8f5e9] dark:bg-[#1b5e20] py-2 px-2 rounded-md mb-3 text-center text-[0.95em]">
+              Your password has been reset successfully! Redirecting to login...
+            </p>
+          ) : ''}
         </div>
       </div>
     </div>
