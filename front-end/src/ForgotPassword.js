@@ -76,7 +76,7 @@ const ForgotPassword = () => {
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input
                   type="email"
-                  className="form-input"
+                  className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

@@ -66,14 +66,14 @@ const DeleteAccount = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            className="form-input"
+            className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
             placeholder="Enter your username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <input
             type="password"
-            className="form-input"
+            className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

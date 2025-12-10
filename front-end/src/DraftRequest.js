@@ -150,7 +150,7 @@ export default function DraftRequest() {
           <label className="block">
             <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Say something about yourself:</span>
             <textarea
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               rows={6}
               value={aboutYou}
               onChange={(e) => setAboutYou(e.target.value)}

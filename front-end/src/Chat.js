@@ -32,15 +32,18 @@ const Chat = props => {
             
                     let name = 'Unknown';
                     let photo = '/images/avatar-default.png';
+                    let friendUserId = null;
        
                     if (item.userId && item.friendId) {
                         // If logged-in user is userId, show friendId's name
                         if (item.userId._id === userId && typeof item.friendId === 'object') {
                             name = item.friendId.username || item.friendId.email || 'Unknown';
                             photo = item.friendId.photo || '/images/avatar-default.png';
+                            friendUserId = item.friendId._id;
                         } else if (item.friendId._id === userId && typeof item.userId === 'object') {
                             name = item.userId.username || item.userId.email || 'Unknown';
                             photo = item.userId.photo || '/images/avatar-default.png';
+                            friendUserId = item.userId._id;
                         }
                     }
                     let time = '';
@@ -55,6 +58,7 @@ const Chat = props => {
                         last_message: item.lastMessage || '',
                         timestamp: time,
                         unread: item.unread || 0,
+                        friendUserId,
                     };
                 });
                 if (isMounted) setChatList(normalized);
@@ -154,6 +158,7 @@ const Chat = props => {
                             last_message={chat.last_message}
                             timestamp={chat.timestamp}
                             unread={chat.unread}
+                            friendUserId={chat.friendUserId}
                         />
                     ))
                 ) : (
@@ -196,15 +201,22 @@ const ProfileImage = ({ photo, name }) => {
 }
 
 //chatitem component 
-const ChatItem = ({ id, name, photo, last_message, timestamp, unread }) => {
+const ChatItem = ({ id, name, photo, last_message, timestamp, unread, friendUserId }) => {
     const navigate = useNavigate()
     const handleChatClick = () => {
         navigate(`/chat/${id}`)
     }
 
+    const handleProfileClick = (e) => {
+        e.stopPropagation()
+        if (friendUserId) {
+            navigate(`/users/${friendUserId}`)
+        }
+    }
+
     return (
         <div className="flex items-center gap-3 px-5 py-3 border-b border-[#f0f0f0] dark:border-[#2c2c2c] cursor-pointer transition-colors hover:bg-[#f8f9fa] dark:hover:bg-[#1e1e1e] active:bg-[#e9ecef] dark:active:bg-[#2a2a2a]" onClick={handleChatClick}>
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 cursor-pointer" onClick={handleProfileClick}>
                 <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
                     <ProfileImage photo={photo} name={name} />
                 </div>

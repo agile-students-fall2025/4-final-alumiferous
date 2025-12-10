@@ -251,7 +251,7 @@ const OnBoarding = () => {
             <input
               type="text"
               name="username"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="Choose a username"
               value={formData.username}
               onChange={handleChange}
@@ -350,7 +350,7 @@ const OnBoarding = () => {
 
             <textarea
               name="bio"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="A short bio (what you're looking for, background, etc.)"
               value={formData.bio}
               onChange={handleChange}
