@@ -87,7 +87,7 @@ export default function DraftRequest() {
 
       console.log('Sending request:', requestData);
 
-      const apiUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+      const apiUrl = process.env.REACT_APP_API_BASE_URL || "";
       const response = await fetch(`${apiUrl}/api/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
