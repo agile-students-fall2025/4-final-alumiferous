@@ -1,6 +1,8 @@
 // Authentication routes using ES modules
 import express from 'express';
 import User from '../models/User.js';
+import crypto from 'crypto';
+import { sendPasswordResetEmail } from '../config/email.js';
 
 
 const router = express.Router();
@@ -94,23 +96,77 @@ router.get('/logout', (req, res) => {
   res.json({ success: true, message: 'Delete your token from local storage to logout.' });
 });
 
-// Reset Password: POST /auth/reset-password
-router.post('/reset-password', async (req, res) => {
-  const { email, newPassword } = req.body;
+// Forgot Password: POST /auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
   
-  if (!email || !newPassword) {
-    return res.status(400).json({ success: false, message: 'Email and new password are required.' });
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email is required.' });
   }
   
   try {
     const user = await User.findOne({ email }).exec();
     
     if (!user) {
-      return res.status(404).json({ success: false, message: 'No account found with this email.' });
+      // Don't reveal if email exists or not for security
+      return res.json({ 
+        success: true, 
+        message: 'If an account exists with this email, a password reset link has been sent.' 
+      });
+    }
+    
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+    
+    // Send email
+    const emailResult = await sendPasswordResetEmail(email, resetToken);
+    
+    if (!emailResult.success) {
+      console.error('Failed to send reset email:', emailResult.error);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Failed to send reset email. Please try again later.' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'If an account exists with this email, a password reset link has been sent.' 
+    });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ success: false, message: 'Error processing request.', error: err.message });
+  }
+});
+
+// Reset Password: POST /auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+  
+  if (!token || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Token and new password are required.' });
+  }
+  
+  try {
+    const user = await User.findOne({ 
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    }).exec();
+    
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Password reset token is invalid or has expired.' 
+      });
     }
     
     // Update the password (will be hashed by the pre-save hook)
     user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save();
     
     res.json({ 
@@ -120,6 +176,40 @@ router.post('/reset-password', async (req, res) => {
   } catch (err) {
     console.error('Reset password error:', err);
     res.status(500).json({ success: false, message: 'Error resetting password.', error: err.message });
+  }
+});
+
+// Change Password (for logged-in users): POST /auth/change-password
+router.post('/change-password', async (req, res) => {
+  const { userId, currentPassword, newPassword } = req.body;
+  
+  if (!userId || !currentPassword || !newPassword) {
+    return res.status(400).json({ success: false, message: 'User ID, current password, and new password are required.' });
+  }
+  
+  try {
+    const user = await User.findById(userId).exec();
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    
+    // Verify current password
+    if (!user.validPassword(currentPassword)) {
+      return res.status(401).json({ success: false, message: 'Current password is incorrect.' });
+    }
+    
+    // Update to new password (will be hashed by the pre-save hook)
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Password changed successfully.' 
+    });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ success: false, message: 'Error changing password.', error: err.message });
   }
 });
 

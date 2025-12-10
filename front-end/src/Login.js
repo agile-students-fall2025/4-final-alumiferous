@@ -171,6 +171,17 @@ const Login = props => {
                 required
               />
               
+              {isLogin && (
+                <div className="text-right -mt-2">
+                  <a 
+                    href="/forgot-password" 
+                    className="text-sm text-primary dark:text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              )}
+              
               <input 
                 type="submit" 
                 value={isLogin ? 'Log In' : 'Sign Up'} 
