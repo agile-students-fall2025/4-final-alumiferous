@@ -192,9 +192,7 @@ In the front-end directory, you can run:
 │   ├── package.json               # Front-end dependencies and scripts
 │   └── README.md                  # Front-end setup instructions
 ├── back-end/                      # Express.js back-end application
-│   ├── config/                    # Configuration (e.g., DB, app settings)
 │   ├── models/                    # Database models
-│   ├── public/uploads/            # Uploaded files
 │   ├── routes/                    # API routes
 │   ├── test/                      # Back-end tests
 │   ├── .env.example               # Example back-end environment variables
@@ -203,7 +201,6 @@ In the front-end directory, you can run:
 │   ├── package.json               # Back-end dependencies and scripts
 │   └── README.MD                  # Back-end setup instructions
 ├── ux-design/                     # Wireframes and design prototypes
-│   └── README.md                  # UX documentation
 └── README.md                      # Project overview and deployment link
 
 ```
