@@ -184,7 +184,7 @@ In the front-end directory, you can run:
 ## Project Structure
 
 ```
-4-final-community/
+4-final-alumiferous/
 ├── front-end/                     # React.js front-end application
 │   ├── public/                    # Public assets
 │   ├── src/                       # Front-end source code
