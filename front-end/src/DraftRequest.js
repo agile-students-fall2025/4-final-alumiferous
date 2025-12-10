@@ -109,6 +109,9 @@ export default function DraftRequest() {
 
       await response.json();
       
+      // Trigger custom event to notify SkillDescription
+      window.dispatchEvent(new CustomEvent('requestSent', { detail: { skillId } }));
+      
       nav(`/skills/${encodeURIComponent(skillId)}`);
     } catch (err) {
       setError(err.message);
