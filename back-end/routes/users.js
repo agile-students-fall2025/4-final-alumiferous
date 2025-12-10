@@ -6,6 +6,28 @@ import SkillOffering from '../models/SkillOffering.js';
 
 const router = express.Router();
 
+// GET /api/users/check-username?username=foo
+// Returns { available: true } when the username is not present in the DB.
+// MUST BE BEFORE /:id route to avoid matching "check-username" as an id
+router.get('/check-username', async (req, res) => {
+  const username = (req.query.username || '').toString().trim();
+  if (!username) return res.status(400).json({ error: 'username query parameter is required' });
+
+  try {
+    // case-insensitive exact match
+    const esc = username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`^${esc}$`, 'i');
+    const excludeId = req.query.excludeId;
+    const q = { username: re };
+    if (excludeId) q._id = { $ne: excludeId };
+    const existing = await User.findOne(q).lean().exec();
+    return res.json({ available: !existing });
+  } catch (err) {
+    console.error('Error checking username availability:', err && err.message ? err.message : err);
+    return res.status(500).json({ error: 'failed to check username' });
+  }
+});
+
 // GET /api/users/:id - get public profile data for a user
 router.get('/:id', async (req, res) => {
   const userId = req.params.id;
@@ -62,27 +84,6 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error('Error fetching user public profile:', err);
     return res.status(500).json({ error: 'failed to fetch user profile' });
-  }
-});
-
-// GET /api/users/check-username?username=foo
-// Returns { available: true } when the username is not present in the DB.
-router.get('/check-username', async (req, res) => {
-  const username = (req.query.username || '').toString().trim();
-  if (!username) return res.status(400).json({ error: 'username query parameter is required' });
-
-  try {
-    // case-insensitive exact match
-    const esc = username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(`^${esc}$`, 'i');
-    const excludeId = req.query.excludeId;
-    const q = { username: re };
-    if (excludeId) q._id = { $ne: excludeId };
-    const existing = await User.findOne(q).lean().exec();
-    return res.json({ available: !existing });
-  } catch (err) {
-    console.error('Error checking username availability:', err && err.message ? err.message : err);
-    return res.status(500).json({ error: 'failed to check username' });
   }
 });
 
