@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema({
   offeredSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
   neededSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "Skill"}],
   savedSkills: [{type: mongoose.Schema.Types.ObjectId, ref: "SkillOffering"}],
-  bio: {type: String}
+  bio: {type: String},
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 });
 
 
