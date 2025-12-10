@@ -97,7 +97,7 @@ const ChangePassword = () => {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="password"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -105,7 +105,7 @@ const ChangePassword = () => {
 
             <input
               type="password"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -113,7 +113,7 @@ const ChangePassword = () => {
 
             <input
               type="password"
-              className="form-input"
+              className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

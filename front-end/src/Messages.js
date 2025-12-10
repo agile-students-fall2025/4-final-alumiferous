@@ -251,7 +251,7 @@ const Messages = () => {
       <form className="flex items-center gap-2 px-4 py-3 border-t border-gray-200 dark:border-[#333] bg-white dark:bg-[#121212]" onSubmit={onSend}>
         <input
           type="text"
-          className="form-input"
+          className="form-input dark:!text-white dark:!bg-[#2b2b2b] dark:placeholder-gray-400"
           placeholder="Type a message…"
           value={draft}
           onChange={e => setDraft(e.target.value)}
