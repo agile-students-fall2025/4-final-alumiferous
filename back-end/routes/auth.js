@@ -94,6 +94,35 @@ router.get('/logout', (req, res) => {
   res.json({ success: true, message: 'Delete your token from local storage to logout.' });
 });
 
+// Reset Password: POST /auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  const { email, newPassword } = req.body;
+  
+  if (!email || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Email and new password are required.' });
+  }
+  
+  try {
+    const user = await User.findOne({ email }).exec();
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No account found with this email.' });
+    }
+    
+    // Update the password (will be hashed by the pre-save hook)
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Password reset successfully.' 
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ success: false, message: 'Error resetting password.', error: err.message });
+  }
+});
+
 // Error handling middleware
 router.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
