@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 const PublicProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +37,16 @@ const PublicProfile = () => {
 
   const handleSkillClick = (skillId) => {
     navigate(`/skills/${skillId}`);
+  };
+
+  const handleBack = () => {
+    // Check if we came from a specific page via location state
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      // Default to home to avoid loops
+      navigate('/home');
+    }
   };
 
   if (loading) {
@@ -75,9 +87,16 @@ const PublicProfile = () => {
     <main className="min-h-screen bg-white dark:bg-[#121212] pt-20 pb-24">
       {/* Header */}
       <div className="fixed top-[56px] left-0 right-0 z-10 flex items-center justify-between px-5 py-4 bg-white dark:bg-[#121212] border-b border-[#e0e0e0] dark:border-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0">
+        <button
+          onClick={handleBack}
+          className="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white m-0 flex-1 min-w-0 text-center">
           User Profile
         </h1>
+        <div className="w-16"></div> {/* Spacer for centering */}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 mt-[72px]">
