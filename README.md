@@ -155,7 +155,7 @@ Integrated a hosted MongoDB Atlas database into the Express.js backend using Mon
 - Product Owner: Alisha Atif
 - Scrum Master: Godbless Osei
 
-Deployed the full-stack InstaSkill application to a DigitalOcean Droplet, configuring the Node/Express backend and React frontend to run in a production environment.
+Deployed the full‑stack InstaSkill application to a DigitalOcean Droplet, configuring the Node/Express backend and React frontend for a production environment with continuous deployment via GitHub Actions.
 
 ## How to Run the Application
 
